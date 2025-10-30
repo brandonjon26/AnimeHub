@@ -1,3 +1,4 @@
+![AnimeHub Icon](AnimeHub.Client/public/AnimeHubIcon.ico)
 ## 🚀 AnimeHub
 
 ### 🎯 Overview
@@ -26,7 +27,14 @@ This project utilizes a modern, performance-focused stack:
 
 The project uses a solution file (`AnimeHub.sln`) to manage distinct project folders, facilitating a clear separation of concerns:
 
-AnimeHub/ ├── AnimeHub.Api/ # ASP.NET Core Backend (Business Logic, API Endpoints) ├── AnimeHub.Client/ # React/Vite Frontend (UI Components, State Management) ├── AnimeHub.Scraper/ # Python service for data ingestion (Decoupled) ├── AnimeHub.UnitTests/ # .NET unit tests (API Business Logic) ├── AnimeHub.IntegrationTests/# .NET/Full-stack flow tests ├── .gitignore # Consolidated ignore file (Backend + Frontend) └── AnimeHub.sln # Primary Solution File
+AnimeHub/ 
+	├── AnimeHub.Api/ # ASP.NET Core Backend (Business Logic, API Endpoints) 
+	├── AnimeHub.Client/ # React/Vite Frontend (UI Components, State Management) 
+	├── AnimeHub.Scraper/ # Python service for data ingestion (Decoupled) 
+	├── AnimeHub.UnitTests/ # .NET unit tests (API Business Logic) 
+	├── AnimeHub.IntegrationTests/# .NET/Full-stack flow tests 
+	├── .gitignore # Consolidated ignore file (Backend + Frontend) 
+	└── AnimeHub.sln # Primary Solution File
 
 ---
 
