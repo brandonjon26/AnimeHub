@@ -1,0 +1,191 @@
+################################################################
+# AnimeHub Project - Unified .gitignore
+# Consolidated from:
+# 1. ASP.NET Core / Visual Studio template (dotnet new gitignore)
+# 2. Vite / React Frontend template
+################################################################
+
+### I. LOGS AND TEMPORARY FILES (COMMON TO BOTH) ###
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.stackdump # Windows dump file
+*.tmp
+*.tmp_proj
+*.log
+*.tlog
+
+### II. BUILD OUTPUT AND DEPENDENCIES ###
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# .NET Build Results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*.pdb
+*.ipdb
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*_wpftmp.csproj
+*.pidb
+*.binlog
+
+# Publish/Deployment
+publish/
+*.[Pp]ublish.xml
+*.azurePubxml
+# Note: Comment the next line if you want to checkin your web deploy settings,
+# but database connection strings (with potential passwords) will be unencrypted
+*.pubxml
+*.publishproj
+PublishScripts/
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+# Uncomment if necessary however generally it will be regenerated when needed
+#!**/[Pp]ackages/repositories.config
+*.nuget.props
+*.nuget.targets
+
+# Application/Installer Files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk # Windows shortcuts
+
+### III. IDE / EDITOR AND USER-SPECIFIC FILES ###
+
+# User-specific files (Visual Studio)
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vshistory/
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+*.usertasks
+
+# Visual Studio Cache/Options
+.vs/
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+
+# VS Code (Consolidated: Keeps necessary config files)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+
+# JetBrains Rider / IntelliJ
+.idea/
+*.sln.iml
+
+# Mac OS System Files
+.DS_Store
+.AppleDouble
+Icon
+._*
+
+# Windows System Files
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Environment Variables
+.env
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+### IV. TESTING, COVERAGE, AND ADD-INS ###
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NUnit
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+
+# Code Coverage Tools
+*.dotCover
+.axoCover/*
+!.axoCover/settings.json
+coverage*.json
+coverage*.xml
+coverage*.info
+*.coverage
+*.coveragexml
+_NCrunch_*
+.*crunch*.local.xml
+nCrunchTemp_*
+
+# Other Add-ins/Tools
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+_TeamCity*
+.sass-cache/
+DocProject/buildhelp/
+DocProject/Help/*.HxT
+DocProject/Help/*.HxC
+DocProject/Help/*.hhc
+DocProject/Help/*.hhk
+DocProject/Help/*.hhp
+DocProject/Help/Html2
+DocProject/Help/html
+*.jmconfig
+OpenCover/
+ASALocalRun/
+*.nvuser
+.mfractor/
+.localhistory/
+healthchecksdb
+MigrationBackup/
+.ionide/
+FodyWeavers.xsd
