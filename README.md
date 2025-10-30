@@ -1,73 +1,50 @@
-# React + TypeScript + Vite
+## 🚀 AnimeHub
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### 🎯 Overview
 
-Currently, two official plugins are available:
+**AnimeHub** is a platform designed to track, organize, and manage information about anime, figures, and related merchandise by scraping data from various sources (e.g., AmiAmi, Crunchyroll) and aggregating it into a user-friendly interface.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project is built using a **Monolith-First** architecture, separating the concerns into distinct project folders for the API, Client, and Scraping services.
 
-## React Compiler
+### 💻 Tech Stack & Architecture
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+This project utilizes a modern, performance-focused stack:
 
-## Expanding the ESLint configuration
+| Component | Technology | Version / Key Library | Rationale / Key Feature |
+| :--- | :--- | :--- | :--- |
+| **Backend API** | ASP.NET Core | **.NET 8 (LTS)** | High-performance, cross-platform backend. |
+| **Frontend UI** | React + TypeScript | **Vite** | Component-based, static typing, lightning-fast development server. |
+| **Database** | SQL Server | **Entity Framework Core (EF Core)** | Robust, scalable, simplified data access. |
+| **Data Scraping** | Python | *TBD (Via Message Queue)* | Dedicated language for web scraping; decoupled integration. |
+| **State Management**| Frontend Caching | **TanStack Query (React Query)** | Manages server state, implements **Optimistic Updates**. |
+| **Styling** | Isolation | **CSS Modules** | Ensures component-specific styles and avoids global conflicts. |
+| **API Client** | HTTP | **Axios** | Used with an **Interceptor** for automatic JWT injection. |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 📂 Repository Structure
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+The project uses a solution file (`AnimeHub.sln`) to manage distinct project folders, facilitating a clear separation of concerns:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+AnimeHub/ ├── AnimeHub.Api/ # ASP.NET Core Backend (Business Logic, API Endpoints) ├── AnimeHub.Client/ # React/Vite Frontend (UI Components, State Management) ├── AnimeHub.Scraper/ # Python service for data ingestion (Decoupled) ├── AnimeHub.UnitTests/ # .NET unit tests (API Business Logic) ├── AnimeHub.IntegrationTests/# .NET/Full-stack flow tests ├── .gitignore # Consolidated ignore file (Backend + Frontend) └── AnimeHub.sln # Primary Solution File
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### ⚙️ Getting Started
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+To run the project locally, you will need the **.NET 8 SDK** and **Node.js (LTS)** installed.
+
+#### 1. Setup
+
+Navigate to the project root directory (`AnimeHub/`).
+
+```bash
+# 1. Install .NET packages and build the solution
+dotnet restore
+dotnet build
+
+# 2. Navigate to the frontend client directory
+cd AnimeHub.Client
+
+# 3. Install Node dependencies
+npm install
