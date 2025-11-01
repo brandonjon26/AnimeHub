@@ -1,5 +1,4 @@
 import React, { type ReactNode } from "react";
-// We'll use a CSS Module for layout-specific styles
 import styles from "./MainLayout.module.css";
 
 interface MainLayoutProps {
