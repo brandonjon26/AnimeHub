@@ -36,6 +36,7 @@ AnimeHub/
 	├── AnimeHub.IntegrationTests/# .NET/Full-stack flow tests 
 	├── .gitignore # Consolidated ignore file (Backend + Frontend) 
 	└── AnimeHub.sln # Primary Solution File
+```
 
 ---
 
@@ -57,3 +58,4 @@ cd AnimeHub.Client
 
 # 3. Install Node dependencies
 npm install
+```
