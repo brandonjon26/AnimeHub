@@ -140,6 +140,13 @@ $RECYCLE.BIN/
 *.njsproj
 *.sw?
 
+# Explicitly ignore Vite-specific environment files in all project folders
+# This ensures that specific development/testing settings are never tracked.
+.env.development
+.env.test
+.env.staging
+.env.production
+
 ### IV. TESTING, COVERAGE, AND ADD-INS ###
 
 # MSTest test Results
