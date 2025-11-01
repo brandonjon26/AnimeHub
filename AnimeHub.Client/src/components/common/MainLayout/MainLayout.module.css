@@ -1,0 +1,58 @@
+.layoutContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  /* Your Halloween Dark Theme: Black background with Orange highlight */
+  background-color: var(--color-bg-secondary);
+  border-bottom: 3px solid var(--color-accent-orange);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-text-primary);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-accent-purple); /* Using Purple for the logo text */
+}
+
+.mainContent {
+  display: flex;
+  flex-grow: 1; /* Ensures content takes up all remaining space */
+}
+
+.sidebar {
+  width: 250px; /* Placeholder width for the sidebar */
+  background-color: var(--color-bg-secondary);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  /* Visually confirming the Green Accent color */
+  color: var(--color-accent-green);
+}
+
+.pageContent {
+  flex-grow: 1;
+  padding: 2rem;
+}
+
+.avatarArea {
+  width: 200px; /* Placeholder width for the avatar column */
+  background-color: var(--color-bg-primary);
+  padding: 1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  /* Visually confirming the Orange Accent color */
+  color: var(--color-accent-orange);
+}
+
+.footer {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: 0.5rem;
+}

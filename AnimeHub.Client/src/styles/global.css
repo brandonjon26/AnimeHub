@@ -1,0 +1,76 @@
+/* Import fonts or reset styles here */
+/* For now, just a basic reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ----------------------------------------------------------------- */
+/* 2. CSS Variables for Theming (FIXED SELECTORS) */
+/* ----------------------------------------------------------------- */
+
+/* Default Theme: Dark 
+   Applies to the body element (or any element that contains all variables) 
+   when NO data-theme attribute is present.
+*/
+body {
+  /* Backgrounds */
+  --color-bg-primary: #121212; /* Dark background */
+  --color-bg-secondary: #1e1e1e; /* Slightly lighter for cards/surfaces */
+
+  /* Text */
+  --color-text-primary: #e0e0e0; /* Light text for dark bg */
+  --color-text-secondary: #b0b0b0; /* Less emphasized text */
+
+  /* Accent Colors (Your Halloween Palette) */
+  --color-accent-orange: #ff7f50;
+  --color-accent-purple: #9932cc;
+  --color-accent-green: #3cb371;
+
+  /* Primary Action/Interactive */
+  --color-primary-brand: var(--color-accent-orange);
+}
+
+/* Dark Theme Explicitly (Required to override when toggling back from Light) */
+body[data-theme="dark"] {
+  /* We redefine the dark variables here to ensure proper overriding if needed */
+  --color-bg-primary: #121212;
+  --color-bg-secondary: #1e1e1e;
+  --color-text-primary: #e0e0e0;
+  --color-text-secondary: #b0b0b0;
+
+  --color-primary-brand: var(--color-accent-orange);
+}
+
+/* Light Theme Definition: Overrides the DARK variables when data-theme='light' is present on <body> */
+/* TARGET THE BODY ELEMENT WITH THE ATTRIBUTE: body[data-theme="light"] */
+body[data-theme="light"] {
+  /* Backgrounds: Use brighter, traditional colors */
+  --color-bg-primary: #ffffff; /* White */
+  --color-bg-secondary: #f8f8f8; /* Very light gray for cards/surfaces */
+
+  /* Text: Use dark, highly contrasting text */
+  --color-text-primary: #212121; /* Near Black */
+  --color-text-secondary: #757575; /* Gray for subtle text */
+
+  /* Accent Colors: Make them slightly softer to prevent them from "glowing" on white */
+  --color-accent-orange: #ff8c00; /* Darker Orange */
+  --color-accent-purple: #800080; /* Stronger Purple */
+  --color-accent-green: #3cb371; /* Green can remain strong */
+
+  /* Primary Action/Interactive (Kept as Orange) */
+  --color-primary-brand: var(--color-accent-orange);
+}
+
+/* ----------------------------------------------------------------- */
+/* 3. Global Body Styling (Uses the variables defined above) */
+/* ----------------------------------------------------------------- */
+
+body {
+  /* This rule applies the theme variables that are swapped by the selectors above */
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: sans-serif; /* Placeholder */
+  transition: background-color 0.3s, color 0.3s;
+}

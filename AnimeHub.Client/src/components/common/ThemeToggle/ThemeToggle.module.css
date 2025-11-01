@@ -1,0 +1,20 @@
+/* Using CSS variables defined in global.css */
+.themeButton {
+  padding: 8px 15px;
+  background-color: var(--color-primary-brand);
+  color: var(--color-bg-primary); /* Text color should be dark/black */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s; /* Add a smooth transition */
+}
+
+.themeButton:hover {
+  /* Slightly darker orange on hover */
+  background-color: color-mix(
+    in srgb,
+    var(--color-primary-brand) 90%,
+    black 10%
+  );
+}
