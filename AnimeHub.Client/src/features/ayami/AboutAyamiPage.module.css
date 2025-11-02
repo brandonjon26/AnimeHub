@@ -20,6 +20,26 @@
   flex-grow: 2;
 }
 
+.bioFlexContainer {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start; /* Ensures content is top-aligned */
+  margin-bottom: 30px; /* Space before the key details list */
+}
+
+.headshotImage {
+  width: 250px;
+  flex-shrink: 0; /* Prevents the image from shrinking */
+  height: auto;
+  border: 3px solid var(--color-accent-purple); /* Standout border */
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.bioText {
+  flex-grow: 1;
+}
+
 .paragraph {
   margin-bottom: 15px;
   line-height: 1.6;

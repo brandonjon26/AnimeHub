@@ -1,6 +1,7 @@
 .layoutContainer {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  /* flex-direction: column; */
+  gird-template-rows: auto 1fr auto;
   min-height: 100vh;
 }
 
@@ -127,7 +128,7 @@
   flex-shrink: 0; /* Prevents it from shrinking */
 
   /* 🔑 Use Flexbox to manage vertical height */
-  display: flex;
+  display: block;
   flex-direction: column;
   height: 100%;
 }

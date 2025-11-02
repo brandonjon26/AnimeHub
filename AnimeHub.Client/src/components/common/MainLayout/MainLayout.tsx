@@ -1,5 +1,5 @@
 import React, { type ReactNode, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
 import AyamiAvatar from "../AyamiAvatar";
 import styles from "./MainLayout.module.css";
@@ -34,6 +34,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
+  // 🔑 Get current path
+  const location = useLocation();
+  // 🔑 Check if we are on the Home page
+  const isHomePage = location.pathname === "/";
+
   return (
     <div className={styles.layoutContainer}>
       {/* 1. TOP NAVBAR (Vision: Home, Anime, Merchandise, Icon, Logout, Profile) */}
@@ -53,14 +58,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           >
             Home
           </NavLink>
-          <NavLink
-            to="/anime"
-            className={({ isActive }) =>
-              isActive ? styles.activeLink : styles.link
-            }
-          >
-            Anime
-          </NavLink>
           {/* 🔑 New Navigation Link for Ayami */}
           <NavLink
             to="/ayami"
@@ -69,6 +66,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             }
           >
             Meet Ayami
+          </NavLink>
+          <NavLink
+            to="/anime"
+            className={({ isActive }) =>
+              isActive ? styles.activeLink : styles.link
+            }
+          >
+            Anime
           </NavLink>
           <NavLink
             to="/merchandise"
@@ -112,9 +117,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </section>
 
         {/* Right Avatar (Vision: Custom AnimeHub Character) */}
-        <aside className={styles.avatarArea}>
-          <AyamiAvatar />
-        </aside>
+        {isHomePage && (
+          <aside className={styles.avatarArea}>
+            <AyamiAvatar />
+          </aside>
+        )}
       </main>
 
       {/* Optional: Footer */}

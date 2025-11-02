@@ -6,6 +6,12 @@
   padding: 0;
 }
 
+html,
+body,
+#root {
+  height: 100%; /* Ensure full height from the top of the browser */
+}
+
 /* ----------------------------------------------------------------- */
 /* 2. CSS Variables for Theming (FIXED SELECTORS) */
 /* ----------------------------------------------------------------- */

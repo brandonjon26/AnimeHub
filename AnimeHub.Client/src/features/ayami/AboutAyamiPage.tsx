@@ -16,19 +16,17 @@ const AyamiBio = `
 
 // Helper function to render paragraphs and bold text (retained for clean formatting)
 const renderBio = (text: string) => {
-  return text
-    .split("\n\n")
-    .map((paragraph, index) => (
-      <p
-        key={index}
-        style={{ marginBottom: "15px", lineHeight: 1.6 }}
-        dangerouslySetInnerHTML={{
-          __html: paragraph
-            .trim()
-            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-        }}
-      />
-    ));
+  return text.split("\n\n").map((paragraph, index) => (
+    <p
+      key={index}
+      style={{ marginBottom: "15px", lineHeight: 1.6 }}
+      dangerouslySetInnerHTML={{
+        __html: paragraph
+          .trim()
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
+      }}
+    />
+  ));
 };
 
 const AboutAyamiPage: React.FC = () => {
@@ -42,9 +40,18 @@ const AboutAyamiPage: React.FC = () => {
         <div className={styles.contentWrapper}>
           {/* Left: Bio/Text Area */}
           <div className={styles.bioArea}>
-            <h2>Ayami's Story</h2>
-            {renderBio(AyamiBio)}
+            <div className={styles.bioFlexContainer}>
+              <img
+                src="/images/ayami/Ayami_Bio_Page_3.png"
+                alt="Ayami Headshot"
+                className={styles.headshotImage}
+              />
 
+              <div className={styles.bioText}>
+                <h2>Ayami's Story</h2>
+                {renderBio(AyamiBio)}
+              </div>
+            </div>
             <h3 className={styles.keyDetailsTitle}>Key Details</h3>
             <ul className={styles.keyList}>
               <li>
@@ -69,14 +76,14 @@ const AboutAyamiPage: React.FC = () => {
 
             {/* REFERENCE IMAGE 1: Full art or main pose */}
             <img
-              src="/images/ayami/Ayami Bio Page 1.png"
+              src="/images/ayami/Ayami_Bio_Page_1.png"
               alt="Ayami Full Art"
               className={styles.galleryImage}
             />
 
             {/* REFERENCE IMAGE 2: Chibi or secondary pose */}
             <img
-              src="/images/ayami/Ayami Bio Page 2.png"
+              src="/images/ayami/Ayami_Bio_Page_2.png"
               alt="Ayami Full Art"
               className={styles.galleryImage}
             />
