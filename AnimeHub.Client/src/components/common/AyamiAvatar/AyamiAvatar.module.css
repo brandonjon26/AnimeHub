@@ -1,0 +1,39 @@
+.avatarContainer {
+  /* Styles to make the avatar panel distinct */
+  /* Add flex-grow to ensure the container uses all vertical space in the parent */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column; /* Organize content vertically */
+  justify-content: flex-start; /* Push image to center/bottom if desired, or just start */
+  flex-grow: 0;
+  text-align: center;
+  padding: 1rem 0.5rem;
+  color: var(--color-text-primary);
+}
+
+.title {
+  color: var(--color-accent-purple);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-accent-orange);
+}
+
+.imagePlaceholder {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  object-fit: contain;
+  max-height: 100%;
+  margin: 10px 0;
+  background-color: var(--color-bg-secondary);
+  border: 2px dashed var(--color-accent-green);
+  color: var(--color-accent-green);
+  margin: 10px 0;
+}
