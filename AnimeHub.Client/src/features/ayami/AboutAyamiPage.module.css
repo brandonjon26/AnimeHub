@@ -1,0 +1,54 @@
+/* AnimeHub.Client/src/features/ayami/AboutAyamiPage.module.css */
+
+.pageContainer {
+  padding: 20px;
+}
+
+.title {
+  color: var(--color-accent-purple);
+  border-bottom: 2px solid var(--color-accent-orange);
+  padding-bottom: 10px;
+}
+
+.contentWrapper {
+  display: flex;
+  gap: 40px;
+  margin-top: 30px;
+}
+
+.bioArea {
+  flex-grow: 2;
+}
+
+.paragraph {
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.keyDetailsTitle {
+  margin-top: 25px;
+  color: var(--color-accent-orange);
+}
+
+.keyList {
+  padding-left: 20px;
+  line-height: 1.8;
+}
+
+.galleryArea {
+  flex-grow: 1;
+  min-width: 300px;
+}
+
+.galleryImage {
+  width: 100%;
+  height: auto;
+  border: 2px solid var(--color-accent-green); /* Default border */
+  margin-bottom: 20px;
+}
+
+/* Specific styling for the second image (Chibi) */
+.chibiImage {
+  border: 2px solid var(--color-accent-orange);
+  margin-bottom: 0;
+}
