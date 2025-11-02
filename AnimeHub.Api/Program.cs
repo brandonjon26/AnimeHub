@@ -1,9 +1,25 @@
+using AnimeHub.Api.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Retrieve the connection string from configuration (Secret Manager in Development)
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+// Only load Key Vault secrets in non-development environments
+if (!builder.Environment.IsDevelopment())
+{
+    // Logic here for Key Vault access
+}
+
+// Register the DbContext to use SQL Server
+builder.Services.AddDbContext<AnimeHubDbContext>(options =>
+{
+    options.UseSqlServer(connectionString);
+});
+
+// Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

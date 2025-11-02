@@ -96,6 +96,8 @@ PublishScripts/
 *.userprefs
 *.usertasks
 
+appsettings.Development.json
+
 # Visual Studio Cache/Options
 .vs/
 ipch/
