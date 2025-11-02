@@ -6,6 +6,8 @@
 
 .header {
   /* Your Halloween Dark Theme: Black background with Orange highlight */
+  gap: 15px;
+  padding: 0.75rem 1.5rem;
   background-color: var(--color-bg-secondary);
   border-bottom: 3px solid var(--color-accent-orange);
   padding: 0.75rem 1.5rem;
@@ -16,38 +18,125 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 }
 
+.hamburger {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--color-accent-orange);
+  cursor: pointer;
+  z-index: 100;
+}
+
 .logo {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--color-accent-purple); /* Using Purple for the logo text */
 }
 
+.navLinks {
+  display: flex;
+  gap: 20px; /* Space between links */
+}
+
+.link,
+.activeLink {
+  text-decoration: none;
+  color: var(--color-text-primary);
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.link:hover {
+  color: var(--color-accent-orange);
+}
+
+.activeLink {
+  color: var(--color-bg-primary);
+  background-color: var(--color-accent-purple);
+  font-weight: bold;
+}
+
+.userActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logoutButton,
+.profileButton {
+  /* Basic button styling to match the theme */
+  background-color: transparent;
+  border: 1px solid var(--color-accent-orange);
+  color: var(--color-accent-orange);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.logoutButton:hover,
+.profileButton:hover {
+  background-color: rgba(255, 127, 80, 0.1); /* Slight hover effect */
+}
+
 .mainContent {
   display: flex;
-  flex-grow: 1; /* Ensures content takes up all remaining space */
+  flex-grow: 1;
+  align-items: stretch;
+  height: 100%;
+  min-height: calc(
+    100vh - 60px
+  ); /* Ensure it takes up viewport height minus header/footer */
 }
 
+/* LEFT SIDEBAR (Collapsible) */
 .sidebar {
-  width: 250px; /* Placeholder width for the sidebar */
+  /* Base styles */
   background-color: var(--color-bg-secondary);
   border-right: 1px solid rgba(255, 255, 255, 0.1);
+  transition: width 0.3s ease-in-out, padding 0.3s ease-in-out;
+  overflow: hidden; /* Hide content when collapsed */
+  flex-shrink: 0; /* Prevents it from shrinking when content grows */
+}
+
+/* Collapsed State (Default) */
+.sidebarClosed {
+  width: 0;
+  padding: 0;
+}
+
+/* Open State */
+.sidebarOpen {
+  width: 250px; /* Full width when open */
   padding: 1rem;
-  /* Visually confirming the Green Accent color */
-  color: var(--color-accent-green);
 }
 
-.pageContent {
-  flex-grow: 1;
-  padding: 2rem;
+/* Content inside the sidebar (hidden when collapsed) */
+.sidebarContent {
+  width: 250px; /* Maintain fixed content width */
 }
 
+/* RIGHT AVATAR AREA (Wider) */
 .avatarArea {
-  width: 200px; /* Placeholder width for the avatar column */
+  /* 🔑 Wider width for better display */
+  width: 300px;
   background-color: var(--color-bg-primary);
   padding: 1rem;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
-  /* Visually confirming the Orange Accent color */
-  color: var(--color-accent-orange);
+  flex-shrink: 0; /* Prevents it from shrinking */
+
+  /* 🔑 Use Flexbox to manage vertical height */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Center Page Content (Needs to fill remaining space) */
+.pageContent {
+  flex-grow: 1;
+  padding: 2rem;
+  overflow-y: auto; /* Allows content scrolling if needed */
 }
 
 .footer {
