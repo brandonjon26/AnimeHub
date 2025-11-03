@@ -1,6 +1,8 @@
 using AnimeHub.Api.Data;
 using AnimeHub.Api.Endpoints;
 using AnimeHub.Api.Mapping;
+using AnimeHub.Api.Repositories;
+using AnimeHub.Api.Services;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,8 @@ if (!builder.Environment.IsDevelopment())
     // Logic here for Key Vault access
 }
 
+// Add services to the container.
+
 // Register the DbContext to use SQL Server
 builder.Services.AddDbContext<AnimeHubDbContext>(options =>
 {
@@ -32,7 +36,12 @@ builder.Services.AddAutoMapper((IServiceProvider serviceProvider, IMapperConfigu
     config.AddProfile<AnimeMappingProfile>();
 }, new Type[] { });
 
-// Add services to the container.
+// Register the Anime Repository (Scoped lifetime is standard for repositories)
+builder.Services.AddScoped<IAnimeRepository, AnimeRepository>();
+
+// Register the Anime Service (Scoped lifetime is standard for services)
+builder.Services.AddScoped<AnimeInterface, AnimeService>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
