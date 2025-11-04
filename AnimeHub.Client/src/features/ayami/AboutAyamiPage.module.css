@@ -60,15 +60,67 @@
   min-width: 300px;
 }
 
-.galleryImage {
-  width: 100%;
-  height: auto;
-  border: 2px solid var(--color-accent-green); /* Default border */
-  margin-bottom: 20px;
+.featuredGrid {
+  /* Layout for the two featured images */
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns */
+  gap: 15px;
+  margin-top: 15px;
 }
 
-/* Specific styling for the second image (Chibi) */
-.chibiImage {
-  border: 2px solid var(--color-accent-orange);
+.featuredImage {
+  width: 100%;
+  height: auto;
+  border: 2px solid var(--color-accent-purple);
+  border-radius: 4px;
+  object-fit: cover;
+  /* Removed the original static galleryImage styles */
   margin-bottom: 0;
+}
+
+/* 2. Albums Section (Below the main flex container) */
+.albumsSection {
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 1px solid var(--color-bg-secondary); /* Subtle separator */
+}
+
+.albumList {
+  display: flex;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.albumLink {
+  text-decoration: none;
+  color: var(--color-text-primary);
+  transition: transform 0.2s;
+}
+
+.albumLink:hover {
+  transform: translateY(-5px); /* Lift card on hover */
+  color: var(--color-accent-orange);
+}
+
+.albumCard {
+  /* Styling for the box containing the image and name */
+  background-color: var(--color-bg-secondary);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 180px; /* Fixed width for card */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.albumCover {
+  width: 100%;
+  max-width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  border: 1px solid var(--color-accent-green);
 }

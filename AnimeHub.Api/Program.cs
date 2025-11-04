@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Retrieve the connection string from configuration (Secret Manager in Development)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+const string CorsPolicyName = "AllowReactClient";
 
 // Only load Key Vault secrets in non-development environments
 if (!builder.Environment.IsDevelopment())
@@ -38,13 +39,28 @@ builder.Services.AddAutoMapper((IServiceProvider serviceProvider, IMapperConfigu
 
 // Register the Anime Repository (Scoped lifetime is standard for repositories)
 builder.Services.AddScoped<IAnimeRepository, AnimeRepository>();
+builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
+builder.Services.AddScoped<IGalleryCategoryRepository, GalleryCategoryRepository>();
 
 // Register the Anime Service (Scoped lifetime is standard for services)
 builder.Services.AddScoped<AnimeInterface, AnimeService>();
+builder.Services.AddScoped<GalleryInterface, GalleryService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Configure CORS Service
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: CorsPolicyName,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // Allow your frontend's exact origin
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 var app = builder.Build();
 
@@ -55,12 +71,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles();
+
 app.UseHttpsRedirection();
+
+app.UseCors(CorsPolicyName);
 
 app.UseAuthorization();
 
 app.MapControllers(); // Leave for now but will most likely delete later
 
 app.MapAnimeEndpoints();
+app.MapGalleryEndpoints();
 
 app.Run();
