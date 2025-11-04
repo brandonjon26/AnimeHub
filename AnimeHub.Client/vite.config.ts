@@ -8,7 +8,7 @@ export default defineConfig({
     proxy: {
       // All requests starting with '/api' will be forwarded to your backend URL
       "/api": {
-        target: "http://localhost:44393", // **<- REPLACE with your actual ASP.NET Core API URL/port**
+        target: "https://localhost:44393", // **<- REPLACE with your actual ASP.NET Core API URL/port**
         changeOrigin: true,
         secure: false, // Set to true if your API uses HTTPS
         // rewrite: (path) => path.replace(/^\/api/, '') // Optional: remove '/api' if not needed by backend
