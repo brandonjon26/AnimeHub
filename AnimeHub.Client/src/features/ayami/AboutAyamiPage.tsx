@@ -1,94 +1,80 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import AyamiContent from "./AyamiContent";
+import { GalleryClient } from "../../api/GalleryClient";
+import {
+  type GalleryImage,
+  type GalleryCategory,
+} from "../../api/types/GalleryTypes";
 import MainLayout from "../../components/common/MainLayout";
 import styles from "./AboutAyamiPage.module.css";
 
-const AyamiBio = `
-  Ayami (meaning "Bewitching Beauty") is the enigmatic spirit of discovery and charm at the heart of AnimeHub. 
-  Hailing from a dark, ruined world somewhere on the outskirts of the Isekai multiverse, 
-  she carries herself with an effortless confidence that belies her petite stature.
-  
-  Her playful nature is only matched by her profound sense of mystery. 
-  Dressed in her signature midnight-black mini-dress, witch's hat, and gloves—all highlighted by subtle purple accents matching her mesmerizing eyes—she embodies both elegance and edge.
-  
-  Ayami wields a distinctive staff, not just as a weapon, but as a key to unlock the most compelling worlds and narratives in the AnimeHub universe. 
-  She is here to be your confident, charming, and slightly mischievous guide through all the deepest lore and most captivating stories the fandom has to offer.
-`;
-
-// Helper function to render paragraphs and bold text (retained for clean formatting)
-const renderBio = (text: string) => {
-  return text.split("\n\n").map((paragraph, index) => (
-    <p
-      key={index}
-      style={{ marginBottom: "15px", lineHeight: 1.6 }}
-      dangerouslySetInnerHTML={{
-        __html: paragraph
-          .trim()
-          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-      }}
-    />
-  ));
-};
+// Initialize the client
+const galleryClient = new GalleryClient();
 
 const AboutAyamiPage: React.FC = () => {
+  // 🔑 State for the dynamic gallery data
+  const [featuredImages, setFeaturedImages] = useState<GalleryImage[]>([]);
+  const [folders, setFolders] = useState<GalleryCategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const location = useLocation();
+  // Determines if we are on the index route (/ayami) or a nested route (/ayami/album)
+  const isIndexRoute =
+    location.pathname.endsWith("/ayami") ||
+    location.pathname.endsWith("/ayami/");
+
+  // 🔑 Data Fetching Logic
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch both data sets concurrently
+        const [featured, categories] = await Promise.all([
+          galleryClient.getFeaturedImages(),
+          galleryClient.getFolders(),
+        ]);
+
+        setFeaturedImages(featured);
+        setFolders(categories);
+      } catch (err) {
+        console.error("Failed to fetch gallery data:", err);
+        setError("Failed to load Ayami's media gallery.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Only fetch data if we are rendering the index view
+    if (isIndexRoute) {
+      fetchData();
+    }
+  }, [isIndexRoute]);
+
+  // If the route is not the index (/ayami/album), Outlet handles rendering, so we skip loading/error screens here.
+
+  if (isIndexRoute && isLoading) {
+    return <div className={styles.pageContainer}>Loading Ayami's media...</div>;
+  }
+
+  if (isIndexRoute && error) {
+    return (
+      <div className={styles.pageContainer} style={{ color: "red" }}>
+        Error: {error}
+      </div>
+    );
+  }
+
   return (
     <MainLayout>
-      {/* 🔑 Use class name for the page container */}
       <div className={styles.pageContainer}>
-        <h1 className={styles.title}>Meet Ayami 🌟 The Bewitching Beauty</h1>
+        {/* Outlet for rendering nested routes (Step 5) */}
+        <Outlet />
 
-        {/* 🔑 Use class name for the flex wrapper */}
-        <div className={styles.contentWrapper}>
-          {/* Left: Bio/Text Area */}
-          <div className={styles.bioArea}>
-            <div className={styles.bioFlexContainer}>
-              <img
-                src="/images/ayami/Ayami_Bio_Page_3.png"
-                alt="Ayami Headshot"
-                className={styles.headshotImage}
-              />
-
-              <div className={styles.bioText}>
-                <h2>Ayami's Story</h2>
-                {renderBio(AyamiBio)}
-              </div>
-            </div>
-            <h3 className={styles.keyDetailsTitle}>Key Details</h3>
-            <ul className={styles.keyList}>
-              <li>
-                **Origin:** Outskirts of the Isekai Multiverse (a dark, ruined
-                world).
-              </li>
-              <li>**Role:** Guide of discovery and charm for AnimeHub.</li>
-              <li>
-                **Signature Look:** Midnight-black dress, witch's hat, and
-                subtle purple accents.
-              </li>
-              <li>
-                **Equipment:** A distinctive staff, used to unlock compelling
-                worlds.
-              </li>
-            </ul>
-          </div>
-
-          {/* Right: Gallery */}
-          <div className={styles.galleryArea}>
-            <h2>Gallery</h2>
-
-            {/* REFERENCE IMAGE 1: Full art or main pose */}
-            <img
-              src="/images/ayami/Ayami_Bio_Page_1.png"
-              alt="Ayami Full Art"
-              className={styles.galleryImage}
-            />
-
-            {/* REFERENCE IMAGE 2: Chibi or secondary pose */}
-            <img
-              src="/images/ayami/Ayami_Bio_Page_2.png"
-              alt="Ayami Full Art"
-              className={styles.galleryImage}
-            />
-          </div>
-        </div>
+        {/* Render AyamiContent ONLY if we are on the index route */}
+        {isIndexRoute && (
+          <AyamiContent featuredImages={featuredImages} folders={folders} />
+        )}
       </div>
     </MainLayout>
   );

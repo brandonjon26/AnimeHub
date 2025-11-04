@@ -1,0 +1,125 @@
+.galleryGrid {
+  /* Main grid for the album page */
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(200px, 1fr)
+  ); /* Responsive grid */
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.galleryGridImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  /* Use global variables for consistent theming */
+  border: 2px solid var(--color-bg-secondary);
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.galleryGridImage:hover {
+  transform: scale(1.02);
+  border-color: var(--color-accent-purple);
+}
+
+.backButton {
+  /* Styles for the "Exit Album" button */
+  background-color: var(--color-accent-orange);
+  color: var(--color-bg-primary); /* Dark text on orange */
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-bottom: 20px;
+}
+
+.backButton:hover {
+  background-color: var(--color-accent-purple); /* Purple hover for contrast */
+  color: white;
+}
+
+/* --- IMAGE VIEWER STYLES --- */
+
+.viewerOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Use a semi-transparent black overlay */
+  background-color: rgba(0, 0, 0, 0.95);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewerContainer {
+  position: relative;
+  width: 90vw;
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewerImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.viewerCaption {
+  color: white;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.viewerNavButton {
+  position: absolute;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 4em;
+  cursor: pointer;
+  z-index: 1001;
+  /* Add a subtle drop shadow to buttons for visibility against white images */
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  transition: opacity 0.2s;
+}
+
+.viewerNavButton:hover {
+  opacity: 0.8;
+}
+
+.viewerPrev {
+  left: -50px;
+}
+
+.viewerNext {
+  right: -50px;
+}
+
+.viewerCloseButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2em;
+  cursor: pointer;
+  z-index: 1001;
+  transition: color 0.2s;
+}
+
+.viewerCloseButton:hover {
+  color: var(--color-accent-orange); /* Use accent color on hover */
+}
