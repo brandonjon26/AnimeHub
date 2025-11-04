@@ -38,9 +38,12 @@ builder.Services.AddAutoMapper((IServiceProvider serviceProvider, IMapperConfigu
 
 // Register the Anime Repository (Scoped lifetime is standard for repositories)
 builder.Services.AddScoped<IAnimeRepository, AnimeRepository>();
+builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
+builder.Services.AddScoped<IGalleryCategoryRepository, GalleryCategoryRepository>();
 
 // Register the Anime Service (Scoped lifetime is standard for services)
 builder.Services.AddScoped<AnimeInterface, AnimeService>();
+builder.Services.AddScoped<GalleryInterface, GalleryService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -62,5 +65,6 @@ app.UseAuthorization();
 app.MapControllers(); // Leave for now but will most likely delete later
 
 app.MapAnimeEndpoints();
+app.MapGalleryEndpoints();
 
 app.Run();
