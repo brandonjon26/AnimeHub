@@ -19,6 +19,7 @@ namespace AnimeHub.Api.Data
         public DbSet<AyamiProfile> AyamiProfiles { get; set; }
         public DbSet<AyamiAttire> AyamiAttires { get; set; }
         public DbSet<AyamiAccessory> AyamiAccessories { get; set; }
+        public DbSet<AccessoryAttireJoin> AccessoryAttireJoins { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -44,11 +45,19 @@ namespace AnimeHub.Api.Data
                 .HasForeignKey(a => a.ProfileId)
                 .IsRequired();
 
-            modelBuilder.Entity<AyamiAttire>()
-                .HasMany(a => a.Accessories)
-                .WithOne(acc => acc.Attire)
-                .HasForeignKey(acc => acc.AttireId)
-                .IsRequired();
+            // Configure the new Many-to-Many relationship (MUST BE KEPT)
+            modelBuilder.Entity<AccessoryAttireJoin>()
+                .HasKey(aat => new { aat.AttireId, aat.AccessoryId }); // Composite Primary Key
+
+            modelBuilder.Entity<AccessoryAttireJoin>()
+                .HasOne(aat => aat.Attire)
+                .WithMany(a => a.AccessoryLinks)
+                .HasForeignKey(aat => aat.AttireId);
+
+            modelBuilder.Entity<AccessoryAttireJoin>()
+                .HasOne(aat => aat.Accessory)
+                .WithMany(acc => acc.AttireLinks)
+                .HasForeignKey(aat => aat.AccessoryId);
         }
     }
 }
