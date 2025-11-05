@@ -1,18 +1,22 @@
 ﻿using AnimeHub.Api.Entities;
+using System.Linq.Expressions;
 
 namespace AnimeHub.Api.Repositories
 {
     public interface IBaseRepository<T> where T : class // T must be a class (our entities)
     {
-        // Read operations (Non-tracking for performance on GET requests)
-        Task<IEnumerable<T>> GetAllAsync();
+        // Query Methods
+        Task<IEnumerable<T>> GetAllAsync(); // Read operations (Non-tracking for performance on GET requests)
+        Task<T?> GetReadOnlyByIdAsync(long id); // Find by primary key for read-only (Non-tracking)
+        Task<T?> GetTrackedByIdAsync(long id); // Find by primary key for read/write (Tracking required for UPDATE/DELETE)
+        Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null);
 
-        // Find by primary key for read-only (Non-tracking)
-        Task<T?> GetReadOnlyByIdAsync(long id);
 
-        // Find by primary key for read/write (Tracking required for UPDATE/DELETE)
-        Task<T?> GetTrackedByIdAsync(long id);
-
-        // Future methods: AddAsync, UpdateAsync, DeleteAsync, SaveChangesAsync, etc.
+        // CRUD Methods
+        Task Add(T entity);
+        Task Update(T entity);
+        Task Delete(T entity);
+        Task DeleteRange(IEnumerable<T> entities);
+        Task<int> SaveChangesAsync();
     }
 }

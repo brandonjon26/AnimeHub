@@ -1,6 +1,8 @@
 ﻿using AnimeHub.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace AnimeHub.Api.Repositories
 {
@@ -45,6 +47,54 @@ namespace AnimeHub.Api.Repositories
         {
             // Uses FindAsync (which checks tracking first) or attaches the entity for UPDATE/DELETE
             return await _dbSet.FindAsync(id);
+        }
+
+        public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
+        {
+            IQueryable<T> query = _dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (includeProperties != null)
+            {
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task Add(T entity)
+        {
+            _dbSet.Add(entity);
+        }
+
+        public async Task Update(T entity)
+        {
+            // For disconnected scenarios, we may need to explicitly attach and mark as modified.
+            // For simplicity and common use cases, EF Core tracks the entity if it was queried
+            // in the same context, but we ensure it's attached and marked if necessary.
+            _dbSet.Update(entity);
+        }
+
+        public async Task Delete(T entity)
+        {
+            _dbSet.Remove(entity);
+        }
+
+        public async Task DeleteRange(IEnumerable<T> entities)
+        {
+            _dbSet.RemoveRange(entities);
+        }
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync();
         }
     }
 }

@@ -41,6 +41,7 @@ builder.Services.AddAutoMapper((IServiceProvider serviceProvider, IMapperConfigu
 
 #region Add Scoped Services
 // Register the Anime Repository (Scoped lifetime is standard for repositories)
+builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped<IAnimeRepository, AnimeRepository>();
 builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
 builder.Services.AddScoped<IGalleryCategoryRepository, GalleryCategoryRepository>();

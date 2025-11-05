@@ -21,5 +21,12 @@ namespace AnimeHub.Api.Repositories
                 .ThenInclude(aal => aal.Accessory) // Then include the actual Accessory entity
                 .FirstOrDefaultAsync();
         }
+
+        // Implementation of GetAttireByIdAsync
+        public async Task<AyamiAttire?> GetAttireByIdAsync(int attireId)
+        {
+            // We use the context directly to access the AyamiAttires table
+            return await _context.AyamiAttires.FirstOrDefaultAsync(a => a.AyamiAttireId == attireId);
+        }
     }
 }
