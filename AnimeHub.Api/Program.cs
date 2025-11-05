@@ -35,6 +35,7 @@ builder.Services.AddAutoMapper((IServiceProvider serviceProvider, IMapperConfigu
 
     // Explicitly add your profile to the configuration
     config.AddProfile<AnimeMappingProfile>();
+    config.AddProfile<GalleryMappingProfile>();
 }, new Type[] { });
 
 // Register the Anime Repository (Scoped lifetime is standard for repositories)
@@ -83,5 +84,30 @@ app.MapControllers(); // Leave for now but will most likely delete later
 
 app.MapAnimeEndpoints();
 app.MapGalleryEndpoints();
+
+// Data Seeding using a Scoped Service Provider (Development Only)
+if (app.Environment.IsDevelopment())
+{
+    // Scoped creation ensures the DbContext is properly disposed
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var context = services.GetRequiredService<AnimeHubDbContext>();
+
+        try
+        {
+            // context.Database.Migrate(); // Uncomment if you want migrations run on startup
+
+            // Call the static SeedDatabase method
+            SeedData.SeedDatabase(context);
+        }
+        catch (Exception ex)
+        {
+            // Log errors if seeding fails
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred while seeding the database.");
+        }
+    }
+}
 
 app.Run();
