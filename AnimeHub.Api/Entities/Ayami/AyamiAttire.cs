@@ -18,8 +18,8 @@ namespace AnimeHub.Api.Entities.Ayami
         [MaxLength(255)]
         public string Hairstyle { get; set; } = string.Empty;
 
-        // Navigation Property
-        public ICollection<AyamiAccessory> Accessories { get; set; } = new List<AyamiAccessory>();
+        // Navigation property for the new many-to-many relationship
+        public ICollection<AccessoryAttireJoin> AccessoryLinks { get; set; } = new List<AccessoryAttireJoin>();
 
         // Foreign Key to Profile
         public int ProfileId { get; set; }

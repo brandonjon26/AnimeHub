@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AnimeHub.Api.Entities.Ayami
 {
@@ -13,11 +15,7 @@ namespace AnimeHub.Api.Entities.Ayami
 
         public bool IsWeapon { get; set; } = false;
 
-        // Foreign Key
-        public int AttireId { get; set; }
-
-        // Navigation Property
-        [ForeignKey("AttireId")]
-        public AyamiAttire Attire { get; set; } = null!;
+        // Navigation property for the new many-to-many relationship
+        public ICollection<AccessoryAttireJoin> AttireLinks { get; set; } = new List<AccessoryAttireJoin>(); 
     }
 }

@@ -17,7 +17,8 @@ namespace AnimeHub.Api.Repositories
         {
             return await _context.AyamiProfiles
                 .Include(p => p.Attires)
-                .ThenInclude(a => a.Accessories) // Nested Include for the accessories
+                .ThenInclude(a => a.AccessoryLinks) // Navigate through the join table
+                .ThenInclude(aal => aal.Accessory) // Then include the actual Accessory entity
                 .FirstOrDefaultAsync();
         }
     }
