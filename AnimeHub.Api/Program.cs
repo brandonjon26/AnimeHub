@@ -20,14 +20,13 @@ if (!builder.Environment.IsDevelopment())
     // Logic here for Key Vault access
 }
 
-// Add services to the container.
-
 // Register the DbContext to use SQL Server
 builder.Services.AddDbContext<AnimeHubDbContext>(options =>
 {
     options.UseSqlServer(connectionString);
 });
 
+// Add services to the container
 // Register AutoMapper
 builder.Services.AddAutoMapper((IServiceProvider serviceProvider, IMapperConfigurationExpression config) =>
 {
@@ -36,16 +35,23 @@ builder.Services.AddAutoMapper((IServiceProvider serviceProvider, IMapperConfigu
     // Explicitly add your profile to the configuration
     config.AddProfile<AnimeMappingProfile>();
     config.AddProfile<GalleryMappingProfile>();
+    config.AddProfile<AyamiMappingProfile>();
 }, new Type[] { });
 
+
+#region Add Scoped Services
 // Register the Anime Repository (Scoped lifetime is standard for repositories)
 builder.Services.AddScoped<IAnimeRepository, AnimeRepository>();
 builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
 builder.Services.AddScoped<IGalleryCategoryRepository, GalleryCategoryRepository>();
+builder.Services.AddScoped<IAyamiRepository, AyamiRepository>();
 
 // Register the Anime Service (Scoped lifetime is standard for services)
 builder.Services.AddScoped<AnimeInterface, AnimeService>();
 builder.Services.AddScoped<GalleryInterface, GalleryService>();
+builder.Services.AddScoped<AyamiInterface, AyamiService>();
+#endregion
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -82,8 +88,13 @@ app.UseAuthorization();
 
 app.MapControllers(); // Leave for now but will most likely delete later
 
+
+#region Map Endpoints
 app.MapAnimeEndpoints();
 app.MapGalleryEndpoints();
+app.MapAyamiEndpoints();
+#endregion
+
 
 // Data Seeding using a Scoped Service Provider (Development Only)
 if (app.Environment.IsDevelopment())
