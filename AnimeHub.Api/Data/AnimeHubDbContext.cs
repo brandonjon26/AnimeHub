@@ -1,4 +1,5 @@
 ﻿using AnimeHub.Api.Entities;
+using AnimeHub.Api.Entities.Ayami;
 using AnimeHub.Api.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -15,6 +16,9 @@ namespace AnimeHub.Api.Data
         public DbSet<Anime> Anime {  get; set; }
         public DbSet<GalleryImage> GalleryImages { get; set; }
         public DbSet<GalleryImageCategory> GalleryImageCategories { get; set; }
+        public DbSet<AyamiProfile> AyamiProfiles { get; set; }
+        public DbSet<AyamiAttire> AyamiAttires { get; set; }
+        public DbSet<AyamiAccessory> AyamiAccessories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,18 +37,18 @@ namespace AnimeHub.Api.Data
                       .IsRequired();
             });
 
-            //// Data Seed for the lookup table
-            //modelBuilder.Entity<GalleryImageCategory>().HasData(
-            //    new GalleryImageCategory { GalleryImageCategoryId = (int)GalleryImageCategoryEnum.StandardAnimeIsekai, Name = "Standard Anime/Isekai" },
-            //    new GalleryImageCategory { GalleryImageCategoryId = (int)GalleryImageCategoryEnum.ChibiStyle, Name = "Chibi Style" }
-            //);
+            // Configure the Ayami Profile relationships
+            modelBuilder.Entity<AyamiProfile>()
+                .HasMany(p => p.Attires)
+                .WithOne(a => a.Profile)
+                .HasForeignKey(a => a.ProfileId)
+                .IsRequired();
 
-            //// Configure the relationship between GalleryImage and GalleryImageCategory
-            //modelBuilder.Entity<GalleryImage>()
-            //    .HasOne(gi => gi.Category) // GalleryImage has one Category
-            //    .WithMany(gic => gic.GalleryImages) // Category has many GalleryImages
-            //    .HasForeignKey(gi => gi.GalleryImageCategoryId) // Uses the GalleryImageCategoryId foreign key
-            //    .IsRequired();
+            modelBuilder.Entity<AyamiAttire>()
+                .HasMany(a => a.Accessories)
+                .WithOne(acc => acc.Attire)
+                .HasForeignKey(acc => acc.AttireId)
+                .IsRequired();
         }
     }
 }
