@@ -33,18 +33,18 @@ namespace AnimeHub.Api.Data
                       .IsRequired();
             });
 
-            // Data Seed for the lookup table
-            modelBuilder.Entity<GalleryImageCategory>().HasData(
-                new GalleryImageCategory { GalleryImageCategoryId = (int)GalleryImageCategoryEnum.StandardAnimeIsekai, Name = "Standard Anime/Isekai" },
-                new GalleryImageCategory { GalleryImageCategoryId = (int)GalleryImageCategoryEnum.ChibiStyle, Name = "Chibi Style" }
-            );
+            //// Data Seed for the lookup table
+            //modelBuilder.Entity<GalleryImageCategory>().HasData(
+            //    new GalleryImageCategory { GalleryImageCategoryId = (int)GalleryImageCategoryEnum.StandardAnimeIsekai, Name = "Standard Anime/Isekai" },
+            //    new GalleryImageCategory { GalleryImageCategoryId = (int)GalleryImageCategoryEnum.ChibiStyle, Name = "Chibi Style" }
+            //);
 
-            // Configure the relationship between GalleryImage and GalleryImageCategory
-            modelBuilder.Entity<GalleryImage>()
-                .HasOne(gi => gi.Category) // GalleryImage has one Category
-                .WithMany(gic => gic.GalleryImages) // Category has many GalleryImages
-                .HasForeignKey(gi => gi.GalleryImageCategoryId) // Uses the GalleryImageCategoryId foreign key
-                .IsRequired();
+            //// Configure the relationship between GalleryImage and GalleryImageCategory
+            //modelBuilder.Entity<GalleryImage>()
+            //    .HasOne(gi => gi.Category) // GalleryImage has one Category
+            //    .WithMany(gic => gic.GalleryImages) // Category has many GalleryImages
+            //    .HasForeignKey(gi => gi.GalleryImageCategoryId) // Uses the GalleryImageCategoryId foreign key
+            //    .IsRequired();
         }
     }
 }
