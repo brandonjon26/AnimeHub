@@ -17,7 +17,7 @@ namespace AnimeHub.Api.Data
             new GalleryImageCategory { GalleryImageCategoryId = (int)GalleryImageCategoryEnum.ChibiStyle, Name = "Chibi Style" }
         };
 
-        // --- Ayami Profile Data Components ---
+        #region Ayami Profile Data Components
 
         // Define all unique, reusable accessories ONCE.
         private static readonly AyamiAccessory[] AllUniqueAccessories = new AyamiAccessory[]
@@ -91,6 +91,8 @@ namespace AnimeHub.Api.Data
 
             return profile;
         }
+
+        #endregion
 
         // Helper function to create the join entity links
         private static void AddLinks(AyamiAttire attire, ICollection<AyamiAccessory> accessories, params int[] accessoryIds)
