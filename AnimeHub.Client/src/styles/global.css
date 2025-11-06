@@ -36,6 +36,9 @@ body {
 
   /* Primary Action/Interactive */
   --color-primary-brand: var(--color-accent-orange);
+
+  /* NEW: Modal/Overlay Backdrop Color */
+  --color-backdrop: #000000;
 }
 
 /* Dark Theme Explicitly (Required to override when toggling back from Light) */
@@ -47,6 +50,11 @@ body[data-theme="dark"] {
   --color-text-secondary: #b0b0b0;
 
   --color-primary-brand: var(--color-accent-orange);
+
+  --color-backdrop: #000000; /* Black for dark theme */
+
+  --color-border: white;
+  --color-cancel-button: white;
 }
 
 /* Light Theme Definition: Overrides the DARK variables when data-theme='light' is present on <body> */
@@ -67,6 +75,11 @@ body[data-theme="light"] {
 
   /* Primary Action/Interactive (Kept as Orange) */
   --color-primary-brand: var(--color-accent-orange);
+
+  --color-backdrop: #424242; /* Darker grey for light theme backdrop */
+
+  --color-border: #000000;
+  --color-cancel-button: #000000;
 }
 
 /* ----------------------------------------------------------------- */

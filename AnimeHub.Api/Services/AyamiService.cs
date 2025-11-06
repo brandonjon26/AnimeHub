@@ -38,10 +38,10 @@ namespace AnimeHub.Api.Services
         }
 
         // --- UPDATE ---
-        public async Task<bool> UpdateProfileAsync(AyamiProfileUpdateDto updateDto)
+        public async Task<bool> UpdateProfileAsync(int profileId, AyamiProfileUpdateDto updateDto)
         {
             // The Ayami Profile is a singleton, so we always retrieve the first one.
-            var profileToUpdate = await _repository.GetFirstOrDefaultAsync(p => p.AyamiProfileId == 1);
+            var profileToUpdate = await _repository.GetFirstOrDefaultAsync(p => p.AyamiProfileId == profileId);
 
             if (profileToUpdate is null) return false;
 
@@ -58,10 +58,10 @@ namespace AnimeHub.Api.Services
         }
 
         // --- CREATE ---
-        public async Task<int?> AddAttireAsync(AyamiAttireInputDto attireDto)
+        public async Task<int?> AddAttireAsync(int profileId, AyamiAttireInputDto attireDto)
         {
             // 1. Find the target profile
-            AyamiProfile? profile = await _repository.GetFirstOrDefaultAsync(p => p.AyamiProfileId == 1);
+            AyamiProfile? profile = await _repository.GetFirstOrDefaultAsync(p => p.AyamiProfileId == 3);
             if (profile is null) return null;
 
             // 2. Map the DTO to the new Attire entity
