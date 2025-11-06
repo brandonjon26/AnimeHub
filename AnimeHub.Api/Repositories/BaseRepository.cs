@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 namespace AnimeHub.Api.Repositories
 {
     // T must be a class (our entities) and it implements the IRepository interface
-    public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
+    public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         protected readonly AnimeHubDbContext _context;
         protected readonly DbSet<T> _dbSet;

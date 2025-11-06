@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import AyamiContent from "./AyamiContent";
 import { GalleryClient } from "../../api/GalleryClient";
+import { AyamiClient } from "../../api/AyamiClient";
 import {
   type GalleryImage,
   type GalleryCategory,
 } from "../../api/types/GalleryTypes";
+import { type AyamiProfileDto } from "../../api/types/AyamiTypes";
 import MainLayout from "../../components/common/MainLayout";
 import styles from "./AboutAyamiPage.module.css";
 
@@ -13,57 +16,60 @@ import styles from "./AboutAyamiPage.module.css";
 const galleryClient = new GalleryClient();
 
 const AboutAyamiPage: React.FC = () => {
-  // 🔑 State for the dynamic gallery data
-  const [featuredImages, setFeaturedImages] = useState<GalleryImage[]>([]);
-  const [folders, setFolders] = useState<GalleryCategory[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const location = useLocation();
-  // Determines if we are on the index route (/ayami) or a nested route (/ayami/album)
   const isIndexRoute =
     location.pathname.endsWith("/ayami") ||
     location.pathname.endsWith("/ayami/");
 
-  // 🔑 Data Fetching Logic
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch both data sets concurrently
-        const [featured, categories] = await Promise.all([
-          galleryClient.getFeaturedImages(),
-          galleryClient.getFolders(),
-        ]);
+  // --- 🔑 TanStack Query Data Fetching ---
 
-        setFeaturedImages(featured);
-        setFolders(categories);
-      } catch (err) {
-        console.error("Failed to fetch gallery data:", err);
-        setError("Failed to load Ayami's media gallery.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // 1. Fetch Ayami Profile Data
+  const profileQuery = useQuery<AyamiProfileDto, Error>({
+    queryKey: ["ayamiProfile"], // Unique key for the profile
+    queryFn: () => AyamiClient.getProfile(),
+    enabled: isIndexRoute, // Only run the query if we are on the index route
+  });
 
-    // Only fetch data if we are rendering the index view
-    if (isIndexRoute) {
-      fetchData();
-    }
-  }, [isIndexRoute]);
+  // 2. Fetch Featured Images (Replacing old useEffect logic)
+  const featuredQuery = useQuery({
+    queryKey: ["galleryFeatured"],
+    queryFn: () => galleryClient.getFeaturedImages(),
+    enabled: isIndexRoute,
+  });
 
-  // If the route is not the index (/ayami/album), Outlet handles rendering, so we skip loading/error screens here.
+  // 3. Fetch Gallery Folders (Replacing old useEffect logic)
+  const foldersQuery = useQuery({
+    queryKey: ["galleryFolders"],
+    queryFn: () => galleryClient.getFolders(),
+    enabled: isIndexRoute,
+  });
+
+  // --- 🔑 Combine Loading & Error States ---
+
+  const isLoading =
+    profileQuery.isLoading || featuredQuery.isLoading || foldersQuery.isLoading;
+  const error = profileQuery.error || featuredQuery.error || foldersQuery.error;
 
   if (isIndexRoute && isLoading) {
-    return <div className={styles.pageContainer}>Loading Ayami's media...</div>;
+    return (
+      <div className={styles.pageContainer}>Loading Ayami's universe...</div>
+    );
   }
 
   if (isIndexRoute && error) {
     return (
       <div className={styles.pageContainer} style={{ color: "red" }}>
-        Error: {error}
+        Error: Failed to load Ayami data: {error.message}
       </div>
     );
   }
+
+  // --- Render Logic ---
+
+  // Note: Data is guaranteed to exist here if isLoading is false and no error occurred.
+  const profile = profileQuery.data;
+  const featuredImages = featuredQuery.data || [];
+  const folders = foldersQuery.data || [];
 
   return (
     <MainLayout>
@@ -72,8 +78,12 @@ const AboutAyamiPage: React.FC = () => {
         <Outlet />
 
         {/* Render AyamiContent ONLY if we are on the index route */}
-        {isIndexRoute && (
-          <AyamiContent featuredImages={featuredImages} folders={folders} />
+        {isIndexRoute && profile && (
+          <AyamiContent
+            profile={profile}
+            featuredImages={featuredImages}
+            folders={folders}
+          />
         )}
       </div>
     </MainLayout>

@@ -1,28 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   type GalleryImage,
   type GalleryCategory,
 } from "../../api/types/GalleryTypes";
+import { type AyamiProfileDto } from "../../api/types/AyamiTypes";
+import AyamiProfileEditModal from "./AyamiProfileEditModal";
 import styles from "./AboutAyamiPage.module.css";
 
 interface AyamiContentProps {
+  profile: AyamiProfileDto;
   featuredImages: GalleryImage[];
   folders: GalleryCategory[];
 }
-
-// Static Bio Text from the old AboutAyamiPage.tsx
-const AyamiBio = `
-    Ayami (meaning "Bewitching Beauty") is the enigmatic spirit of discovery and charm at the heart of AnimeHub. 
-    Hailing from a dark, ruined world somewhere on the outskirts of the Isekai multiverse, 
-    she carries herself with an effortless confidence that belies her petite stature.
-    
-    Her playful nature is only matched by her profound sense of mystery. 
-    Dressed in her signature midnight-black mini-dress, witch's hat, and gloves—all highlighted by subtle purple accents matching her mesmerizing eyes—she embodies both elegance and edge.
-    
-    Ayami wields a distinctive staff, not just as a weapon, but as a key to unlock the most compelling worlds and narratives in the AnimeHub universe. 
-    She is here to be your confident, charming, and slightly mischievous guide through all the deepest lore and most captivating stories the fandom has to offer.
-`;
 
 const renderBio = (text: string) => {
   return text.split("\n\n").map((paragraph, index) => (
@@ -39,13 +29,30 @@ const renderBio = (text: string) => {
 };
 
 const AyamiContent: React.FC<AyamiContentProps> = ({
+  profile,
   featuredImages,
   folders,
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const profileId = profile.ayamiProfileId;
+
+  const fullName = `${profile.firstName} ${profile.lastName}`;
+  const japaneseName = `${profile.japaneseFirstName} ${profile.japaneseLastName}`;
+
+  // Get accessories from the first attire for the Key Details list
+  // Note: In a larger app, you might choose a primary attire specifically.
+  const primaryAttire = profile.attires[0];
+  const equipmentAccessory = primaryAttire?.accessories.find(
+    (acc) => acc.isWeapon
+  );
+
   return (
     <>
       {/* 1. TOP SECTION: Bio (Left) and Featured Photos (Right) */}
-      <h1 className={styles.title}>Meet Ayami 🌟 The Bewitching Beauty</h1>
+      <h1 className={styles.title}>
+        Meet {fullName} ({japaneseName}) 🌟 The Bewitching Beauty
+      </h1>
 
       {/* Reuses the existing flex wrapper class */}
       <div className={styles.contentWrapper}>
@@ -53,30 +60,48 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
         <div className={styles.bioArea}>
           <div className={styles.bioFlexContainer}>
             {/* Static image remains for the bio section */}
-            <img
-              src="/images/ayami/Ayami_Bio_Page_3.png"
-              alt="Ayami Headshot"
-              className={styles.headshotImage}
-            />
+            <div
+              className={styles.headshotContainer}
+              onClick={() => setIsModalOpen(true)}
+            >
+              <img
+                src="/images/ayami/Ayami_Bio_Page_3.png"
+                alt={`${fullName} Headshot`}
+                className={styles.headshotImage}
+              />
+
+              <span className={styles.editOverlay}>Edit Profile</span>
+            </div>
 
             <div className={styles.bioText}>
-              <h2>Ayami's Story</h2>
-              {renderBio(AyamiBio)}
+              <h2>{profile.firstName}'s Story</h2>
+              {renderBio(profile.bio)}
             </div>
           </div>
           {/* Key Details List remains static */}
           <h3 className={styles.keyDetailsTitle}>Key Details</h3>
           <ul className={styles.keyList}>
-            <li>**Origin:** Outskirts of the Isekai Multiverse.</li>
-            <li>**Role:** Guide of discovery and charm for AnimeHub.</li>
             <li>
-              **Signature Look:** Midnight-black dress, witch's hat, and purple
-              accents.
+              <b>Full Name:</b> {fullName} ({japaneseName})
             </li>
             <li>
-              **Equipment:** A distinctive staff, used to unlock compelling
-              worlds.
+              <b>Vibe:</b> {profile.vibe}
             </li>
+            <li>
+              <b>Height:</b> {profile.height}
+            </li>
+            <li>
+              <b>Eyes:</b> {profile.eyes}
+            </li>
+            <li>
+              <b>Hair:</b> {profile.hair}
+            </li>
+            <li>
+              <b>Equipment:</b> {profile.primaryEquipment}
+            </li>
+            {equipmentAccessory && (
+              <li>**Primary Weapon:** {equipmentAccessory.description}</li>
+            )}
           </ul>
         </div>
 
@@ -102,7 +127,7 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
 
       {/* 2. BOTTOM SECTION: Album/Folder Links */}
       <div className={styles.albumsSection}>
-        <h2>Ayami's Albums</h2>
+        <h2>{profile.firstName}'s Albums</h2>
         <div className={styles.albumList}>
           {folders.map((folder) => (
             <Link
@@ -122,6 +147,15 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
           ))}
         </div>
       </div>
+
+      {/* MODAL RENDERING */}
+      {isModalOpen && (
+        <AyamiProfileEditModal
+          profile={profile}
+          profileId={profileId}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </>
   );
 };

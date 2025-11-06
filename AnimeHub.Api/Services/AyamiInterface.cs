@@ -8,11 +8,11 @@ namespace AnimeHub.Api.Services
         Task<AyamiProfileDto?> GetAyamiProfileAsync();
 
         // UPDATE 
-        Task<bool> UpdateProfileAsync(AyamiProfileUpdateDto updateDto);
+        Task<bool> UpdateProfileAsync(int profileId, AyamiProfileUpdateDto updateDto);
 
         // CREATE
         // Returns the ID of the new attire, or null on failure.
-        Task<int?> AddAttireAsync(AyamiAttireInputDto attireDto);
+        Task<int?> AddAttireAsync(int profileId, AyamiAttireInputDto attireDto);
 
         // DELETE
         Task<bool> DeleteAttireAsync(int attireId);

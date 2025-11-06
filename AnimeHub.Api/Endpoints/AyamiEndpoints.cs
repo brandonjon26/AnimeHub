@@ -30,11 +30,12 @@ namespace AnimeHub.Api.Endpoints
             .WithDescription("Retrieves the complete Ayami Kageyama character profile.");
 
             // UPDATE: Update Core Profile Details
-            group.MapPut("/", async (
+            group.MapPut("/{profileId}", async (
+                int profileId,
                 [FromBody] AyamiProfileUpdateDto updateDto,
                 AyamiInterface service) =>
             {
-                var success = await service.UpdateProfileAsync(updateDto);
+                var success = await service.UpdateProfileAsync(profileId, updateDto);
                 return success ? Results.NoContent() : Results.NotFound();
             })
             .WithName("UpdateAyamiProfile")
@@ -44,11 +45,12 @@ namespace AnimeHub.Api.Endpoints
 
 
             // CREATE: Add a new Attire
-            group.MapPost("/attire", async (
+            group.MapPost("/{profileId}/attire", async (
+                int profileId,
                 [FromBody] AyamiAttireInputDto attireDto,
                 AyamiInterface service) =>
             {
-                var newId = await service.AddAttireAsync(attireDto);
+                var newId = await service.AddAttireAsync(profileId, attireDto);
                 if (newId is null)
                 {
                     // Assuming null means the base profile (ID 1) wasn't found
