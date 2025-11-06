@@ -3,6 +3,7 @@
 namespace AnimeHub.Api.DTOs.Ayami
 {
     public record AyamiAttireDto(
+        int AyamiAttireId,
         string Name,
         string Description,
         string Hairstyle,

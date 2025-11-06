@@ -3,6 +3,7 @@
 namespace AnimeHub.Api.DTOs.Ayami
 {
     public record AyamiProfileDto(
+        int AyamiProfileId,
         string FirstName,
         string LastName,
         string JapaneseFirstName,
