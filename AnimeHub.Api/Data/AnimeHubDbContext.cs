@@ -34,10 +34,11 @@ namespace AnimeHub.Api.Data
                 .HasKey(up => up.UserId); // Use UserId as the PK
 
             modelBuilder.Entity<UserProfile>()
-                .HasOne(up => up.User)
+                .HasOne<IdentityUser>()
                 .WithOne() // IdentityUser doesn't have a navigation property back to UserProfile by default
                 .HasForeignKey<UserProfile>(up => up.UserId) // UserId is both the PK and FK
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade); // Enables cascade delete
 
             // Configure the GalleryImage entity
             modelBuilder.Entity<GalleryImage>(entity =>

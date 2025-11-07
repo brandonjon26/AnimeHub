@@ -14,7 +14,9 @@ namespace AnimeHub.Api.Endpoints
     {
         public static void MapAnimeEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/anime").WithTags("Anime");
+            var group = routes.MapGroup("/api/anime")
+                .WithTags("Anime")
+                .AllowAnonymous(); // Explicitly allows public read access
 
             // --------------------------
             // Endpoint 1: GET /api/anime

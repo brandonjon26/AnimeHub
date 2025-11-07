@@ -57,6 +57,7 @@ builder.Services.AddScoped<IAnimeRepository, AnimeRepository>();
 builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
 builder.Services.AddScoped<IGalleryCategoryRepository, GalleryCategoryRepository>();
 builder.Services.AddScoped<IAyamiRepository, AyamiRepository>();
+builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 
 // Register the Anime Service (Scoped lifetime is standard for services)
 builder.Services.AddScoped<AnimeInterface, AnimeService>();
@@ -134,8 +135,8 @@ app.UseCors(CorsPolicyName);
 
 // CRITICAL: Must be called BEFORE UseAuthorization
 app.UseAuthentication();
-
 app.UseAuthorization();
+
 
 app.MapControllers(); // Leave for now but will most likely delete later
 
@@ -146,6 +147,7 @@ app.MapAnimeEndpoints();
 app.MapGalleryEndpoints();
 app.MapAyamiEndpoints();
 app.MapAuthEndpoints();
+app.MapUserProfileEndpoints();
 
 #endregion
 
