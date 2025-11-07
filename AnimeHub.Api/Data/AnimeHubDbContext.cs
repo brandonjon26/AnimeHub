@@ -3,16 +3,19 @@ using AnimeHub.Api.Entities.Ayami;
 using AnimeHub.Api.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace AnimeHub.Api.Data
 {
-    public class AnimeHubDbContext : DbContext
+    public class AnimeHubDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
     {
         // Constructor that passes configuration options to the base DbContext class
         public AnimeHubDbContext(DbContextOptions<AnimeHubDbContext> options) : base(options) 
         {
         }
 
+        public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Anime> Anime {  get; set; }
         public DbSet<GalleryImage> GalleryImages { get; set; }
         public DbSet<GalleryImageCategory> GalleryImageCategories { get; set; }
@@ -23,7 +26,18 @@ namespace AnimeHub.Api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // CRITICAL: Must call the base implementation for Identity tables
             base.OnModelCreating(modelBuilder);
+
+            // Configure the one-to-one relationship between IdentityUser and UserProfile
+            modelBuilder.Entity<UserProfile>()
+                .HasKey(up => up.UserId); // Use UserId as the PK
+
+            modelBuilder.Entity<UserProfile>()
+                .HasOne(up => up.User)
+                .WithOne() // IdentityUser doesn't have a navigation property back to UserProfile by default
+                .HasForeignKey<UserProfile>(up => up.UserId) // UserId is both the PK and FK
+                .IsRequired();
 
             // Configure the GalleryImage entity
             modelBuilder.Entity<GalleryImage>(entity =>

@@ -1,10 +1,16 @@
 ﻿using AnimeHub.Api.Data;
+using AnimeHub.Api.DTOs.Auth;
 using AnimeHub.Api.Entities;
 using AnimeHub.Api.Entities.Ayami;
 using AnimeHub.Api.Entities.Enums;
+using AnimeHub.Api.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AnimeHub.Api.Data
 {
@@ -92,8 +98,6 @@ namespace AnimeHub.Api.Data
             return profile;
         }
 
-        #endregion
-
         // Helper function to create the join entity links
         private static void AddLinks(AyamiAttire attire, ICollection<AyamiAccessory> accessories, params int[] accessoryIds)
         {
@@ -104,20 +108,90 @@ namespace AnimeHub.Api.Data
             }
         }
 
-        public static void SeedDatabase(AnimeHubDbContext context)
+        #endregion        
+
+        public static async Task SeedDatabaseAsync(AnimeHubDbContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IServiceProvider serviceProvider)
         {
             // Ensure the context exists and connections are possible
-            context.Database.EnsureCreated();
+            context.Database.EnsureCreated();            
 
+            // --- 1. Identity Seeding ---
+            await SeedRolesAsync(roleManager);
+            await SeedUsersAsync(userManager, serviceProvider);
+
+            // --- 2. Application Data Seeding ---
+            await SeedApplicationDataAsync(context);
+        }
+
+        #region Seed Helper Methods
+
+        // Separated identity seeding logic for clarity
+        private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+        {
+            var roleNames = new[] { Roles.Administrator, Roles.Mage, Roles.Villager };
+
+            foreach (var roleName in roleNames)
+            {
+                if (!await roleManager.RoleExistsAsync(roleName))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(roleName));
+                }
+            }
+        }        
+
+        // Helper to create the initial admin (Mage) user
+        private static async Task SeedUsersAsync(UserManager<IdentityUser> userManager, IServiceProvider serviceProvider)
+        {
+            const string adminEmail = "admin@animehub.com";
+            const string adminUserName = "AnimeHubAdmin";
+
+            if (await userManager.FindByEmailAsync(adminEmail) == null)
+            {
+                var adminUser = new IdentityUser
+                {
+                    UserName = adminUserName,
+                    Email = adminEmail,
+                    EmailConfirmed = true,
+                };
+
+                // NOTE: Use a secure default password that should be changed immediately in development!
+                var result = await userManager.CreateAsync(adminUser, "P@$$w0rd123");
+
+                if (result.Succeeded)
+                {
+                    // Assign the custom Admin-level role
+                    await userManager.AddToRoleAsync(adminUser, Roles.Mage);
+
+                    // CRITICAL: Use the ServiceProvider to get the profile service
+                    var profileService = serviceProvider.GetRequiredService<UserProfileInterface>();
+
+                    // Manually create a RegisterDto-like object for the Admin
+                    var adminDto = new RegisterDto
+                    {
+                        UserName = adminUserName,
+                        Email = adminEmail,
+                        FirstName = "Anime",
+                        LastName = "Admin",
+                        Birthday = new DateOnly(1990, 1, 1), // Default adult birthday
+                        Location = "AnimeHub HQ"
+                    };
+
+                    await profileService.CreateProfileAsync(adminUser.Id, adminDto);
+                }
+            }
+        }
+
+        // Consolidated the existing application data seeding into a new async helper method
+        private static async Task SeedApplicationDataAsync(AnimeHubDbContext context)
+        {
             // 1. Seed Gallery Categories (Lookup Table)
             if (!context.GalleryImageCategories.Any())
             {
                 context.GalleryImageCategories.AddRange(GalleryCategories);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
 
             // 2. Seed Ayami Accessories first (Must be separate now)
-            // Use explicit IDs for seeding unique records.
             if (!context.AyamiAccessories.Any())
             {
                 // Must turn IDENTITY_INSERT ON to insert explicit IDs
@@ -126,7 +200,7 @@ namespace AnimeHub.Api.Data
                 {
                     context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.AyamiAccessories ON");
                     context.AyamiAccessories.AddRange(AllUniqueAccessories);
-                    context.SaveChanges();
+                    await context.SaveChangesAsync(); // Use async version
                     context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.AyamiAccessories OFF");
                 }
                 finally
@@ -143,10 +217,12 @@ namespace AnimeHub.Api.Data
 
                 var profile = GetAyamiProfileData(seededAccessories);
                 context.AyamiProfiles.Add(profile);
-                context.SaveChanges();
+                await context.SaveChangesAsync(); // Use async version
             }
 
-            // 3. (Anime seeding will go here later in Phase 5B)
+            // 3. (Anime seeding will go here later)
         }
+
+        #endregion
     }
 }
