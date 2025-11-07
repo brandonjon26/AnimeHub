@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using AnimeHub.Api.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AnimeHub.Api.Endpoints
 {
@@ -27,7 +29,8 @@ namespace AnimeHub.Api.Endpoints
                 return profile is null ? Results.NotFound() : Results.Ok(profile);
             })
             .WithName("GetAyamiProfile")
-            .WithDescription("Retrieves the complete Ayami Kageyama character profile.");
+            .WithDescription("Retrieves the complete Ayami Kageyama character profile.")
+            .RequireAuthorization(); // Requires ANY logged-in user (Villager, Mage, Admin)
 
             // UPDATE: Update Core Profile Details
             group.MapPut("/{profileId}", async (
@@ -41,7 +44,10 @@ namespace AnimeHub.Api.Endpoints
             .WithName("UpdateAyamiProfile")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
-            .ProducesValidationProblem();
+            .Produces(StatusCodes.Status401Unauthorized) // Added Unauthorized
+            .Produces(StatusCodes.Status403Forbidden)    // Added Forbidden
+            .ProducesValidationProblem()
+            .RequireAuthorization(Roles.Mage, Roles.Administrator); // Restrict to Mage/Admin roles
 
 
             // CREATE: Add a new Attire
@@ -63,7 +69,10 @@ namespace AnimeHub.Api.Endpoints
             .WithName("AddAyamiAttire")
             .Produces<int>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
-            .ProducesValidationProblem();
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status403Forbidden)
+            .ProducesValidationProblem()
+            .RequireAuthorization(Roles.Mage, Roles.Administrator); // Restrict to Mage/Admin roles
 
 
             // DELETE: Delete an Attire
@@ -76,7 +85,10 @@ namespace AnimeHub.Api.Endpoints
             })
             .WithName("DeleteAyamiAttire")
             .Produces(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status403Forbidden)
+            .RequireAuthorization(Roles.Mage, Roles.Administrator); // Restrict to Mage/Admin roles;
         }
     }
 }

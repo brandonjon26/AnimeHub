@@ -24,13 +24,15 @@ namespace AnimeHub.Api.Endpoints
             group.MapPost("/register", RegisterUser)
                 .WithName("RegisterUser")
                 .Produces(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status400BadRequest);
+                .Produces(StatusCodes.Status400BadRequest)
+                .AllowAnonymous(); // Must be public for users to sign up
 
             // POST /auth/login
             group.MapPost("/login", LoginUser)
                 .WithName("LoginUser")
                 .Produces<string>(StatusCodes.Status200OK) // JWT Token as a string
-                .Produces(StatusCodes.Status401Unauthorized);
+                .Produces(StatusCodes.Status401Unauthorized)
+                .AllowAnonymous(); // Must be public for users to log in
 
             return routes;
         }
@@ -50,11 +52,6 @@ namespace AnimeHub.Api.Endpoints
                 // 2. Return success
                 return Results.Ok(new { message = "Registration successful. Welcome, Villager!" });
             }
-
-            // NOTE ON ARCHITECTURE:
-            // Custom fields (FirstName, Birthday, etc.) are in the DTO but not IdentityUser.
-            // In a subsequent step, we'll create a dedicated UserProfile entity and service 
-            // to persist this extra data after IdentityUser is created.
 
             // 3. Handle failure (e.g., password complexity, user already exists check is handled within the service/identity)
             // Transform IdentityResult errors into a readable ValidationProblem

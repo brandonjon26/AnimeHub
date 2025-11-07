@@ -51,7 +51,7 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
     <>
       {/* 1. TOP SECTION: Bio (Left) and Featured Photos (Right) */}
       <h1 className={styles.title}>
-        Meet {fullName} ({japaneseName}) 🌟 The Bewitching Beauty
+        Meet {fullName} ({japaneseName}) 🔮 The Bewitching Beauty {/*🌟*/}
       </h1>
 
       {/* Reuses the existing flex wrapper class */}
