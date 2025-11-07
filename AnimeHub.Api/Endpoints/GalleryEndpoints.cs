@@ -9,7 +9,9 @@ namespace AnimeHub.Api.Endpoints
     {
         public static void MapGalleryEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/gallery").WithTags("Gallery");
+            var group = routes.MapGroup("/api/gallery")
+                .WithTags("Gallery")
+                .AllowAnonymous(); // Explicitly allows public read access for all current GETs
 
             // ---------------------------------------------------------------------
             // Endpoint 1: GET /api/gallery/featured (Get the two featured photos)
@@ -47,6 +49,10 @@ namespace AnimeHub.Api.Endpoints
             })
             .WithName("GetImagesByCategory")
             .WithOpenApi();
+
+            // Future Administrative Endpoints (Phase 7):
+            // group.MapPost("/", CreateGalleryImage)
+            //     .RequireAuthorization(Roles.Mage); // Example of future role restriction
         }
     }
 }

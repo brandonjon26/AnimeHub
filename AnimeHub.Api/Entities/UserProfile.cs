@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AnimeHub.Api.Entities
 {
+    [Table("UserProfiles")]
     public class UserProfile
     {
         // Primary Key and Foreign Key: This column will hold the Id 
