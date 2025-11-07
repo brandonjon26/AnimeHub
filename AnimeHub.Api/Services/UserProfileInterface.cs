@@ -11,7 +11,13 @@ namespace AnimeHub.Api.Services
         // Retrieves the full profile, potentially including the IsAdult flag.
         Task<UserProfile?> GetProfileByUserIdAsync(string userId);
 
-        // FUTURE: Update user profile data.
-        // Task<UserProfile> UpdateProfileAsync(string userId, UpdateProfileDto dto);
+        // Update user profile data.
+        Task<UserProfile?> UpdateProfileAsync(string userId, UserProfileUpdateDto dto);
+
+        // Custom profile data deletion for specialized needs
+        Task<bool> DeleteProfileAsync(string userId);
+
+        // Method for full Identity account deletion (cascades)
+        Task<bool> DeleteUserAccountAsync(string userId);
     }
 }
