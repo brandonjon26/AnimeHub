@@ -1,0 +1,105 @@
+/* Container for the entire page, centers the login box */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--color-bg-primary);
+}
+
+/* The box containing the form */
+.login-box {
+  background-color: var(--color-bg-secondary);
+  padding: 3rem 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 450px;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-text-secondary); /* Subtle border */
+}
+
+.login-box h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--color-primary-brand);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: var(--color-text-secondary);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-text-secondary);
+  border-radius: 6px;
+  background-color: var(--color-bg-primary); /* Darker input background */
+  color: var(--color-text-primary);
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--color-primary-brand);
+  box-shadow: 0 0 0 2px var(--color-primary-brand);
+}
+
+/* Styling for invalid input */
+.form-group input[aria-invalid="true"] {
+  border-color: var(--color-accent-orange);
+}
+
+.submit-button {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--color-primary-brand);
+  color: var(--color-bg-primary); /* Dark text on orange brand color */
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+  margin-top: 1rem;
+}
+
+.submit-button:hover:not(:disabled) {
+  /* Slightly darker orange on hover */
+  filter: brightness(1.1);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: var(--color-accent-orange);
+  font-size: 0.85rem;
+  margin-top: 0.4rem;
+}
+
+.register-link-text {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.register-link-text a {
+  color: var(--color-accent-purple); /* Using purple accent for links */
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.register-link-text a:hover {
+  text-decoration: underline;
+}

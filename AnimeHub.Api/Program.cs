@@ -46,6 +46,7 @@ builder.Services.AddAutoMapper((IServiceProvider serviceProvider, IMapperConfigu
     config.AddProfile<AnimeMappingProfile>();
     config.AddProfile<GalleryMappingProfile>();
     config.AddProfile<AyamiMappingProfile>();
+    config.AddProfile<AuthMappingProfile>();
 }, new Type[] { });
 
 
