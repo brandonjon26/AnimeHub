@@ -28,7 +28,7 @@ namespace AnimeHub.Api.Services
             _mapper = mapper;
         }
 
-        public async Task<IdentityResult> RegisterAsync(RegisterDto dto)
+        public async Task<UserResponseDto?> RegisterAsync(RegisterDto dto)
         {
             // 1. Check if user already exists (by email or username)
             if (await _userManager.FindByEmailAsync(dto.Email) != null ||
@@ -40,7 +40,7 @@ namespace AnimeHub.Api.Services
             }
 
             // 2. Create the new IdentityUser
-            var user = new IdentityUser
+            IdentityUser user = new IdentityUser
             {
                 UserName = dto.UserName,
                 Email = dto.Email,
@@ -48,7 +48,7 @@ namespace AnimeHub.Api.Services
             };
 
             // 3. Attempt to create the user with the given password
-            var result = await _userManager.CreateAsync(user, dto.Password);
+            IdentityResult result = await _userManager.CreateAsync(user, dto.Password);
 
             if (result.Succeeded)
             {
@@ -58,15 +58,40 @@ namespace AnimeHub.Api.Services
 
                 // 5. Create the UserProfile record
                 await _profileService.CreateProfileAsync(user.Id, dto);
+
+                // NEW STEP 6: Fetch roles and profile (Just like in LoginAsync)
+                IList<string> roles = await _userManager.GetRolesAsync(user);
+                UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id);
+
+                // NEW STEP 7: Generate Token
+                string token = GenerateJwtToken(user, roles);
+
+                // NEW STEP 8: Mapping and Construction (Reusing LoginAsync's logic)
+                UserResponseDto initialResponse = _mapper.Map<UserResponseDto>(user);
+
+                if (profile != null)
+                {
+                    _mapper.Map(profile, initialResponse);
+                }
+
+                UserResponseDto finalResponse = initialResponse with
+                {
+                    Token = token,
+                    IsAdmin = roles.Contains(Roles.Administrator) || roles.Contains(Roles.Mage)
+                };
+
+                // Registration failed, return null to indicate failure (or let endpoint handle the result)
+                // For now, we return null, which the endpoint will convert to an IdentityResult failure response.
+                return finalResponse;
             }
 
-            return result;
+            return null;
         }
 
         public async Task<UserResponseDto?> LoginAsync(LoginDto dto)
         {
             // 1. Find user by unified LoginIdentifier (Email or Username)
-            var user = dto.LoginIdentifier.Contains('@')
+            IdentityUser? user = dto.LoginIdentifier.Contains('@')
                 ? await _userManager.FindByEmailAsync(dto.LoginIdentifier)
                 : await _userManager.FindByNameAsync(dto.LoginIdentifier);
 
@@ -76,14 +101,14 @@ namespace AnimeHub.Api.Services
             }
 
             // 2. Fetch dependencies
-            var roles = await _userManager.GetRolesAsync(user);
-            var profile = await _profileService.GetProfileByUserIdAsync(user.Id); // Fetch custom profile
+            IList<string> roles = await _userManager.GetRolesAsync(user);
+            UserProfile profile = await _profileService.GetProfileByUserIdAsync(user.Id); // Fetch custom profile
 
             // 3. Generate Token
             string token = GenerateJwtToken(user, roles);
 
             // 4. Mapping and Construction
-            var initialResponse = _mapper.Map<UserResponseDto>(user); // Map IdentityUser fields
+            UserResponseDto initialResponse = _mapper.Map<UserResponseDto>(user); // Map IdentityUser fields
 
             if (profile != null)
             {
@@ -93,7 +118,7 @@ namespace AnimeHub.Api.Services
 
             // 5. Final assignment of calculated/generated fields
             // The 'with' expression creates a *new* record instance with the specified properties changed
-            var finalResponse = initialResponse with
+            UserResponseDto finalResponse = initialResponse with
             {
                 Token = token,
                 IsAdmin = roles.Contains(Roles.Administrator) || roles.Contains(Roles.Mage)
@@ -105,7 +130,7 @@ namespace AnimeHub.Api.Services
         // Generates the JWT Token
         private string GenerateJwtToken(IdentityUser user, IList<string> roles)
         {
-            var claims = new List<Claim>
+            List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id), // Primary identifier
                 new Claim(ClaimTypes.Name, user.UserName!),
@@ -119,9 +144,9 @@ namespace AnimeHub.Api.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var issuer = _configuration["Jwt:Issuer"];
-            var audience = _configuration["Jwt:Audience"];
-            var tokenDuration = double.Parse(_configuration["Jwt:DurationInMinutes"]!);
+            string? issuer = _configuration["Jwt:Issuer"];
+            string? audience = _configuration["Jwt:Audience"];
+            double tokenDuration = double.Parse(_configuration["Jwt:DurationInMinutes"]!);
 
             // Create the token descriptor
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -142,7 +167,7 @@ namespace AnimeHub.Api.Services
         public async Task<bool> EnsureRolesExistAsync()
         {
             // This is a helper method we can use during seeding to ensure roles exist.
-            var roles = new[] { Roles.Administrator, Roles.Mage, Roles.Villager };
+            string[] roles = new[] { Roles.Administrator, Roles.Mage, Roles.Villager };
             bool allExist = true;
 
             foreach (var roleName in roles)
