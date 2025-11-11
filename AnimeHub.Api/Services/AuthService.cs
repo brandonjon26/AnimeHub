@@ -19,6 +19,8 @@ namespace AnimeHub.Api.Services
         private readonly UserProfileInterface _profileService;
         private readonly IMapper _mapper;
 
+        private record TokenResult(string Token, DateTimeOffset Expiration);
+
         public AuthService(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, UserProfileInterface profileService, IMapper mapper)
         {
             _userManager = userManager;
@@ -64,7 +66,7 @@ namespace AnimeHub.Api.Services
                 UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id);
 
                 // NEW STEP 7: Generate Token
-                string token = GenerateJwtToken(user, roles);
+                TokenResult tokenData = GenerateJwtToken(user, roles);
 
                 // NEW STEP 8: Mapping and Construction (Reusing LoginAsync's logic)
                 UserResponseDto initialResponse = _mapper.Map<UserResponseDto>(user);
@@ -76,7 +78,9 @@ namespace AnimeHub.Api.Services
 
                 UserResponseDto finalResponse = initialResponse with
                 {
-                    Token = token,
+                    Token = tokenData.Token,
+                    Expiration = tokenData.Expiration,
+                    Roles = roles.ToList(),
                     IsAdmin = roles.Contains(Roles.Administrator) || roles.Contains(Roles.Mage)
                 };
 
@@ -102,10 +106,10 @@ namespace AnimeHub.Api.Services
 
             // 2. Fetch dependencies
             IList<string> roles = await _userManager.GetRolesAsync(user);
-            UserProfile profile = await _profileService.GetProfileByUserIdAsync(user.Id); // Fetch custom profile
+            UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id); // Fetch custom profile
 
             // 3. Generate Token
-            string token = GenerateJwtToken(user, roles);
+            TokenResult tokenData = GenerateJwtToken(user, roles);
 
             // 4. Mapping and Construction
             UserResponseDto initialResponse = _mapper.Map<UserResponseDto>(user); // Map IdentityUser fields
@@ -120,7 +124,9 @@ namespace AnimeHub.Api.Services
             // The 'with' expression creates a *new* record instance with the specified properties changed
             UserResponseDto finalResponse = initialResponse with
             {
-                Token = token,
+                Token = tokenData.Token,
+                Expiration = tokenData.Expiration,
+                Roles = roles.ToList(),
                 IsAdmin = roles.Contains(Roles.Administrator) || roles.Contains(Roles.Mage)
             };
 
@@ -128,7 +134,7 @@ namespace AnimeHub.Api.Services
         }
 
         // Generates the JWT Token
-        private string GenerateJwtToken(IdentityUser user, IList<string> roles)
+        private TokenResult GenerateJwtToken(IdentityUser user, IList<string> roles)
         {
             List<Claim> claims = new List<Claim>
             {
@@ -141,27 +147,31 @@ namespace AnimeHub.Api.Services
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             // Get configuration values
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+            SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             string? issuer = _configuration["Jwt:Issuer"];
             string? audience = _configuration["Jwt:Audience"];
             double tokenDuration = double.Parse(_configuration["Jwt:DurationInMinutes"]!);
 
+            // Calculate expiration date
+            DateTime expiresAt = DateTime.UtcNow.AddMinutes(tokenDuration);
+
             // Create the token descriptor
-            var tokenDescriptor = new SecurityTokenDescriptor
+            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(tokenDuration),
+                Expires = expiresAt,
                 Issuer = issuer,
                 Audience = audience,
                 SigningCredentials = credentials
             };
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return tokenHandler.WriteToken(token);
+            // Return the TokenResult record
+            return new TokenResult(tokenHandler.WriteToken(token), new DateTimeOffset(expiresAt));
         }
 
         public async Task<bool> EnsureRolesExistAsync()

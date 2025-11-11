@@ -32,10 +32,13 @@ export interface IUserResponse {
   token: string;
   expiration: string; // ISO date string for token expiration
   userId: string;
+  userName: string;
   email: string;
   firstName: string;
   lastName: string;
   roles: string[]; // Array of roles (e.g., ["Villager", "Mage"])
+  isAdmin: boolean;
+  isAdult: boolean;
 }
 
 /**

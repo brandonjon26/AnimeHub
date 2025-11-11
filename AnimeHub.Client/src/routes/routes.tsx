@@ -14,6 +14,7 @@ import Register from "../features/auth/Register.tsx";
 import ProtectedRoute from "../features/auth/ProtectedRoute.tsx";
 import RedirectIfAuthenticated from "../features/auth/RedirectIfAuthenticated.tsx";
 import WelcomePage from "../features/home/WelcomePage.tsx";
+import ProfilePage from "../features/profile/ProfilePage.tsx";
 
 // 1. Define the route configuration array (outside any component)
 const routeConfig: RouteObject[] = [
@@ -58,6 +59,13 @@ const routeConfig: RouteObject[] = [
                 element: <GalleryFolderPage />,
               },
             ],
+          },
+
+          // Future Anime and Merchandise paths
+
+          {
+            path: "/profile",
+            element: <ProfilePage />,
           },
         ],
       },
