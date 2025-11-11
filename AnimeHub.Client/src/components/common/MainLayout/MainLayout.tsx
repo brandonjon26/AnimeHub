@@ -2,6 +2,8 @@ import React, { type ReactNode, useState } from "react";
 import { NavLink, useLocation, Outlet } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
 import AyamiAvatar from "../AyamiAvatar";
+import { useAuth } from "../../../hooks/useAuth";
+import UserMenu from "../UserMenu";
 import styles from "./MainLayout.module.css";
 
 // -----------------------------------
@@ -30,19 +32,26 @@ const MainLayout: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
+  const { user } = useAuth();
+
   // Get current path
   const location = useLocation();
   // Check if we are on the Home page
   const isHomePage = location.pathname === "/home" || location.pathname === "/";
+
+  // Provide a fallback name if user data isn't immediately available (shouldn't happen post-login)
+  const userName = user?.firstName || "User";
 
   return (
     <div className={styles.layoutContainer}>
       {/* 1. TOP NAVBAR (Vision: Home, Anime, Merchandise, Icon, Logout, Profile) */}
       <header className={styles.header}>
         {/* 🔑 New Hamburger Icon */}
-        <HamburgerIcon isOpen={isSidebarOpen} onClick={toggleSidebar} />
+        <div className={styles.userActionsLeft}>
+          <HamburgerIcon isOpen={isSidebarOpen} onClick={toggleSidebar} />
 
-        <div className={styles.logo}>AnimeHub [Icon]</div>
+          <div className={styles.logo}>AnimeHub [Icon]</div>
+        </div>
 
         {/* Navigation Links */}
         <nav className={styles.navLinks}>
@@ -83,8 +92,7 @@ const MainLayout: React.FC = () => {
 
         <div className={styles.userActions}>
           <ThemeToggle />
-          <button className={styles.logoutButton}>Logout</button>
-          <button className={styles.profileButton}>Profile</button>
+          <UserMenu userName={userName} />
         </div>
       </header>
 

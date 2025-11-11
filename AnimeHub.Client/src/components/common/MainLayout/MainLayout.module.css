@@ -64,6 +64,12 @@
   gap: 15px;
 }
 
+.userActionsLeft {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
 .logoutButton,
 .profileButton {
   /* Basic button styling to match the theme */
