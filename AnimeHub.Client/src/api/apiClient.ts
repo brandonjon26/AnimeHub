@@ -18,12 +18,16 @@ const apiClient = axios.create({
 // This fulfills the blueprint requirement to use an Interceptor.
 apiClient.interceptors.request.use(
   (config) => {
-    // --- Future Logic Goes Here ---
-    // Example: const token = localStorage.getItem('jwt');
-    // if (token) {
-    //     config.headers.Authorization = `Bearer ${token}`;
-    // }
-    // -----------------------------
+    const token = localStorage.getItem("jwtToken");
+
+    if (token) {
+      // Ensure the Authorization header is set for secured endpoints
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      // Remove header if no token is present
+      delete config.headers.Authorization;
+    }
+
     return config;
   },
   (error) => {

@@ -1,35 +1,67 @@
-import { createBrowserRouter } from "react-router-dom";
 import React from "react";
+import {
+  useRoutes,
+  Navigate,
+  createBrowserRouter,
+  type RouteObject,
+} from "react-router-dom";
+import MainLayout from "./../components/common/MainLayout/MainLayout.tsx";
 import HomePage from "../features/home/HomePage";
 import AboutAyamiPage from "../features/ayami/AboutAyamiPage";
 import GalleryFolderPage from "../features/ayami/GalleryFolderPage";
+import Login from "../features/auth/Login.tsx";
+import Register from "../features/auth/Register.tsx";
+import ProtectedRoute from "../features/auth/ProtectedRoute.tsx";
+import RedirectIfAuthenticated from "../features/auth/RedirectIfAuthenticated.tsx";
 
-// The array that defines all routes in the application
-const router = createBrowserRouter([
+// 1. Define the route configuration array (outside any component)
+const routeConfig: RouteObject[] = [
+  // --- PUBLIC AUTH ROUTES ---
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+
+  // --- PROTECTED ROUTE WRAPPER ---
   {
     path: "/",
-    element: <HomePage />, // The entry point of the application
-    errorElement: <div>Oops! Something went wrong.</div>, // Custom error boundary
-    // loader: rootLoader, // Add data loading functions here later
-  },
-  {
-    // PARENT ROUTE: Renders AboutAyamiPage.tsx
-    path: "/ayami",
-    element: <AboutAyamiPage />,
-    errorElement: <div>Oops! Ayami seems to have wandered off!</div>,
-
-    // NESTED ROUTES: Renders content inside the <Outlet /> in AboutAyamiPage
+    element: <ProtectedRoute />,
     children: [
       {
-        // Matches paths like /ayami/Standard%20Anime%20Isekai
-        path: ":categoryName",
-        element: <GalleryFolderPage />,
+        element: <MainLayout />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="/home" />,
+          },
+          {
+            path: "home",
+            element: <HomePage />,
+          },
+          // Ayami/Gallery Routes (NESTED STRUCTURE)
+          {
+            path: "ayami",
+            element: <AboutAyamiPage />,
+            children: [
+              {
+                // Matches paths like /ayami/Standard%20Anime%20Isekai
+                path: ":categoryName",
+                element: <GalleryFolderPage />,
+              },
+            ],
+          },
+        ],
       },
-      // Note: If you want /ayami itself to render, you can add an index: true route,
-      // but for now, AboutAyamiPage's internal logic handles the index view.
     ],
   },
-  // We will add other feature routes here (e.g., /login, /anime/:id)
-]);
 
-export default router;
+  // --- CATCH-ALL (404) ---
+  { path: "*", element: <div>404 Not Found</div> },
+];
+
+// 2. Export the created browser router
+export const router = createBrowserRouter(routeConfig);

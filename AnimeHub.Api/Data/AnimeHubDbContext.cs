@@ -30,15 +30,19 @@ namespace AnimeHub.Api.Data
             base.OnModelCreating(modelBuilder);
 
             // Configure the one-to-one relationship between IdentityUser and UserProfile
-            modelBuilder.Entity<UserProfile>()
-                .HasKey(up => up.UserId); // Use UserId as the PK
+            modelBuilder.Entity<UserProfile>(userProfile =>
+            {
+                // 1. Define the Primary Key (First block, separate is required)
+                userProfile.HasKey(up => up.UserId);
 
-            modelBuilder.Entity<UserProfile>()
-                .HasOne<IdentityUser>()
-                .WithOne() // IdentityUser doesn't have a navigation property back to UserProfile by default
-                .HasForeignKey<UserProfile>(up => up.UserId) // UserId is both the PK and FK
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade); // Enables cascade delete
+                // 2. Define the One-to-One relationship (Second block)
+                // CRITICAL: Use the generic HasOne(up => up.User!)
+                userProfile.HasOne(up => up.User!)
+                           .WithOne()
+                           .HasForeignKey<UserProfile>(up => up.UserId) // Explicitly use the PK as the FK
+                           .IsRequired()
+                           .OnDelete(DeleteBehavior.Cascade);
+            });
 
             // Configure the GalleryImage entity
             modelBuilder.Entity<GalleryImage>(entity =>
