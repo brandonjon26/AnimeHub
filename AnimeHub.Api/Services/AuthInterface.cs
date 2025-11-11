@@ -5,13 +5,13 @@ namespace AnimeHub.Api.Services
 {
     public interface AuthInterface
     {
-        // Result is the IdentityResult, containing errors if unsuccessful
-        Task<IdentityResult> RegisterAsync(RegisterDto dto);
+        // Register will auto login; Result is a string (JWT) or null if login fails
+        Task<UserResponseDto?> RegisterAsync(RegisterDto dto);
 
         // Result is a string (JWT) or null if login fails
         Task<UserResponseDto?> LoginAsync(LoginDto dto);
 
-        // FUTURE: Helper to manage roles
+        // Helper to manage roles
         Task<bool> EnsureRolesExistAsync();
     }
 }

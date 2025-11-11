@@ -99,11 +99,18 @@ const Register: React.FC = () => {
     setValidationErrors(null);
 
     try {
-      const success = await register(formData);
+      const result = await register(formData);
 
-      if (success) {
-        // Navigate to the home page or a confirmation page upon success (auto-logged in)
-        navigate("/home"); // , { replace: true }
+      if (result.success) {
+        // 1. Navigate to the desired page (home or welcome)
+        // Let's use /welcome for a better first-time experience, but /home is fine if /welcome isn't created yet.
+        // For now, let's stick to /home, and we can change this later when we create the /welcome page.
+        navigate("/welcome", { replace: true });
+
+        // 2. 🔑 CRITICAL FIX: Force a hard refresh.
+        // This ensures the browser's history stack stabilizes and the AuthContext
+        // re-hydrates the new authenticated state without router conflict.
+        window.location.reload();
       }
     } catch (error: any) {
       const validation = parseValidationError(error);

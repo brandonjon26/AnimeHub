@@ -168,22 +168,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   ); // Dependency is the stable function handleLoginSuccess
 
   // REFACTOR TO MATCH LOGIN LATER (NEED TO UPDATE BACKEND TO RETURN USER DATA ** Might not need this refactor anymore)
-  const register = React.useCallback(async (data: IRegisterRequest) => {
-    try {
-      const userResponse = await AuthService.register(data);
-      // handleLoginSuccess(userResponse);
+  const register = React.useCallback(
+    async (data: IRegisterRequest) => {
+      try {
+        const userResponse = await AuthService.register(data);
+        // handleLoginSuccess(userResponse);
 
-      localStorage.setItem("jwtToken", userResponse.token);
+        localStorage.setItem("jwtToken", userResponse.token);
 
-      const { token, ...userDetails } = userResponse;
-      localStorage.setItem("user", JSON.stringify(userDetails));
+        const { token, ...userDetails } = userResponse;
+        localStorage.setItem("user", JSON.stringify(userDetails));
 
-      return { success: true, user: userResponse };
-    } catch (error) {
-      console.error("Registration failed:", error);
-      return { success: false, error: error };
-    }
-  }, []); // Dependency is the stable function handleLoginSuccess
+        // 🔑 CRITICAL CHANGE: Dispatch success NOW, synchronously
+        // This ensures the global state is updated immediately before the
+        // subsequent window.location.reload() in Register.tsx
+        dispatch({ type: "LOGIN_SUCCESS", payload: userResponse });
+
+        return { success: true, user: userResponse };
+      } catch (error) {
+        console.error("Registration failed:", error);
+        return { success: false, error: error };
+      }
+    },
+    [dispatch]
+  ); // Dependency is the stable function handleLoginSuccess
 
   const hasRole = React.useCallback(
     (role: string): boolean => {
