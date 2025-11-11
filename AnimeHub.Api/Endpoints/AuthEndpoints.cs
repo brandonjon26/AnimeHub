@@ -23,7 +23,7 @@ namespace AnimeHub.Api.Endpoints
             // POST /auth/register
             group.MapPost("/register", RegisterUser)
                 .WithName("RegisterUser")
-                .Produces(StatusCodes.Status200OK)
+                .Produces<UserResponseDto>(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status400BadRequest)
                 .AllowAnonymous(); // Must be public for users to sign up
 
@@ -42,23 +42,38 @@ namespace AnimeHub.Api.Endpoints
         // Handler for POST /auth/register
         private static async Task<IResult> RegisterUser(
             [FromBody] RegisterDto registerDto,
-            [FromServices] AuthInterface authService)
+            [FromServices] AuthInterface authService,
+            [FromServices] UserManager<IdentityUser> userManager)
         {
-            // 1. Call the service layer to perform registration logic
-            var result = await authService.RegisterAsync(registerDto);
+            // 1. Pre-check for existing user (good practice for clearer error messages)
+            if (await userManager.FindByEmailAsync(registerDto.Email) != null ||
+                await userManager.FindByNameAsync(registerDto.UserName) != null)
+            {
+                // Returning a structured problem details response
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    { "Identity", new[] { "An account with this email or username already exists." } }
+                });
+            }
 
-            if (result.Succeeded)
+            // 2. Call the service layer to perform registration and auto-login
+            // Update variable type to UserResponseDto
+            UserResponseDto? response = await authService.RegisterAsync(registerDto);
+
+            // Handle failure based on null response from the service
+            if (response is null)
             {
-                // 2. Return success
-                return Results.Ok(new { message = "Registration successful. Welcome, Villager!" });
+                // Registration failed due to internal Identity validation (e.g., password complexity)
+                // NOTE: Since AuthService doesn't return IdentityResult errors anymore, 
+                // the service should ideally throw an exception containing the IdentityResult 
+                // errors, which we then catch and convert to a ValidationProblem here.
+
+                // For now, we return a general 400 error as a fallback for internal errors:
+                return Results.BadRequest("Registration failed. Please check password complexity and details.");
             }
 
-            // 3. Handle failure (e.g., password complexity, user already exists check is handled within the service/identity)
-            // Transform IdentityResult errors into a readable ValidationProblem
-            var errors = result.Errors
-                .ToDictionary(e => e.Code, e => new[] { e.Description });
-
-            return Results.ValidationProblem(errors);
+            // 3. Return the fully formed DTO (Success case)
+            return Results.Ok(response);
         }
 
         // Handler for POST /auth/login

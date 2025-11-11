@@ -1,0 +1,105 @@
+.welcomeContainer {
+  /* Full screen height, centered content */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 40px;
+  text-align: center;
+  background-color: var(--color-bg-primary);
+}
+
+.contentWrapper {
+  /* Main layout using Grid to position avatars and content */
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr; /* Left Avatar | Center Content | Right Avatar */
+  align-items: center;
+  width: 100%;
+  max-width: 1250px; /* Limit the spread */
+  gap: 40px;
+}
+
+.avatarContainer {
+  /* Placeholder for the mascot images */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar {
+  /* Style for the headshot images */
+  width: 150px;
+  height: 150px;
+  border-radius: 50%; /* Circular headshots */
+  object-fit: cover;
+  border: 3px solid var(--color-primary-brand);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.welcomeContent {
+  /* Central text and link area */
+  padding: 30px;
+  background-color: var(--color-bg-secondary);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.welcomeContent h2 {
+  color: var(--color-text-primary);
+  margin-bottom: 15px;
+  font-size: 2.5rem;
+}
+
+.welcomeContent p {
+  color: var(--color-text-secondary);
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+.linkGroup {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.linkButton {
+  padding: 12px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+/* Primary Link (Explore) */
+.primaryLink {
+  background-color: var(--color-primary-brand);
+  color: var(--color-bg-primary); /* Dark text on primary brand color */
+}
+
+.primaryLink:hover {
+  opacity: 0.9;
+}
+
+/* Secondary Link (Profile Setup) */
+.secondaryLink {
+  border: 2px solid var(--color-text-secondary);
+  color: var(--color-text-primary);
+}
+
+.secondaryLink:hover {
+  background-color: var(--color-bg-primary);
+  border-color: var(--color-primary-brand);
+  color: var(--color-primary-brand);
+}
+
+/* Media Query for smaller screens (e.g., mobile) */
+@media (max-width: 768px) {
+  .contentWrapper {
+    grid-template-columns: 1fr; /* Stack content vertically */
+    gap: 20px;
+  }
+  .avatarContainer {
+    display: none; /* Hide avatars on small screens to save space */
+  }
+}

@@ -13,6 +13,7 @@ import Login from "../features/auth/Login.tsx";
 import Register from "../features/auth/Register.tsx";
 import ProtectedRoute from "../features/auth/ProtectedRoute.tsx";
 import RedirectIfAuthenticated from "../features/auth/RedirectIfAuthenticated.tsx";
+import WelcomePage from "../features/home/WelcomePage.tsx";
 
 // 1. Define the route configuration array (outside any component)
 const routeConfig: RouteObject[] = [
@@ -31,6 +32,10 @@ const routeConfig: RouteObject[] = [
     path: "/",
     element: <ProtectedRoute />,
     children: [
+      {
+        path: "/welcome",
+        element: <WelcomePage />,
+      },
       {
         element: <MainLayout />,
         children: [
