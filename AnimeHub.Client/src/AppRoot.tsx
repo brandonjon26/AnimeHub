@@ -1,7 +1,10 @@
-import { RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import router from "./routes/routes.tsx";
-import { ThemeProvider } from "./features/auth/ThemeContext.tsx";
+import { BrowserRouter, RouterProvider } from "react-router-dom";
+import { router } from "./routes/routes.tsx";
+import { ThemeProvider } from "./features/theme/ThemeContext.tsx";
+import { AuthProvider } from "./features/auth/AuthContext.tsx";
+// import { RouterProvider } from "react-router-dom";
+// import router from "./routes/routes.tsx";
 
 // 1. Create a client instance for TanStack Query
 const queryClient = new QueryClient({
@@ -19,7 +22,9 @@ function AppRoot() {
     // Wrap the entire application (the Router) with the ThemeProvider
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <RouterProvider router={router} />
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

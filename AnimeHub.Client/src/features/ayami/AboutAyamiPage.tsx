@@ -21,7 +21,7 @@ const AboutAyamiPage: React.FC = () => {
     location.pathname.endsWith("/ayami") ||
     location.pathname.endsWith("/ayami/");
 
-  // --- 🔑 TanStack Query Data Fetching ---
+  // --- TanStack Query Data Fetching ---
 
   // 1. Fetch Ayami Profile Data
   const profileQuery = useQuery<AyamiProfileDto, Error>({
@@ -44,7 +44,7 @@ const AboutAyamiPage: React.FC = () => {
     enabled: isIndexRoute,
   });
 
-  // --- 🔑 Combine Loading & Error States ---
+  // --- Combine Loading & Error States ---
 
   const isLoading =
     profileQuery.isLoading || featuredQuery.isLoading || foldersQuery.isLoading;
@@ -72,21 +72,19 @@ const AboutAyamiPage: React.FC = () => {
   const folders = foldersQuery.data || [];
 
   return (
-    <MainLayout>
-      <div className={styles.pageContainer}>
-        {/* Outlet for rendering nested routes (Step 5) */}
-        <Outlet />
+    <div className={styles.pageContainer}>
+      {/* Outlet for rendering nested routes (Step 5) */}
+      <Outlet />
 
-        {/* Render AyamiContent ONLY if we are on the index route */}
-        {isIndexRoute && profile && (
-          <AyamiContent
-            profile={profile}
-            featuredImages={featuredImages}
-            folders={folders}
-          />
-        )}
-      </div>
-    </MainLayout>
+      {/* Render AyamiContent ONLY if we are on the index route */}
+      {isIndexRoute && profile && (
+        <AyamiContent
+          profile={profile}
+          featuredImages={featuredImages}
+          folders={folders}
+        />
+      )}
+    </div>
   );
 };
 
