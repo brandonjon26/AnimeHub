@@ -1,0 +1,112 @@
+.profileContainer {
+  padding: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.header {
+  color: var(--color-text-primary);
+  margin-bottom: 5px;
+}
+
+.roleTag {
+  color: var(--color-accent-purple); /* Highlight the role */
+  margin-bottom: 30px;
+  font-size: 1rem;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns */
+  gap: 40px;
+}
+
+/* Card Styling */
+.detailsCard,
+.linksCard {
+  background-color: var(--color-bg-secondary);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.detailsCard h3,
+.linksCard h3 {
+  color: var(--color-primary-brand);
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--color-bg-primary);
+  padding-bottom: 5px;
+}
+
+.detailsCard p {
+  margin-bottom: 10px;
+  font-size: 1.05rem;
+  color: var(--color-text-secondary);
+}
+
+.actionButtons {
+  margin-top: 25px;
+  display: flex;
+  gap: 15px;
+}
+
+.button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.primaryButton {
+  background-color: var(--color-accent-green);
+  color: var(--color-bg-primary);
+}
+
+.primaryButton:hover {
+  background-color: #2e8b57; /* Slightly darker green */
+}
+
+.deleteButton {
+  background-color: var(--color-accent-orange);
+  color: var(--color-bg-primary);
+}
+
+.deleteButton:hover {
+  background-color: #cc663d; /* Slightly darker orange */
+}
+
+/* Links Section */
+.linkGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.contentLink {
+  text-decoration: none;
+  color: var(--color-accent-purple);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.contentLink:hover {
+  color: var(--color-primary-brand);
+  text-decoration: underline;
+}
+
+.adminSection {
+  padding-top: 15px;
+  border-top: 1px solid var(--color-bg-primary);
+  color: var(--color-text-secondary);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .contentGrid {
+    grid-template-columns: 1fr; /* Single column layout for small screens */
+    gap: 30px;
+  }
+}

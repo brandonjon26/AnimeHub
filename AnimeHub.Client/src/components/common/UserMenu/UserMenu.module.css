@@ -1,0 +1,65 @@
+.userMenuContainer {
+  position: relative;
+  z-index: 1000; /* Ensure it floats above other content */
+}
+
+.profileButton {
+  /* Style for the visible user button/icon */
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--color-primary-brand);
+  color: var(--color-bg-primary);
+  border: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.2s;
+}
+
+.profileButton:hover {
+  box-shadow: 0 0 10px var(--color-primary-brand);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 50px; /* Position below the button */
+  right: 0;
+  width: 200px;
+  background-color: var(--color-bg-secondary);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.menuItem {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 10px 15px;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background-color 0.15s;
+  font-size: 1rem;
+}
+
+.menuItem:hover {
+  background-color: var(--color-bg-primary); /* Use a darker color on hover */
+}
+
+.logoutItem {
+  color: var(--color-accent-orange); /* Highlight Logout */
+  border-top: 1px solid var(--color-text-secondary);
+  margin-top: 5px;
+  padding-top: 10px;
+}
+
+.logoutItem:hover {
+  background-color: var(--color-accent-orange);
+  color: var(--color-bg-primary);
+}
