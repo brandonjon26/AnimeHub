@@ -12,6 +12,8 @@ namespace AnimeHub.Api.Mapping
             // We map from IdentityUser to UserResponseDto initially
             CreateMap<IdentityUser, UserResponseDto>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
 
                 // Set default values for properties that must be filled in later
                 // The IsAdmin, FirstName, IsAdult, and Token properties will be set via 

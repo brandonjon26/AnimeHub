@@ -1,11 +1,11 @@
 import React from "react";
-import MainLayout from "../../components/common/MainLayout";
+// import MainLayout from "../../components/common/MainLayout";
 import ThemeToggle from "../../components/common/ThemeToggle"; // We will create this next
 
 const HomePage: React.FC = () => {
   return (
     // Wrap the Home Page content in the structural layout
-    <MainLayout>
+    <>
       <h2>Welcome to AnimeHub!</h2>
       <p>This is the central page for announcements and featured content.</p>
 
@@ -24,7 +24,7 @@ const HomePage: React.FC = () => {
       >
         [Announcements & Featured Anime Section Placeholder]
       </div>
-    </MainLayout>
+    </>
   );
 };
 

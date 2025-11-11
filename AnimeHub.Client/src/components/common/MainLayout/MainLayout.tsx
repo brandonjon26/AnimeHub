@@ -1,5 +1,5 @@
 import React, { type ReactNode, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, Outlet } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
 import AyamiAvatar from "../AyamiAvatar";
 import styles from "./MainLayout.module.css";
@@ -25,19 +25,15 @@ const HamburgerIcon: React.FC<HamburgerProps> = ({ isOpen, onClick }) => (
 );
 // ---------------------------------------------------------
 
-interface MainLayoutProps {
-  children: ReactNode;
-}
-
-const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  // 🔑 State for the sidebar
+const MainLayout: React.FC = () => {
+  // State for the sidebar
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  // 🔑 Get current path
+  // Get current path
   const location = useLocation();
-  // 🔑 Check if we are on the Home page
-  const isHomePage = location.pathname === "/";
+  // Check if we are on the Home page
+  const isHomePage = location.pathname === "/home" || location.pathname === "/";
 
   return (
     <div className={styles.layoutContainer}>
@@ -51,7 +47,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         {/* Navigation Links */}
         <nav className={styles.navLinks}>
           <NavLink
-            to="/"
+            to="/home"
             className={({ isActive }) =>
               isActive ? styles.activeLink : styles.link
             }
@@ -112,7 +108,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
         {/* Center Page Content (Vision: Announcements, Featured Items) */}
         <section className={styles.pageContent}>
-          {children}{" "}
+          <Outlet />
           {/* This renders the actual HomePage or other route components */}
         </section>
 

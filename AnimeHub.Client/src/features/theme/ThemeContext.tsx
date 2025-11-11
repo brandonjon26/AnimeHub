@@ -3,6 +3,8 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useCallback,
+  useMemo,
   type ReactNode,
 } from "react";
 
@@ -32,9 +34,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(INITIAL_THEME);
 
   // Function to switch between 'dark' and 'light'
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"));
-  };
+  }, []); // Empty dependency array makes this function stable
 
   // Effect to apply the theme to the document body
   useEffect(() => {
@@ -42,10 +44,13 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     document.body.setAttribute("data-theme", theme);
   }, [theme]); // Reruns whenever the 'theme' state changes
 
-  const contextValue: ThemeContextType = {
-    theme,
-    toggleTheme,
-  };
+  const contextValue = useMemo(
+    () => ({
+      theme,
+      toggleTheme,
+    }),
+    [theme, toggleTheme]
+  ); // Dependencies: theme state and stable toggleTheme function
 
   return (
     <ThemeContext.Provider value={contextValue}>
