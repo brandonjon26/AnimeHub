@@ -1,4 +1,4 @@
-﻿namespace AnimeHub.Api.DTOs
+﻿namespace AnimeHub.Api.DTOs.GalleryImage
 {
     // DTO for the gallery folders/albums metadata
     public class GalleryImageCategoryDto
