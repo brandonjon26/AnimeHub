@@ -19,7 +19,9 @@ namespace AnimeHub.Api.Entities
         public string AltText { get; set; } = string.Empty;  
         
         public bool IsFeatured { get; set; } = false; // Flag to easily select images for the "Featured Photos" section
-                                                      // 
+
+        public bool IsMatureContent { get; set; } = false;  // Flag to denote mature/18+ content
+
         [Required] // Foreign Key property (stores the int value from the enum)
         public int GalleryImageCategoryId { get; set; }       
         
@@ -27,7 +29,9 @@ namespace AnimeHub.Api.Entities
         public GalleryImageCategory? Category { get; set; }
 
         public DateTime DateAdded { get; set; } = DateTime.UtcNow;
-        
+
+        public DateTime DateModified { get; set; } = DateTime.UtcNow;
+
         [NotMapped] // Add a non-mapped property for code logic if needed
         public GalleryImageCategoryEnum CategoryType
         {

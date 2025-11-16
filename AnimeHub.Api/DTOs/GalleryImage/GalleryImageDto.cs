@@ -1,4 +1,4 @@
-﻿namespace AnimeHub.Api.DTOs
+﻿namespace AnimeHub.Api.DTOs.GalleryImage
 {
     // DTO for a single gallery image (what the frontend client sees)
     public record GalleryImageDto(
@@ -6,6 +6,7 @@
         string ImageUrl,
         string AltText,
         bool IsFeatured,
-        string CategoryName // Display name of the category (e.g., "Chibi Style")
+        string CategoryName, // Display name of the category (e.g., "Chibi Style")
+        bool IsMatrureContent
     );
 }

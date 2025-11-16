@@ -1,25 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { GalleryClient } from "../../api/GalleryClient";
-import { type GalleryImage } from "../../api/types/GalleryTypes";
+import {
+  type GalleryImage,
+  type GalleryCategory,
+} from "../../api/types/GalleryTypes";
 import ImageViewer from "./ImageViewer";
-// 🔑 Use dedicated Gallery styles instead of AboutAyamiPage styles
+import { useAuth } from "../../hooks/useAuth";
 import styles from "./Gallery.module.css";
 import pageStyles from "./AboutAyamiPage.module.css"; // Keep page container styles
 
 const galleryClient = new GalleryClient();
 
 const GalleryFolderPage: React.FC = () => {
+  // Access User Auth State
+  const { user } = useAuth();
+  const isAdult = user?.isAdult ?? false;
+
   // Get the dynamic part of the URL (the category name)
   const { categoryName } = useParams<{ categoryName: string }>();
-  const navigate = useNavigate(); // 🔑 Hook for the "Back" button
+  const navigate = useNavigate(); // Hook for the "Back" button
 
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [viewerIndex, setViewerIndex] = useState<number | null>(null); // State for the full-screen viewer
 
-  // 🔑 Back Button Logic
+  // Back Button Logic
   const handleGoBack = () => {
     navigate("/ayami"); // Navigates directly back to the index page
     // Alternatively, navigate(-1) goes back one history step, but /ayami is safer.
@@ -28,18 +35,37 @@ const GalleryFolderPage: React.FC = () => {
   useEffect(() => {
     if (!categoryName) return;
 
-    const fetchImages = async () => {
+    const fetchImagesWithAccessCheck = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        // The client handles URL encoding and 404 response (returns [])
+        // 1. Fetch ALL Categories to check the 'isMatureContent' flag
+        const folders: GalleryCategory[] = await galleryClient.getFolders();
+        const targetFolder = folders.find(
+          (folder) => folder.name === decodeURIComponent(categoryName)
+        );
+
+        if (!targetFolder) {
+          setError(`Album '${decodeURIComponent(categoryName)}' not found.`);
+          return;
+        }
+
+        // 2. Perform Access Check (Frontend Restriction)
+        if (targetFolder.isMatureContent && !isAdult) {
+          setError(
+            "Access Denied. This album contains mature content. Please log in as an adult user to view."
+          );
+          return; // Stop execution if restricted
+        }
+
+        // 3. Fetch Images (Only if access is granted)
         const fetchedImages = await galleryClient.getImagesByCategoryName(
           categoryName
         );
         setImages(fetchedImages);
+
         if (fetchedImages.length === 0) {
-          // Only set an error if it's a structural failure, otherwise empty state is fine
-          // For now, let's keep it simple: if images is empty, the UI will show empty state.
+          setError(`Album '${decodeURIComponent(categoryName)}' is empty.`);
         }
       } catch (err) {
         setError("Failed to load album images.");
@@ -48,8 +74,8 @@ const GalleryFolderPage: React.FC = () => {
       }
     };
 
-    fetchImages();
-  }, [categoryName]);
+    fetchImagesWithAccessCheck();
+  }, [categoryName, isAdult]);
 
   // Decode name for display
   const decodedName = decodeURIComponent(categoryName || "Unknown Album");
@@ -63,7 +89,11 @@ const GalleryFolderPage: React.FC = () => {
   if (error)
     return (
       <div className={pageStyles.pageContainer} style={{ color: "red" }}>
-        Error: {error}
+        <button onClick={handleGoBack} className={styles.backButton}>
+          ← Exit Album
+        </button>
+        <h1 style={{ color: "red" }}>Access Error</h1>
+        <p className={pageStyles.errorMessage}>{error}</p>
       </div>
     );
 

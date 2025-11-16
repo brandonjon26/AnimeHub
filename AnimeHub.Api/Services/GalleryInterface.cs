@@ -1,4 +1,4 @@
-﻿using AnimeHub.Api.DTOs;
+﻿using AnimeHub.Api.DTOs.GalleryImage;
 
 namespace AnimeHub.Api.Services
 {
@@ -6,6 +6,11 @@ namespace AnimeHub.Api.Services
     {
         Task<IEnumerable<GalleryImageDto>> GetFeaturedImagesAsync();
         Task<IEnumerable<GalleryImageCategoryDto>> GetAllCategoriesAsync();
-        Task<IEnumerable<GalleryImageDto>> GetImagesByCategoryNameAsync(string categoryName);
+        Task<IEnumerable<GalleryImageDto>> GetImagesByCategoryNameAsync(string categoryName, bool isAdult);
+        Task<bool> CreateImageBatchAsync(GalleryImageCreateBatchDto dto);
+        Task<GalleryImageDto?> CreateSingleImageAsync(GalleryImageCreateSingleDto dto);
+        Task<bool> UpdateGalleryFolderAsync(int categoryId, GalleryImageUpdateFolderDto dto);
+        Task<bool> DeleteGalleryFolderAsync(int categoryId);
+        Task<bool> DeleteImageAsync(long imageId);
     }
 }
