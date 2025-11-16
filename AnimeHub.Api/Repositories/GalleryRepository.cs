@@ -46,6 +46,18 @@ namespace AnimeHub.Api.Repositories
         }
 
         /// <summary>
+        /// Checks if any image within a specific category is flagged as mature content.
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <returns></returns>
+        public async Task<bool> HasMatureContentAsync(int categoryId)
+        {
+            return await _dbSet
+                .Where(gi => gi.GalleryImageCategoryId == categoryId)
+                .AnyAsync(gi => gi.IsMatureContent);
+        }
+
+        /// <summary>
         /// Adds a collection of images to the database context.
         /// </summary>
         /// <param name="images"></param>

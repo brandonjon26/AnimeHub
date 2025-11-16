@@ -4,6 +4,7 @@ using AnimeHub.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.Routing;
+using System.Security.Claims;
 
 namespace AnimeHub.Api.Endpoints
 {
@@ -20,7 +21,7 @@ namespace AnimeHub.Api.Endpoints
             // ---------------------------------------------------------------------
             group.MapGet("/featured", async (GalleryInterface galleryService) =>
             {
-                var featured = await galleryService.GetFeaturedImagesAsync();
+                IEnumerable<GalleryImageDto> featured = await galleryService.GetFeaturedImagesAsync();
                 return Results.Ok(featured);
             })
             .WithName("GetFeaturedImages")
@@ -31,7 +32,7 @@ namespace AnimeHub.Api.Endpoints
             // -----------------------------------------------------------------------
             group.MapGet("/folders", async (GalleryInterface galleryService) =>
             {
-                var folders = await galleryService.GetAllCategoriesAsync();
+                IEnumerable<GalleryImageCategoryDto> folders = await galleryService.GetAllCategoriesAsync();
                 return Results.Ok(folders);
             })
             .WithName("GetGalleryFolders")
@@ -40,13 +41,26 @@ namespace AnimeHub.Api.Endpoints
             // -------------------------------------------------------------------------
             // Endpoint 3: GET /api/gallery/{categoryName} (Get all photos for an album)
             // -------------------------------------------------------------------------
-            group.MapGet("/{categoryName}", async (string categoryName, GalleryInterface galleryService) =>
+            group.MapGet("/{categoryName}", async (string categoryName, GalleryInterface galleryService, HttpContext context) =>
             {
-                var images = await galleryService.GetImagesByCategoryNameAsync(categoryName);
-                if (!images.Any())
+                // Retrieve the user principal from the context
+                ClaimsPrincipal userPrincipal = context.User;
+
+                // Check the 'IsAdult' claim. If the claim doesn't exist (not logged in) or is false, IsAdult is false.
+                // Assuming the claim name is 'IsAdult' and its value is "True" or "False".
+                bool isAdult = userPrincipal.Claims.Any(c => c.Type == "IsAdult" && c.Value.Equals("True", StringComparison.OrdinalIgnoreCase));
+
+                IEnumerable<GalleryImageDto> images = await galleryService.GetImagesByCategoryNameAsync(categoryName, isAdult);
+
+                if (images == null || !images.Any())
                 {
-                    return Results.NotFound($"Category '{categoryName}' not found or empty.");
+                    // Return 404 if the album doesn't exist OR if access was blocked by the security check
+                    // NOTE: We return 404 here, but returning 200 with an empty list is often safer to hide structure. 
+                    // Given the service returns an empty list upon block, we check the count.
+                    // We will stick to returning an empty list (200 OK) for consistency and to avoid revealing the block reason.
+                    return Results.Ok(images);
                 }
+
                 return Results.Ok(images);
             })
             .WithName("GetImagesByCategory")
@@ -57,7 +71,7 @@ namespace AnimeHub.Api.Endpoints
             // ----------------------------------------------------------------------------
             group.MapPost("/batch", async (GalleryImageCreateBatchDto dto, GalleryInterface galleryService) =>
             {
-                var success = await galleryService.CreateImageBatchAsync(dto);
+                bool success = await galleryService.CreateImageBatchAsync(dto);
                 return success ? Results.Created($"/api/gallery/{dto.CategoryId}", dto) : Results.BadRequest("Failed to create gallery batch. Category may not exist.");
             })
             .WithName("CreateGalleryImageBatch")
@@ -69,7 +83,7 @@ namespace AnimeHub.Api.Endpoints
             // --------------------------------------------------------------------------
             group.MapPost("/single", async (GalleryImageCreateSingleDto dto, GalleryInterface galleryService) =>
             {
-                var newImage = await galleryService.CreateSingleImageAsync(dto);
+                GalleryImageDto? newImage = await galleryService.CreateSingleImageAsync(dto);
                 return newImage != null ? Results.Created($"/api/gallery/{dto.CategoryId}/{newImage.GalleryImageId}", newImage) : Results.BadRequest("Failed to add single image.");
             })
             .WithName("CreateSingleGalleryImage")

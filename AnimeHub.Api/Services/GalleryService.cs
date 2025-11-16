@@ -57,13 +57,13 @@ namespace AnimeHub.Api.Services
             return categoryDtos;
         }
 
-        public async Task<IEnumerable<GalleryImageDto>> GetImagesByCategoryNameAsync(string categoryName)
+        public async Task<IEnumerable<GalleryImageDto>> GetImagesByCategoryNameAsync(string categoryName, bool isAdult)
         {
             // Find the target category entity using a direct repository query 
             // Add a custom method to the *Category* repository for efficient lookup by name.
 
             // TEMPORARY FIX (using existing methods)
-            var categoryEntity = (await _categoryRepository.GetAllAsync())
+            GalleryImageCategory? categoryEntity = (await _categoryRepository.GetAllAsync())
                                     .FirstOrDefault(c => c.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase));
 
             if (categoryEntity == null)
@@ -71,8 +71,20 @@ namespace AnimeHub.Api.Services
                 return Enumerable.Empty<GalleryImageDto>();
             }
 
+            int categoryId = categoryEntity.GalleryImageCategoryId;
+
+            // SECURITY CHECK: Determine if the folder contains mature content
+            bool isFolderMature = await _galleryRepository.HasMatureContentAsync(categoryId);
+
+            // Block Access if restricted
+            if (isFolderMature && !isAdult)
+            {
+                // Return an empty collection, blocking unauthorized access.
+                return Enumerable.Empty<GalleryImageDto>();
+            }
+
             // Call the new repository method that includes the category data
-            var imagesForCategory = await _galleryRepository.GetByCategoryWithCategoryAsync(
+            IEnumerable<GalleryImage> imagesForCategory = await _galleryRepository.GetByCategoryWithCategoryAsync(
                 categoryEntity.GalleryImageCategoryId
             );
 
