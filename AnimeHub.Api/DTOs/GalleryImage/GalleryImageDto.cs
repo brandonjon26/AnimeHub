@@ -6,7 +6,7 @@
         string ImageUrl,
         string AltText,
         bool IsFeatured,
-        bool IsMatrureContent,
-        string CategoryName // Display name of the category (e.g., "Chibi Style")
+        string CategoryName, // Display name of the category (e.g., "Chibi Style")
+        bool IsMatrureContent
     );
 }

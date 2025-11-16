@@ -12,6 +12,7 @@ interface AyamiContentProps {
   profile: AyamiProfileDto;
   featuredImages: GalleryImage[];
   folders: GalleryCategory[];
+  isAdult: boolean;
 }
 
 const renderBio = (text: string) => {
@@ -32,6 +33,7 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
   profile,
   featuredImages,
   folders,
+  isAdult,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -46,6 +48,16 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
   const equipmentAccessory = primaryAttire?.accessories.find(
     (acc) => acc.isWeapon
   );
+
+  // Filter the folders based on user's isAdult status
+  const filteredFolders = folders.filter((folder) => {
+    // If the folder is NOT mature, always show it.
+    if (!folder.isMatureContent) {
+      return true;
+    }
+    // If the folder IS mature, only show it if the user is an adult.
+    return isAdult;
+  });
 
   return (
     <>
@@ -129,7 +141,7 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
       <div className={styles.albumsSection}>
         <h2>{profile.firstName}'s Albums</h2>
         <div className={styles.albumList}>
-          {folders.map((folder) => (
+          {filteredFolders.map((folder) => (
             <Link
               key={folder.galleryImageCategoryId}
               to={folder.name} // Target the nested route for Step 5
@@ -142,10 +154,19 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
                   className={styles.albumCover}
                 />
                 <h4>{folder.name}</h4>
+                {folder.isMatureContent && ( // Indicate mature content
+                  <span className={styles.matureTag}>🔞 Mature</span>
+                )}
               </div>
             </Link>
           ))}
         </div>
+        {filteredFolders.length === 0 && folders.length > 0 && !isAdult && (
+          <p>
+            Some albums are hidden because they contain mature content. Please
+            verify your age by logging in or updating your profile.
+          </p>
+        )}
       </div>
 
       {/* MODAL RENDERING */}

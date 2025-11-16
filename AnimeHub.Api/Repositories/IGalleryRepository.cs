@@ -7,6 +7,7 @@ namespace AnimeHub.Api.Repositories
         Task<IEnumerable<GalleryImage>> GetFeaturedWithCategoryAsync();
         Task<IEnumerable<GalleryImage>> GetByCategoryWithCategoryAsync(int categoryId);
         Task<GalleryImageCategory?> GetCategoryByIdAsync(int categoryId);
+        Task<bool> HasMatureContentAsync(int categoryId);
         Task AddRangeAsync(IEnumerable<GalleryImage> images);
         Task<int> UpdateImagesByCategoryIdAsync(int categoryId, bool isMatureContent, long featuredImageId);
         Task<int> DeleteImagesByCategoryIdAsync(int categoryId);

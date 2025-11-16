@@ -10,6 +10,7 @@ import {
 } from "../../api/types/GalleryTypes";
 import { type AyamiProfileDto } from "../../api/types/AyamiTypes";
 import MainLayout from "../../components/common/MainLayout";
+import { useAuth } from "../../hooks/useAuth";
 import styles from "./AboutAyamiPage.module.css";
 
 // Initialize the client
@@ -17,6 +18,9 @@ const galleryClient = new GalleryClient();
 
 const AboutAyamiPage: React.FC = () => {
   const location = useLocation();
+  const { user } = useAuth(); // Get user context (assuming it contains isAdult)
+  const isAdult = user?.isAdult ?? false; // Extract isAdult status, default to false if not logged in
+
   const isIndexRoute =
     location.pathname.endsWith("/ayami") ||
     location.pathname.endsWith("/ayami/");
@@ -82,6 +86,7 @@ const AboutAyamiPage: React.FC = () => {
           profile={profile}
           featuredImages={featuredImages}
           folders={folders}
+          isAdult={isAdult}
         />
       )}
     </div>
