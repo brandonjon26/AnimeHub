@@ -1,4 +1,8 @@
-import { type GalleryCategory, type GalleryImage } from "./types/GalleryTypes";
+import {
+  type GalleryCategory,
+  type GalleryImage,
+  type GalleryBatchCreateMetadata,
+} from "./types/GalleryTypes";
 import apiClient from "./apiClient";
 import axios, { AxiosError, isAxiosError } from "axios";
 
@@ -55,5 +59,40 @@ export class GalleryClient {
       // Re-throw other errors
       throw error;
     }
+  }
+
+  /**
+   * Creates a new album/category and uploads a batch of images to it.
+   * Maps to: POST /api/gallery/batch
+   * @param metadata - Category name, mature flag, and the index of the featured image.
+   * @param files - Array of image File objects to be uploaded.
+   */
+  public async batchCreateImages(
+    metadata: GalleryBatchCreateMetadata, // 🔑 Updated type name
+    files: File[]
+  ): Promise<void> {
+    // 1. Construct FormData object
+    const formData = new FormData();
+
+    // 2. Append metadata (must be stringified/single values)
+    formData.append("CategoryName", metadata.categoryName);
+    formData.append("IsMatureContent", metadata.isMatureContent.toString());
+    formData.append(
+      "FeaturedImageIndex",
+      metadata.featuredImageIndex.toString()
+    );
+
+    // 3. Append files
+    files.forEach((file) => {
+      // The key "Files" must match the property name in GalleryImageCreateBatchDto
+      formData.append("Files", file);
+    });
+
+    // 4. Send the POST request
+    await apiClient.post<void>(`${GALLERY_BASE_PATH}/batch`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   }
 }

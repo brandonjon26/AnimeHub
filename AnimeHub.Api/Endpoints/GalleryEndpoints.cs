@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.Routing;
 using System.Security.Claims;
+using System.Text.Json;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Http;
 
 namespace AnimeHub.Api.Endpoints
 {
@@ -69,13 +72,44 @@ namespace AnimeHub.Api.Endpoints
             // ----------------------------------------------------------------------------
             // Endpoint 4: POST /api/gallery/batch (Create New Folder/Category with images)
             // ----------------------------------------------------------------------------
-            group.MapPost("/batch", async (GalleryImageCreateBatchDto dto, GalleryInterface galleryService) =>
+            group.MapPost("/batch", async (GalleryImageBatchUploadRequest request, GalleryInterface galleryService) =>
             {
-                bool success = await galleryService.CreateImageBatchAsync(dto);
-                return success ? Results.Created($"/api/gallery/{dto.CategoryId}", dto) : Results.BadRequest("Failed to create gallery batch. Category may not exist.");
+                if (request.Files == null || request.Files.Length == 0)
+                {
+                    return Results.BadRequest("No files were provided for upload.");
+                }
+
+                // CRITICAL: Deserialize the JSON Metadata string into the DTO expected by the Service Layer.
+                GalleryImageCreateBatchDto? metadataDto;
+                try
+                {
+                    // This DTO must match the JSON structure sent from the frontend (GalleryBatchCreateMetadata)
+                    metadataDto = JsonSerializer.Deserialize<GalleryImageCreateBatchDto>(
+                        request.Metadata,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                    );
+                }
+                catch (JsonException)
+                {
+                    return Results.BadRequest("Invalid JSON metadata format.");
+                }
+
+                if (metadataDto == null)
+                {
+                    return Results.BadRequest("Missing or invalid image batch metadata.");
+                }
+
+                // CHANGE: Call the service with the DTO and the IFormFile array
+                // The service layer will now handle mapping, file storage, and database insertion.
+                int newCategoryId = await galleryService.CreateImageBatchAsync(metadataDto, request.Files);
+
+                return newCategoryId > 0
+                    ? Results.Created($"/api/gallery/{newCategoryId}", null)
+                    : Results.BadRequest("Failed to create gallery batch. Category name may be in use.");
             })
+            .Accepts<GalleryImageBatchUploadRequest>("multipart/form-data")
             .WithName("CreateGalleryImageBatch")
-            .RequireAuthorization(Roles.Administrator, Roles.Mage)
+            .RequireAuthorization("AdminAccess")
             .WithOpenApi();
 
             // --------------------------------------------------------------------------
@@ -87,7 +121,7 @@ namespace AnimeHub.Api.Endpoints
                 return newImage != null ? Results.Created($"/api/gallery/{dto.CategoryId}/{newImage.GalleryImageId}", newImage) : Results.BadRequest("Failed to add single image.");
             })
             .WithName("CreateSingleGalleryImage")
-            .RequireAuthorization(Roles.Administrator, Roles.Mage)
+            .RequireAuthorization("AdminAccess")
             .WithOpenApi();
 
             // ------------------------------------------------------------------------------------
@@ -99,7 +133,7 @@ namespace AnimeHub.Api.Endpoints
                 return success ? Results.NoContent() : Results.NotFound($"Category with ID {categoryId} not found.");
             })
             .WithName("UpdateGalleryFolder")
-            .RequireAuthorization(Roles.Administrator, Roles.Mage)
+            .RequireAuthorization("AdminAccess")
             .WithOpenApi();
 
             // ---------------------------------------------------------------------------------------
@@ -111,7 +145,7 @@ namespace AnimeHub.Api.Endpoints
                 return success ? Results.NoContent() : Results.NotFound($"Category with ID {categoryId} not found.");
             })
             .WithName("DeleteGalleryFolder")
-            .RequireAuthorization(Roles.Administrator, Roles.Mage)
+            .RequireAuthorization("AdminAccess")
             .WithOpenApi();
 
             // ---------------------------------------------------------------------------
@@ -123,7 +157,7 @@ namespace AnimeHub.Api.Endpoints
                 return success ? Results.NoContent() : Results.NotFound($"Image with ID {imageId} not found.");
             })
             .WithName("DeleteSingleGalleryImage")
-            .RequireAuthorization(Roles.Administrator, Roles.Mage)
+            .RequireAuthorization("AdminAccess")
             .WithOpenApi();
         }
     }

@@ -72,7 +72,35 @@ builder.Services.AddScoped<UserProfileInterface, UserProfileService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    // Define the security scheme for JWT Bearer tokens
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme."
+    });
+
+    // Apply the security scheme globally to all API requests in Swagger
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 // Configure CORS Service
 builder.Services.AddCors(options =>
@@ -128,11 +156,25 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseStaticFiles();
-
 app.UseHttpsRedirection();
 
+app.UseStaticFiles();
+
 app.UseCors(CorsPolicyName);
+
+// Bypass authorization for OPTIONS preflight requests
+//app.Use(async (context, next) =>
+//{
+//    // Check if the request is an OPTIONS request
+//    if (context.Request.Method == "OPTIONS")
+//    {
+//        // Respond with a 204 No Content to confirm preflight success
+//        context.Response.StatusCode = 204;
+//        await context.Response.CompleteAsync(); // End the request pipeline for OPTIONS
+//        return;
+//    }
+//    await next(); // Proceed with the pipeline for all other requests (GET, POST, etc.)
+//});
 
 // CRITICAL: Must be called BEFORE UseAuthorization
 app.UseAuthentication();
