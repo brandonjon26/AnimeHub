@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AnimeHub.Api.DTOs.GalleryImage;
+using Microsoft.AspNetCore.Http;
 
 namespace AnimeHub.Api.Services
 {
@@ -93,57 +94,70 @@ namespace AnimeHub.Api.Services
         }
 
         /// <summary>
-        /// POST /batch: Adds a batch of images to an existing category/folder.
+        /// POST /batch: Creates a new category/folder and adds a batch of images.
         /// </summary>
-        /// <param name="dto"></param>
-        /// <returns></returns>
-        public async Task<bool> CreateImageBatchAsync(GalleryImageCreateBatchDto dto)
+        /// <param name="dto">Batch metadata (CategoryName, IsMature, ImageMetadata).</param>
+        /// <param name="files">The array of IFormFiles uploaded by the user.</param>
+        /// <returns>The ID of the newly created category, or 0 on failure.</returns>
+        public async Task<int> CreateImageBatchAsync(GalleryImageCreateBatchDto dto, IFormFile[] files)
         {
-            // 1. Business Logic: Validate Category Existence
-            GalleryImageCategory? category = await _galleryRepository.GetCategoryByIdAsync(dto.CategoryId);
-            if (category == null)
+            // 1. Business Logic: Check if Category Name already exists
+            GalleryImageCategory? existingCategory = await _categoryRepository.GetByNameAsync(dto.CategoryName);
+            if (existingCategory != null)
             {
-                return false; // Category must exist
+                return 0; // Category already exists, creation failed
             }
 
-            // 2. Mapping: Convert DTOs to Entities
-            List<GalleryImage> newImages = dto.Images.Select(imgDto => new GalleryImage
+            // 2. Category Creation: Map DTO to Category Entity
+            GalleryImageCategory newCategory = _mapper.Map<GalleryImageCategory>(dto);
+
+            // 3. Repository: Add the new category and get its ID
+            // NOTE: We assume CreateNewCategoryAsync returns the ID (or 0 on failure).
+            int categoryId = await _categoryRepository.CreateNewCategoryAsync(newCategory);
+
+            if (categoryId <= 0)
             {
-                ImageUrl = imgDto.ImageUrl,
-                AltText = imgDto.AltText,
-                IsFeatured = imgDto.IsFeatured,
-                IsMatureContent = dto.IsMatureContent, // Apply folder-level flag
-                GalleryImageCategoryId = dto.CategoryId, // Apply category ID
-                DateAdded = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow // Initialize DateModified
-            }).ToList();
+                return 0; // Failed to create category
+            }
 
-            if (!newImages.Any()) return false;
+            // 4. File and Entity Mapping
+            List<GalleryImage> newImages = new List<GalleryImage>();
+            long featuredImageId = 0; // To store the ID of the featured image after saving
 
-            // 3. Repository: Add entities
+            for (int i = 0; i < files.Length; i++)
+            {
+                IFormFile file = files[i];
+                ImageMetadataDto imageMetadata = dto.Images[i];
+
+                // **SIMULATE FILE STORAGE AND URL GENERATION**
+                // In a real application, this is where you'd call a file storage service (e.g., Azure Blob, S3, local disk).
+                // Example: string imageUrl = await _fileStorageService.UploadAsync(file);
+
+                // For demonstration, we create a placeholder URL based on category and file name.
+                string safeCategoryName = dto.CategoryName.Replace(" ", "-").ToLower();
+                string safeFileName = Path.GetFileName(file.FileName); // Using Path.GetFileName for safety
+                string imageUrl = $"/images/{safeCategoryName}/{safeFileName}";
+
+                // Create the image entity
+                GalleryImage newImage = new GalleryImage
+                {
+                    ImageUrl = imageUrl,
+                    AltText = file.FileName, // Use filename as default alt text
+                    IsFeatured = imageMetadata.IsFeatured,
+                    IsMatureContent = dto.IsMatureContent,
+                    GalleryImageCategoryId = categoryId, // Use the new ID
+                    DateAdded = DateTime.UtcNow,
+                    DateModified = DateTime.UtcNow
+                };
+
+                newImages.Add(newImage);
+            }
+
+            // 5. Repository: Add all new image entities
             await _galleryRepository.AddRangeAsync(newImages);
             int rowsAdded = await _galleryRepository.SaveChangesAsync();
 
-            // 4. Post-Save Logic: Handle potential featured image switch
-            // If any image in the batch is marked IsFeatured, we must ensure 
-            // the previously featured image for that category is un-featured.
-            if (newImages.Any(i => i.IsFeatured))
-            {
-                // We reuse the existing UpdateImagesByCategoryIdAsync bulk logic:
-                // It sets all IsFeatured to false, then sets the single featured image ID to true.
-                // We use the ID of the newly added featured image as the target.
-                long newFeaturedId = newImages.First(i => i.IsFeatured).GalleryImageId;
-
-                // We call the repository directly for bulk update, but we ignore the update count here.
-                await _galleryRepository.UpdateImagesByCategoryIdAsync(
-                    dto.CategoryId,
-                    dto.IsMatureContent, // Keep the mature flag consistent
-                    newFeaturedId
-                );
-                // Note: SaveChangesAsync is handled inside UpdateImagesByCategoryIdAsync (ExecuteUpdateAsync)
-            }
-
-            return rowsAdded > 0;
+            return rowsAdded > 0 ? categoryId : 0;
         }
 
         /// <summary>

@@ -30,7 +30,8 @@ namespace AnimeHub.Api.Endpoints
             })
             .WithName("GetAyamiProfile")
             .WithDescription("Retrieves the complete Ayami Kageyama character profile.")
-            .RequireAuthorization(); // Requires ANY logged-in user (Villager, Mage, Admin)
+            .RequireAuthorization() // Requires ANY logged-in user (Villager, Mage, Admin)
+            .WithOpenApi(); 
 
             // UPDATE: Update Core Profile Details
             group.MapPut("/{profileId}", async (
@@ -47,7 +48,8 @@ namespace AnimeHub.Api.Endpoints
             .Produces(StatusCodes.Status401Unauthorized) // Added Unauthorized
             .Produces(StatusCodes.Status403Forbidden)    // Added Forbidden
             .ProducesValidationProblem()
-            .RequireAuthorization(Roles.Mage, Roles.Administrator); // Restrict to Mage/Admin roles
+            .RequireAuthorization("AdminAccess") // Restrict to Mage/Admin roles
+            .WithOpenApi();
 
 
             // CREATE: Add a new Attire
@@ -72,7 +74,8 @@ namespace AnimeHub.Api.Endpoints
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status403Forbidden)
             .ProducesValidationProblem()
-            .RequireAuthorization(Roles.Mage, Roles.Administrator); // Restrict to Mage/Admin roles
+            .RequireAuthorization("AdminAccess") // Restrict to Mage/Admin roles
+            .WithOpenApi();
 
 
             // DELETE: Delete an Attire
@@ -88,7 +91,8 @@ namespace AnimeHub.Api.Endpoints
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status403Forbidden)
-            .RequireAuthorization(Roles.Mage, Roles.Administrator); // Restrict to Mage/Admin roles;
+            .RequireAuthorization("AdminAccess") // Restrict to Mage/Admin roles;
+            .WithOpenApi();
         }
     }
 }

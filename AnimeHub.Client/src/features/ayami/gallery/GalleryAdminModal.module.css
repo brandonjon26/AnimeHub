@@ -1,0 +1,193 @@
+.controlsWrapper {
+  padding-top: 5px;
+}
+
+.viewToggleGroup {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.viewToggleGroup button {
+  /* Base button style */
+  padding: 8px 15px;
+  border: 1px solid var(--color-bg-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.inactiveButton {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+}
+
+.inactiveButton:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+.activeButton {
+  /* Style for the currently selected tab/view */
+  background-color: var(--color-accent-orange);
+  color: var(--color-bg-primary); /* Dark text on orange */
+  border-color: var(--color-accent-orange);
+  font-weight: bold;
+}
+
+.viewContent {
+  border: 1px solid var(--color-bg-secondary);
+  padding: 20px;
+  border-radius: 4px;
+}
+
+.viewContent h3 {
+  margin-top: 0;
+  color: var(--color-accent-purple);
+  border-bottom: 1px dashed var(--color-bg-secondary);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+/* --- BATCH CREATION FORM STYLES --- */
+
+.batchForm {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.textInput {
+  padding: 10px;
+  border: 1px solid var(--color-bg-secondary);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border-radius: 4px;
+  transition: border-color 0.2s;
+}
+
+.textInput:focus {
+  outline: none;
+  border-color: var(--color-accent-purple);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1em;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  /* Ensure the checkbox is visible and clickable */
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+}
+
+/* File input is often difficult to style directly, ensuring it's clearly visible */
+.fileInput {
+  padding: 10px 0;
+}
+
+/* --- IMAGE PREVIEW STYLES --- */
+.previewContainer h4 {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.filePreviews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 10px;
+  border: 1px dashed var(--color-bg-secondary);
+  border-radius: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.previewCard {
+  position: relative;
+  width: 100px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: var(--color-bg-secondary);
+  padding-bottom: 5px; /* Space for file name */
+}
+
+.previewCard:hover {
+  border-color: var(--color-accent-purple);
+  box-shadow: 0 0 5px var(--color-accent-purple);
+}
+
+.featured {
+  /* Special style for the selected featured image */
+  border-color: var(--color-accent-orange);
+  box-shadow: 0 0 8px var(--color-accent-orange);
+}
+
+.previewImage {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+}
+
+.fileName {
+  font-size: 0.75em;
+  text-align: center;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 5px 2px 0;
+}
+
+.featuredTag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: var(--color-accent-orange);
+  color: var(--color-bg-primary);
+  padding: 2px 5px;
+  font-size: 0.65em;
+  font-weight: bold;
+  border-bottom-left-radius: 4px;
+  line-height: 1;
+}
+
+/* --- SUBMIT BUTTON STYLES --- */
+.submitButton {
+  background-color: var(
+    --color-accent-green
+  ); /* Use a secondary accent color for creation */
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.1em;
+  transition: background-color 0.2s;
+  margin-top: 10px;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #2e8b57; /* Slightly darker green */
+}
+
+.submitButton:disabled {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}

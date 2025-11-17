@@ -1,0 +1,69 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Use the backdrop color variable, which adapts to dark/light theme */
+  background-color: rgba(
+    var(--color-backdrop-rgb),
+    0.8
+  ); /* Assuming we define RGB var later, for now use a fixed color */
+  background-color: rgba(0, 0, 0, 0.8); /* Fallback for transparency */
+  z-index: 1050; /* High z-index to cover everything */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalContent {
+  background-color: var(
+    --color-bg-primary
+  ); /* Primary background for the modal body */
+  color: var(--color-text-primary);
+  padding: 20px;
+  border-radius: 8px;
+  min-width: 400px;
+  max-width: 90vw;
+  max-height: 90vh;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-bg-secondary);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--color-accent-purple);
+}
+
+.modalBody {
+  /* Allow body content to scroll if it exceeds max-height */
+  overflow-y: auto;
+  padding-right: 10px; /* Space for scrollbar */
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--color-cancel-button); /* Use the cancel color for the X */
+  line-height: 1;
+  padding: 0;
+  margin-left: 15px;
+  transition: color 0.2s;
+}
+
+.closeButton:hover {
+  color: var(--color-accent-orange);
+}

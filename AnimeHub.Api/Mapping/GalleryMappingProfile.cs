@@ -15,6 +15,9 @@ namespace AnimeHub.Api.Mapping
                     opt => opt.Ignore() // Cover URL is determined in the Service layer
                 );
 
+            CreateMap<GalleryImageCreateBatchDto, GalleryImageCategory>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.CategoryName));
+
             // Mapping for Gallery Images (Entity to Read DTO)
             CreateMap<GalleryImage, GalleryImageDto>()
                 // Explicitly map all positional parameters of the DTO's primary constructor
