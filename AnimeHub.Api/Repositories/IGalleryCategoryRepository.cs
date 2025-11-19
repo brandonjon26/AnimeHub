@@ -6,5 +6,6 @@ namespace AnimeHub.Api.Repositories
     {
         Task<GalleryImageCategory?> GetByNameAsync(string name);
         Task<int> CreateNewCategoryAsync(GalleryImageCategory category);
+        Task<int> DeleteCategoryByIdAsync(int categoryId);
     }
 }

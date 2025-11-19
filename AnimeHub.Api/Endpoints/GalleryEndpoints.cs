@@ -119,12 +119,6 @@ namespace AnimeHub.Api.Endpoints
                         metadataString,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
                     );
-
-                    // This DTO must match the JSON structure sent from the frontend (GalleryBatchCreateMetadata)
-                    //metadataDto = JsonSerializer.Deserialize<GalleryImageCreateBatchDto>(
-                    //    request.Metadata,
-                    //    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-                    //);
                 }
                 catch (JsonException)
                 {
