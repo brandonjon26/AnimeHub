@@ -2,6 +2,7 @@ import {
   type GalleryCategory,
   type GalleryImage,
   type GalleryBatchCreateMetadata,
+  type GalleryFolderUpdate,
 } from "./types/GalleryTypes";
 import apiClient from "./apiClient";
 import axios, { AxiosError, isAxiosError } from "axios";
@@ -89,5 +90,33 @@ export class GalleryClient {
         // "Content-Type": "multipart/form-data",
       },
     });
+  }
+
+  /**
+   * Updates metadata for an entire gallery folder/category.
+   * Maps to: PUT /api/gallery/folder/{categoryId:int}
+   * @param categoryId - The ID of the category/folder to update.
+   * @param updateData - The new mature flag and the ID of the new featured image.
+   */
+  public async updateFolderMetadata(
+    categoryId: number,
+    updateData: GalleryFolderUpdate
+  ): Promise<void> {
+    // Note: The backend expects the categoryId in the path, not the body.
+    await apiClient.put<void>(
+      `${GALLERY_BASE_PATH}/folder/${categoryId}`,
+      updateData
+    );
+    // Success returns 204 No Content, so we expect the promise to resolve without data.
+  }
+
+  /**
+   * Deletes an entire gallery folder/category and all its images.
+   * Maps to: DELETE /api/gallery/folder/{categoryId:int}
+   * @param categoryId - The ID of the category/folder to delete.
+   */
+  public async deleteFolder(categoryId: number): Promise<void> {
+    await apiClient.delete<void>(`${GALLERY_BASE_PATH}/folder/${categoryId}`);
+    // Success returns 204 No Content, so we expect the promise to resolve without data.
   }
 }
