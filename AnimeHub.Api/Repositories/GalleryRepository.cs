@@ -1,6 +1,5 @@
 ﻿using AnimeHub.Api.Data;
 using AnimeHub.Api.Entities;
-using AnimeHub.Api.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace AnimeHub.Api.Repositories
@@ -27,7 +26,7 @@ namespace AnimeHub.Api.Repositories
             // Use .Include() and filter by CategoryId
             return await _dbSet
                 .Include(gi => gi.Category) // Eagerly load the Category
-                .Where(gi => gi.GalleryImageCategoryId == (int)(GalleryImageCategoryEnum)categoryId) // Filter directly in the query
+                .Where(gi => gi.GalleryImageCategoryId == categoryId) // Filter directly in the query
                 .AsNoTracking()
                 .ToListAsync();
         }

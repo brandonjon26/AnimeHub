@@ -28,6 +28,12 @@ apiClient.interceptors.request.use(
       delete config.headers.Authorization;
     }
 
+    // For file uploads (FormData), remove the default Content-Type header
+    // Axios sets config.data to an instance of FormData for file uploads.
+    if (config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
+    }
+
     return config;
   },
   (error) => {

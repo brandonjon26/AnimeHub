@@ -2,7 +2,6 @@
 using AnimeHub.Api.DTOs.Auth;
 using AnimeHub.Api.Entities;
 using AnimeHub.Api.Entities.Ayami;
-using AnimeHub.Api.Entities.Enums;
 using AnimeHub.Api.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,8 +18,8 @@ namespace AnimeHub.Api.Data
         // --- Gallery Category Data ---
         private static readonly GalleryImageCategory[] GalleryCategories =
         {
-            new GalleryImageCategory { GalleryImageCategoryId = (int)GalleryImageCategoryEnum.StandardAnimeIsekai, Name = "Standard Anime/Isekai" },
-            new GalleryImageCategory { GalleryImageCategoryId = (int)GalleryImageCategoryEnum.ChibiStyle, Name = "Chibi Style" }
+            new GalleryImageCategory { Name = "Standard Anime/Isekai" },
+            new GalleryImageCategory { Name = "Chibi Style" }
         };
 
         #region Ayami Profile Data Components
