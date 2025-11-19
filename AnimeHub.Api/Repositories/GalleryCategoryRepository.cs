@@ -40,5 +40,11 @@ namespace AnimeHub.Api.Repositories
             // Check if the save was successful and return the generated ID
             return rowsAdded > 0 ? category.GalleryImageCategoryId : 0;
         }
+
+        public async Task<int> DeleteCategoryByIdAsync(int categoryId)
+        {
+            // Delete the category
+            return await _dbSet.Where(gic => gic.GalleryImageCategoryId == categoryId).ExecuteDeleteAsync();
+        }
     }
 }

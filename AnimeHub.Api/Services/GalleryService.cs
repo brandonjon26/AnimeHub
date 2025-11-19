@@ -263,9 +263,24 @@ namespace AnimeHub.Api.Services
             // 1. Repository: Use bulk delete method
             int deletedCount = await _galleryRepository.DeleteImagesByCategoryIdAsync(categoryId);
 
-            // 2. Business Logic: If successfully deleted, consider deleting the category record itself 
-            // from the category lookup table, unless it's a code-defined enum value.
-            // Assuming we DO NOT delete the category record, as it's enum-managed.
+            // 2. If images are successfully deleted, delete the category
+            if (deletedCount > 0)
+            {
+                try
+                {
+                    await DeleteCategoryAsync(categoryId);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    return false;
+                }
+            }
+            else
+            {
+                throw new Exception("Images failed to delete, please review");
+                return false;
+            }
 
             return deletedCount > 0;
         }
@@ -294,6 +309,15 @@ namespace AnimeHub.Api.Services
             // For now, we skip this complex logic and let the admin handle setting a new featured image.
 
             return rowsDeleted > 0;
+        }
+
+        public async Task<bool> DeleteCategoryAsync(int categoryId)
+        {
+            // Call the repository method to delete the category
+            int deletedCount = await _categoryRepository.DeleteCategoryByIdAsync(categoryId);
+
+            // return true or false
+            return deletedCount > 0;
         }
     }
 }

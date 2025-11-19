@@ -13,5 +13,6 @@ namespace AnimeHub.Api.Services
         Task<bool> UpdateGalleryFolderAsync(int categoryId, GalleryImageUpdateFolderDto dto);
         Task<bool> DeleteGalleryFolderAsync(int categoryId);
         Task<bool> DeleteImageAsync(long imageId);
+        Task<bool> DeleteCategoryAsync(int categoryId);
     }
 }
