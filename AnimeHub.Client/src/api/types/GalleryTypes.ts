@@ -37,3 +37,12 @@ export interface GalleryBatchCreateMetadata {
   isMatureContent: boolean;
   images: ImageMetadata[];
 }
+
+/**
+ * Data required for updating a gallery category's metadata (PUT /api/gallery/folder/{categoryId}).
+ * Maps directly to the backend's GalleryImageUpdateFolderDto.
+ */
+export interface GalleryFolderUpdate {
+  isMatureContent: boolean;
+  featuredImageId: number; // The ID of the image to be newly featured.
+}
