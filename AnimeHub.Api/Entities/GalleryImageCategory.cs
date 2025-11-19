@@ -7,7 +7,7 @@ namespace AnimeHub.Api.Entities
     public class GalleryImageCategory
     {        
         [Key] // Primary Key will hold the enum value (1 for Standard, 2 for Chibi)
-        [DatabaseGenerated(DatabaseGeneratedOption.None)] // We manually assign IDs (from the enum)
+        //[DatabaseGenerated(DatabaseGeneratedOption.None)] // We manually assign IDs (from the enum)
         public int GalleryImageCategoryId { get; set; }
 
         [Required]

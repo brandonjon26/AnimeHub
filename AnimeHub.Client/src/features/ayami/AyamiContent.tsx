@@ -208,7 +208,7 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
         <GalleryAdminModal
           folders={folders}
           onClose={() => setIsGalleryAdminModalOpen(false)}
-          onDataRefresh={onGalleryRefresh}
+          onGalleryRefresh={onGalleryRefresh}
         />
       )}
     </>

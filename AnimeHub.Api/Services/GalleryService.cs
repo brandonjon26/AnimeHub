@@ -136,7 +136,7 @@ namespace AnimeHub.Api.Services
                 // For demonstration, we create a placeholder URL based on category and file name.
                 string safeCategoryName = dto.CategoryName.Replace(" ", "-").ToLower();
                 string safeFileName = Path.GetFileName(file.FileName); // Using Path.GetFileName for safety
-                string imageUrl = $"/images/{safeCategoryName}/{safeFileName}";
+                string imageUrl = @$"\images\ayami\{safeFileName}";
 
                 // Create the image entity
                 GalleryImage newImage = new GalleryImage

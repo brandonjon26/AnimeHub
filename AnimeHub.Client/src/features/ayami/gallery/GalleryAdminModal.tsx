@@ -3,6 +3,7 @@ import { GalleryClient } from "../../../api/GalleryClient";
 import {
   type GalleryCategory,
   type GalleryBatchCreateMetadata,
+  type ImageMetadata,
 } from "../../../api/types/GalleryTypes";
 import Modal from "../../../components/common/modal";
 import { AxiosError } from "axios";
@@ -13,13 +14,13 @@ const galleryClient = new GalleryClient(); // Initialize client
 interface GalleryAdminModalProps {
   folders: GalleryCategory[];
   onClose: () => void;
-  onDataRefresh: () => void;
+  onGalleryRefresh: () => void;
 }
 
 const GalleryAdminModal: React.FC<GalleryAdminModalProps> = ({
   folders,
   onClose,
-  onDataRefresh,
+  onGalleryRefresh,
 }) => {
   const [currentView, setCurrentView] = useState<"create" | "update">("create");
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -57,11 +58,17 @@ const GalleryAdminModal: React.FC<GalleryAdminModalProps> = ({
     }
 
     try {
+      // Construct the list of image metadata from the selected files and the featured index state
+      const imagesMetadata: ImageMetadata[] = selectedFiles.map((_, index) => ({
+        // The index in the array matches the order of the files in the FormData
+        isFeatured: index === featuredIndex,
+      }));
+
       // Prepare the metadata DTO
       const metadata: GalleryBatchCreateMetadata = {
         categoryName: newCategoryName.trim(),
         isMatureContent: isMatureContent,
-        featuredImageIndex: featuredIndex,
+        images: imagesMetadata,
       };
 
       // 🚀 API Call
@@ -71,7 +78,7 @@ const GalleryAdminModal: React.FC<GalleryAdminModalProps> = ({
       alert(`Album "${newCategoryName}" created successfully!`);
 
       // Trigger data refresh on the parent component
-      onDataRefresh();
+      onGalleryRefresh();
 
       // 🔄 Reset form and close modal
       setNewCategoryName("");

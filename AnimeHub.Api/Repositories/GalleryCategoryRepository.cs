@@ -18,9 +18,11 @@ namespace AnimeHub.Api.Repositories
         /// <returns>The matching GalleryImageCategory entity, or null if not found.</returns>
         public async Task<GalleryImageCategory?> GetByNameAsync(string name)
         {
+            string lowerName = name.ToLower();
+
             // Use EF Core to find the category by name, ignoring case
             return await _context.Set<GalleryImageCategory>()
-                                 .FirstOrDefaultAsync(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                                 .FirstOrDefaultAsync(c => c.Name.ToLower().Equals(name));
         }
 
         /// <summary>

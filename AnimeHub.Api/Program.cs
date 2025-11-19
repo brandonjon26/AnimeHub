@@ -6,6 +6,7 @@ using AnimeHub.Api.Services;
 using AnimeHub.Api.Entities;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -14,6 +15,13 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Kestrel to increase the maximum request body size (e.g., to 100MB)
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    // 104,857,600 bytes = 100 MB. Choose an appropriate size.
+    serverOptions.Limits.MaxRequestBodySize = 104857600;
+});
 
 // Retrieve the connection string from configuration (Secret Manager in Development)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -163,18 +171,18 @@ app.UseStaticFiles();
 app.UseCors(CorsPolicyName);
 
 // Bypass authorization for OPTIONS preflight requests
-//app.Use(async (context, next) =>
-//{
-//    // Check if the request is an OPTIONS request
-//    if (context.Request.Method == "OPTIONS")
-//    {
-//        // Respond with a 204 No Content to confirm preflight success
-//        context.Response.StatusCode = 204;
-//        await context.Response.CompleteAsync(); // End the request pipeline for OPTIONS
-//        return;
-//    }
-//    await next(); // Proceed with the pipeline for all other requests (GET, POST, etc.)
-//});
+app.Use(async (context, next) =>
+{
+    // Check if the request is an OPTIONS request
+    if (context.Request.Method == "OPTIONS")
+    {
+        // Respond with a 204 No Content to confirm preflight success
+        context.Response.StatusCode = 204;
+        await context.Response.CompleteAsync(); // End the request pipeline for OPTIONS
+        return;
+    }
+    await next(); // Proceed with the pipeline for all other requests (GET, POST, etc.)
+});
 
 // CRITICAL: Must be called BEFORE UseAuthorization
 app.UseAuthentication();

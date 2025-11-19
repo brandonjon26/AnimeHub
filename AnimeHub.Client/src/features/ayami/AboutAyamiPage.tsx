@@ -48,6 +48,9 @@ const AboutAyamiPage: React.FC = () => {
     enabled: isIndexRoute,
   });
 
+  // Extract the refetch function for the folders
+  const { refetch: refetchFolders } = foldersQuery;
+
   // --- Combine Loading & Error States ---
 
   const isLoading =
@@ -68,6 +71,15 @@ const AboutAyamiPage: React.FC = () => {
     );
   }
 
+  // Define the refresh handler using the refetch method
+  // We don't need to await the refetch, just trigger it.
+  const handleGalleryRefresh = () => {
+    // This tells TanStack Query to re-execute the 'galleryFolders' query.
+    refetchFolders();
+    // Since the featured images are related, it's good practice to refetch them too.
+    featuredQuery.refetch();
+  };
+
   // --- Render Logic ---
 
   // Note: Data is guaranteed to exist here if isLoading is false and no error occurred.
@@ -87,6 +99,7 @@ const AboutAyamiPage: React.FC = () => {
           featuredImages={featuredImages}
           folders={folders}
           isAdult={isAdult}
+          onGalleryRefresh={handleGalleryRefresh}
         />
       )}
     </div>

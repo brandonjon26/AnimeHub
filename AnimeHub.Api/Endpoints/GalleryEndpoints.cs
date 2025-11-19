@@ -44,14 +44,31 @@ namespace AnimeHub.Api.Endpoints
             // -------------------------------------------------------------------------
             // Endpoint 3: GET /api/gallery/{categoryName} (Get all photos for an album)
             // -------------------------------------------------------------------------
-            group.MapGet("/{categoryName}", async (string categoryName, GalleryInterface galleryService, HttpContext context) =>
+            group.MapGet("/{categoryName}", async (string categoryName, GalleryInterface galleryService, HttpContext context, UserProfileInterface userProfileService) =>
             {
                 // Retrieve the user principal from the context
                 ClaimsPrincipal userPrincipal = context.User;
+                bool isAdult = false;
 
-                // Check the 'IsAdult' claim. If the claim doesn't exist (not logged in) or is false, IsAdult is false.
-                // Assuming the claim name is 'IsAdult' and its value is "True" or "False".
-                bool isAdult = userPrincipal.Claims.Any(c => c.Type == "IsAdult" && c.Value.Equals("True", StringComparison.OrdinalIgnoreCase));
+                // 1. Check if the user is authenticated at all
+                if (userPrincipal.Identity != null && userPrincipal.Identity.IsAuthenticated)
+                {
+                    // 2. Find the standard User ID (NameIdentifier) claim
+                    // This claim holds the unique ASP.NET Identity User ID (Guid).
+                    string? userId = userPrincipal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                    if (!string.IsNullOrEmpty(userId))
+                    {
+                        // 3. Use the User ID to fetch the profile from the database
+                        UserProfile? profile = await userProfileService.GetProfileByUserIdAsync(userId);
+
+                        if (profile != null)
+                        {
+                            // 4. Retrieve the IsAdult flag from the profile DTO
+                            isAdult = profile.IsAdult;
+                        }
+                    }
+                }
 
                 IEnumerable<GalleryImageDto> images = await galleryService.GetImagesByCategoryNameAsync(categoryName, isAdult);
 
@@ -72,9 +89,24 @@ namespace AnimeHub.Api.Endpoints
             // ----------------------------------------------------------------------------
             // Endpoint 4: POST /api/gallery/batch (Create New Folder/Category with images)
             // ----------------------------------------------------------------------------
-            group.MapPost("/batch", async (GalleryImageBatchUploadRequest request, GalleryInterface galleryService) =>
+            group.MapPost("/batch", async (HttpContext context, GalleryInterface galleryService) =>
             {
-                if (request.Files == null || request.Files.Length == 0)
+                //if (request.Files == null || request.Files.Length == 0)
+                //{
+                //    return Results.BadRequest("No files were provided for upload.");
+                //}
+
+                // Manually read the form data to force correct binding
+                IFormCollection form = await context.Request.ReadFormAsync();
+
+                // 1. Retrieve the Metadata string
+                string metadataString = form["Metadata"].FirstOrDefault() ?? "";
+
+                // 2. Retrieve the Files array
+                IFormFileCollection formFiles = form.Files;
+                IFormFile[] files = formFiles.ToArray();
+
+                if (files.Length == 0)
                 {
                     return Results.BadRequest("No files were provided for upload.");
                 }
@@ -83,11 +115,16 @@ namespace AnimeHub.Api.Endpoints
                 GalleryImageCreateBatchDto? metadataDto;
                 try
                 {
-                    // This DTO must match the JSON structure sent from the frontend (GalleryBatchCreateMetadata)
                     metadataDto = JsonSerializer.Deserialize<GalleryImageCreateBatchDto>(
-                        request.Metadata,
+                        metadataString,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
                     );
+
+                    // This DTO must match the JSON structure sent from the frontend (GalleryBatchCreateMetadata)
+                    //metadataDto = JsonSerializer.Deserialize<GalleryImageCreateBatchDto>(
+                    //    request.Metadata,
+                    //    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                    //);
                 }
                 catch (JsonException)
                 {
@@ -101,13 +138,12 @@ namespace AnimeHub.Api.Endpoints
 
                 // CHANGE: Call the service with the DTO and the IFormFile array
                 // The service layer will now handle mapping, file storage, and database insertion.
-                int newCategoryId = await galleryService.CreateImageBatchAsync(metadataDto, request.Files);
+                int newCategoryId = await galleryService.CreateImageBatchAsync(metadataDto, files);
 
                 return newCategoryId > 0
                     ? Results.Created($"/api/gallery/{newCategoryId}", null)
                     : Results.BadRequest("Failed to create gallery batch. Category name may be in use.");
             })
-            .Accepts<GalleryImageBatchUploadRequest>("multipart/form-data")
             .WithName("CreateGalleryImageBatch")
             .RequireAuthorization("AdminAccess")
             .WithOpenApi();
