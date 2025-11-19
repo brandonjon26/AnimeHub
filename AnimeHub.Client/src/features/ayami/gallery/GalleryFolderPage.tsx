@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { GalleryClient } from "../../api/GalleryClient";
+import { GalleryClient } from "../../../api/GalleryClient";
 import {
   type GalleryImage,
   type GalleryCategory,
-} from "../../api/types/GalleryTypes";
+} from "../../../api/types/GalleryTypes";
 import ImageViewer from "./ImageViewer";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../../hooks/useAuth";
 import styles from "./Gallery.module.css";
-import pageStyles from "./AboutAyamiPage.module.css"; // Keep page container styles
+import pageStyles from "../AboutAyamiPage.module.css"; // Keep page container styles
 
 const galleryClient = new GalleryClient();
 

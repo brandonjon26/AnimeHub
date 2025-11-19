@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.Routing;
 using System.Security.Claims;
+using System.Text.Json;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Http;
 
 namespace AnimeHub.Api.Endpoints
 {
@@ -41,14 +44,31 @@ namespace AnimeHub.Api.Endpoints
             // -------------------------------------------------------------------------
             // Endpoint 3: GET /api/gallery/{categoryName} (Get all photos for an album)
             // -------------------------------------------------------------------------
-            group.MapGet("/{categoryName}", async (string categoryName, GalleryInterface galleryService, HttpContext context) =>
+            group.MapGet("/{categoryName}", async (string categoryName, GalleryInterface galleryService, HttpContext context, UserProfileInterface userProfileService) =>
             {
                 // Retrieve the user principal from the context
                 ClaimsPrincipal userPrincipal = context.User;
+                bool isAdult = false;
 
-                // Check the 'IsAdult' claim. If the claim doesn't exist (not logged in) or is false, IsAdult is false.
-                // Assuming the claim name is 'IsAdult' and its value is "True" or "False".
-                bool isAdult = userPrincipal.Claims.Any(c => c.Type == "IsAdult" && c.Value.Equals("True", StringComparison.OrdinalIgnoreCase));
+                // 1. Check if the user is authenticated at all
+                if (userPrincipal.Identity != null && userPrincipal.Identity.IsAuthenticated)
+                {
+                    // 2. Find the standard User ID (NameIdentifier) claim
+                    // This claim holds the unique ASP.NET Identity User ID (Guid).
+                    string? userId = userPrincipal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                    if (!string.IsNullOrEmpty(userId))
+                    {
+                        // 3. Use the User ID to fetch the profile from the database
+                        UserProfile? profile = await userProfileService.GetProfileByUserIdAsync(userId);
+
+                        if (profile != null)
+                        {
+                            // 4. Retrieve the IsAdult flag from the profile DTO
+                            isAdult = profile.IsAdult;
+                        }
+                    }
+                }
 
                 IEnumerable<GalleryImageDto> images = await galleryService.GetImagesByCategoryNameAsync(categoryName, isAdult);
 
@@ -69,13 +89,63 @@ namespace AnimeHub.Api.Endpoints
             // ----------------------------------------------------------------------------
             // Endpoint 4: POST /api/gallery/batch (Create New Folder/Category with images)
             // ----------------------------------------------------------------------------
-            group.MapPost("/batch", async (GalleryImageCreateBatchDto dto, GalleryInterface galleryService) =>
+            group.MapPost("/batch", async (HttpContext context, GalleryInterface galleryService) =>
             {
-                bool success = await galleryService.CreateImageBatchAsync(dto);
-                return success ? Results.Created($"/api/gallery/{dto.CategoryId}", dto) : Results.BadRequest("Failed to create gallery batch. Category may not exist.");
+                //if (request.Files == null || request.Files.Length == 0)
+                //{
+                //    return Results.BadRequest("No files were provided for upload.");
+                //}
+
+                // Manually read the form data to force correct binding
+                IFormCollection form = await context.Request.ReadFormAsync();
+
+                // 1. Retrieve the Metadata string
+                string metadataString = form["Metadata"].FirstOrDefault() ?? "";
+
+                // 2. Retrieve the Files array
+                IFormFileCollection formFiles = form.Files;
+                IFormFile[] files = formFiles.ToArray();
+
+                if (files.Length == 0)
+                {
+                    return Results.BadRequest("No files were provided for upload.");
+                }
+
+                // CRITICAL: Deserialize the JSON Metadata string into the DTO expected by the Service Layer.
+                GalleryImageCreateBatchDto? metadataDto;
+                try
+                {
+                    metadataDto = JsonSerializer.Deserialize<GalleryImageCreateBatchDto>(
+                        metadataString,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                    );
+
+                    // This DTO must match the JSON structure sent from the frontend (GalleryBatchCreateMetadata)
+                    //metadataDto = JsonSerializer.Deserialize<GalleryImageCreateBatchDto>(
+                    //    request.Metadata,
+                    //    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                    //);
+                }
+                catch (JsonException)
+                {
+                    return Results.BadRequest("Invalid JSON metadata format.");
+                }
+
+                if (metadataDto == null)
+                {
+                    return Results.BadRequest("Missing or invalid image batch metadata.");
+                }
+
+                // CHANGE: Call the service with the DTO and the IFormFile array
+                // The service layer will now handle mapping, file storage, and database insertion.
+                int newCategoryId = await galleryService.CreateImageBatchAsync(metadataDto, files);
+
+                return newCategoryId > 0
+                    ? Results.Created($"/api/gallery/{newCategoryId}", null)
+                    : Results.BadRequest("Failed to create gallery batch. Category name may be in use.");
             })
             .WithName("CreateGalleryImageBatch")
-            .RequireAuthorization(Roles.Administrator, Roles.Mage)
+            .RequireAuthorization("AdminAccess")
             .WithOpenApi();
 
             // --------------------------------------------------------------------------
@@ -87,7 +157,7 @@ namespace AnimeHub.Api.Endpoints
                 return newImage != null ? Results.Created($"/api/gallery/{dto.CategoryId}/{newImage.GalleryImageId}", newImage) : Results.BadRequest("Failed to add single image.");
             })
             .WithName("CreateSingleGalleryImage")
-            .RequireAuthorization(Roles.Administrator, Roles.Mage)
+            .RequireAuthorization("AdminAccess")
             .WithOpenApi();
 
             // ------------------------------------------------------------------------------------
@@ -99,7 +169,7 @@ namespace AnimeHub.Api.Endpoints
                 return success ? Results.NoContent() : Results.NotFound($"Category with ID {categoryId} not found.");
             })
             .WithName("UpdateGalleryFolder")
-            .RequireAuthorization(Roles.Administrator, Roles.Mage)
+            .RequireAuthorization("AdminAccess")
             .WithOpenApi();
 
             // ---------------------------------------------------------------------------------------
@@ -111,7 +181,7 @@ namespace AnimeHub.Api.Endpoints
                 return success ? Results.NoContent() : Results.NotFound($"Category with ID {categoryId} not found.");
             })
             .WithName("DeleteGalleryFolder")
-            .RequireAuthorization(Roles.Administrator, Roles.Mage)
+            .RequireAuthorization("AdminAccess")
             .WithOpenApi();
 
             // ---------------------------------------------------------------------------
@@ -123,7 +193,7 @@ namespace AnimeHub.Api.Endpoints
                 return success ? Results.NoContent() : Results.NotFound($"Image with ID {imageId} not found.");
             })
             .WithName("DeleteSingleGalleryImage")
-            .RequireAuthorization(Roles.Administrator, Roles.Mage)
+            .RequireAuthorization("AdminAccess")
             .WithOpenApi();
         }
     }

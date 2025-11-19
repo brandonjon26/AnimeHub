@@ -8,7 +8,7 @@ import {
 import MainLayout from "./../components/common/MainLayout/MainLayout.tsx";
 import HomePage from "../features/home/HomePage";
 import AboutAyamiPage from "../features/ayami/AboutAyamiPage";
-import GalleryFolderPage from "../features/ayami/GalleryFolderPage";
+import GalleryFolderPage from "../features/ayami/gallery/GalleryFolderPage";
 import Login from "../features/auth/Login.tsx";
 import Register from "../features/auth/Register.tsx";
 import ProtectedRoute from "../features/auth/ProtectedRoute.tsx";

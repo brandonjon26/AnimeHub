@@ -6,6 +6,8 @@ import {
 } from "../../api/types/GalleryTypes";
 import { type AyamiProfileDto } from "../../api/types/AyamiTypes";
 import AyamiProfileEditModal from "./AyamiProfileEditModal";
+import { useAuth } from "../../hooks/useAuth";
+import GalleryAdminModal from "./gallery/GalleryAdminModal";
 import styles from "./AboutAyamiPage.module.css";
 
 interface AyamiContentProps {
@@ -13,6 +15,7 @@ interface AyamiContentProps {
   featuredImages: GalleryImage[];
   folders: GalleryCategory[];
   isAdult: boolean;
+  onGalleryRefresh: () => void;
 }
 
 const renderBio = (text: string) => {
@@ -34,8 +37,16 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
   featuredImages,
   folders,
   isAdult,
+  onGalleryRefresh,
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isGalleryAdminModalOpen, setIsGalleryAdminModalOpen] = useState(false);
+
+  // Get user role for authorization
+  const { user } = useAuth();
+  // Check if the user is an Admin or Moderator (assuming roles are 'Admin' or 'Moderator')
+  const isGalleryAdmin =
+    user?.roles[0] === "Admin" || user?.roles[0] === "Mage";
 
   const profileId = profile.ayamiProfileId;
 
@@ -74,7 +85,7 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
             {/* Static image remains for the bio section */}
             <div
               className={styles.headshotContainer}
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsProfileModalOpen(true)}
             >
               <img
                 src="/images/ayami/Ayami_Bio_Page_3.png"
@@ -139,7 +150,21 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
 
       {/* 2. BOTTOM SECTION: Album/Folder Links */}
       <div className={styles.albumsSection}>
-        <h2>{profile.firstName}'s Albums</h2>
+        <div className={styles.galleryHeader}>
+          <h2>{profile.firstName}'s Albums</h2>
+
+          {/* 🔑 ADMIN QUICK-ACCESS TOOLS */}
+          {isGalleryAdmin && (
+            <div className={styles.adminQuickAccess}>
+              <button
+                className={styles.adminButton}
+                onClick={() => setIsGalleryAdminModalOpen(true)}
+              >
+                🖼️ Manage Gallery Albums
+              </button>
+            </div>
+          )}
+        </div>
         <div className={styles.albumList}>
           {filteredFolders.map((folder) => (
             <Link
@@ -170,11 +195,20 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
       </div>
 
       {/* MODAL RENDERING */}
-      {isModalOpen && (
+      {isProfileModalOpen && (
         <AyamiProfileEditModal
           profile={profile}
           profileId={profileId}
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => setIsProfileModalOpen(false)}
+        />
+      )}
+
+      {/* 🔑 NEW: GALLERY ADMIN MODAL */}
+      {isGalleryAdminModalOpen && (
+        <GalleryAdminModal
+          folders={folders}
+          onClose={() => setIsGalleryAdminModalOpen(false)}
+          onGalleryRefresh={onGalleryRefresh}
         />
       )}
     </>
