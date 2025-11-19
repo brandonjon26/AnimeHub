@@ -68,19 +68,14 @@ export class GalleryClient {
    * @param files - Array of image File objects to be uploaded.
    */
   public async batchCreateImages(
-    metadata: GalleryBatchCreateMetadata, // 🔑 Updated type name
+    metadata: GalleryBatchCreateMetadata, // Updated type name
     files: File[]
   ): Promise<void> {
     // 1. Construct FormData object
     const formData = new FormData();
 
-    // 2. Append metadata (must be stringified/single values)
-    formData.append("CategoryName", metadata.categoryName);
-    formData.append("IsMatureContent", metadata.isMatureContent.toString());
-    formData.append(
-      "FeaturedImageIndex",
-      metadata.featuredImageIndex.toString()
-    );
+    // 2. Serialize the entire metadata object to a JSON string
+    formData.append("Metadata", JSON.stringify(metadata));
 
     // 3. Append files
     files.forEach((file) => {
@@ -91,7 +86,7 @@ export class GalleryClient {
     // 4. Send the POST request
     await apiClient.post<void>(`${GALLERY_BASE_PATH}/batch`, formData, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        // "Content-Type": "multipart/form-data",
       },
     });
   }

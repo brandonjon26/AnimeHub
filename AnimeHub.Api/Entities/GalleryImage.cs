@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using AnimeHub.Api.Entities.Enums;
 
 namespace AnimeHub.Api.Entities
 {
@@ -31,12 +30,5 @@ namespace AnimeHub.Api.Entities
         public DateTime DateAdded { get; set; } = DateTime.UtcNow;
 
         public DateTime DateModified { get; set; } = DateTime.UtcNow;
-
-        [NotMapped] // Add a non-mapped property for code logic if needed
-        public GalleryImageCategoryEnum CategoryType
-        {
-            get => (GalleryImageCategoryEnum)GalleryImageCategoryId;
-            set => GalleryImageCategoryId = (int)value;
-        }
     }
 }

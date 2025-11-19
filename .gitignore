@@ -149,6 +149,10 @@ $RECYCLE.BIN/
 .env.staging
 .env.production
 
+# Ignore large static assets in the client's public folder
+AnimeHub.Client/public/images/ayami/
+AnimeHub.Client/public/images/chiara/
+
 ### IV. TESTING, COVERAGE, AND ADD-INS ###
 
 # MSTest test Results
