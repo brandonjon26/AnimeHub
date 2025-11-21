@@ -189,6 +189,22 @@ namespace AnimeHub.Api.Endpoints
             .WithName("DeleteSingleGalleryImage")
             .RequireAuthorization("AdminAccess")
             .WithOpenApi();
+
+            // --------------------------------------------------------------------------------------
+            // Endpoint 9: PUT /api/gallery/images/{imageId:long} (Update single image metadata/category)
+            // --------------------------------------------------------------------------------------
+            group.MapPut("/images/{imageId:long}", async (long imageId, GalleryImageUpdateSingleDto dto, GalleryInterface galleryService) =>
+            {
+                // The service layer handles finding the image by ID and applying the DTO changes (category move, maturity flag update).
+                bool success = await galleryService.UpdateSingleImageAsync(imageId, dto);
+
+                return success
+                    ? Results.NoContent()
+                    : Results.NotFound($"Image with ID {imageId} not found, or new category ID is invalid.");
+            })
+            .WithName("UpdateSingleGalleryImage")
+            .RequireAuthorization("AdminAccess")
+            .WithOpenApi();
         }
-    }
+    }    
 }
