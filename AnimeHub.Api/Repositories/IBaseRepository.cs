@@ -8,7 +8,9 @@ namespace AnimeHub.Api.Repositories
         // Query Methods
         Task<IEnumerable<T>> GetAllAsync(); // Read operations (Non-tracking for performance on GET requests)
         Task<T?> GetReadOnlyByIdAsync(long id); // Find by primary key for read-only (Non-tracking)
+        Task<T?> GetReadOnlyByIdAsync(int id);
         Task<T?> GetTrackedByIdAsync(long id); // Find by primary key for read/write (Tracking required for UPDATE/DELETE)
+        Task<T?> GetTrackedByIdAsync(int id);
         Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null);
 
 

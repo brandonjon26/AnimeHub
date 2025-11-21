@@ -43,7 +43,29 @@ namespace AnimeHub.Api.Repositories
             // We'll address this in the concrete repository.
         }
 
+        /// <summary>
+        /// Retrieves an entity by its primary key ID (INT overload), without tracking changes.
+        /// </summary>
+        /// <param name="id">The integer ID of the entity.</param>
+        /// <returns>The entity or null if not found.</returns>
+        public async Task<T?> GetReadOnlyByIdAsync(int id)
+        {
+            // Reuses the core logic. We need to cast the incoming 'int id' to 'long' 
+            // for comparison against the potentially long primary key property, 
+            // or rely on EF Core to handle the comparison of the key type.
+
+            // However, a cleaner implementation for an INT primary key lookup is:
+            return await _dbSet.AsNoTracking()
+                .FirstOrDefaultAsync(e => EF.Property<int>(e, _primaryKeyName) == id);
+        }
+
         public async Task<T?> GetTrackedByIdAsync(long id)
+        {
+            // Uses FindAsync (which checks tracking first) or attaches the entity for UPDATE/DELETE
+            return await _dbSet.FindAsync(id);
+        }
+
+        public async Task<T?> GetTrackedByIdAsync(int id)
         {
             // Uses FindAsync (which checks tracking first) or attaches the entity for UPDATE/DELETE
             return await _dbSet.FindAsync(id);

@@ -3,6 +3,8 @@ import {
   type GalleryImage,
   type GalleryBatchCreateMetadata,
   type GalleryFolderUpdate,
+  type GallerySingleCreate,
+  type GallerySingleUpdate,
 } from "./types/GalleryTypes";
 import apiClient from "./apiClient";
 import axios, { AxiosError, isAxiosError } from "axios";
@@ -90,6 +92,72 @@ export class GalleryClient {
         // "Content-Type": "multipart/form-data",
       },
     });
+  }
+
+  // ----------------------------------------------------------------------
+  // SINGLE IMAGE CRUD OPERATIONS
+  // ----------------------------------------------------------------------
+
+  /**
+   * POST /api/gallery/images/single: Adds a single image file to an existing category.
+   * @param metadata - Category ID, URL, Alt Text, Featured status, and Mature flag.
+   * @param file - The image file to upload.
+   * @returns The newly created GalleryImage object on success.
+   */
+  public async createSingleImage(
+    metadata: GallerySingleCreate,
+    file: File
+  ): Promise<GalleryImage> {
+    const formData = new FormData();
+    formData.append("File", file); // Assuming the backend expects a single file key 'File'
+
+    // Append all DTO metadata fields as strings for the form data
+    formData.append("CategoryId", metadata.categoryId.toString());
+    formData.append("ImageUrl", metadata.imageUrl);
+    formData.append("AltText", metadata.altText);
+    formData.append("IsFeatured", metadata.isFeatured.toString());
+    formData.append("IsMatureContent", metadata.isMatureContent.toString()); // The new flag
+
+    const response = await apiClient.post<GalleryImage>(
+      `${GALLERY_BASE_PATH}/single`,
+      formData,
+      {
+        headers: {
+          // "Content-Type": "multipart/form-data", // Axios handles this
+        },
+      }
+    );
+
+    return response.data;
+  }
+
+  /**
+   * PUT /api/gallery/images/{imageId}: Updates the category and maturity flag of a single image.
+   * @param imageId - The ID of the image to update.
+   * @param updateData - The new category ID and maturity flag.
+   */
+  public async updateSingleImage(
+    imageId: number,
+    updateData: GallerySingleUpdate
+  ): Promise<void> {
+    // Axios handles serializing the JSON body and setting Content-Type
+    await apiClient.put<void>(
+      `${GALLERY_BASE_PATH}/images/${imageId}`,
+      {
+        newGalleryImageCategoryId: updateData.newGalleryImageCategoryId,
+        isMatureContent: updateData.isMatureContent,
+      } // The request body matches the GalleryImageUpdateSingleDto fields
+    );
+    // Success returns 204 No Content, so we expect the promise to resolve without data.
+  }
+
+  /**
+   * DELETE /api/gallery/images/{imageId}: Deletes a single image record.
+   * @param imageId - The ID of the image to delete.
+   */
+  public async deleteImage(imageId: number): Promise<void> {
+    await apiClient.delete<void>(`${GALLERY_BASE_PATH}/images/${imageId}`);
+    // Success returns 204 No Content, so we expect the promise to resolve without data.
   }
 
   /**

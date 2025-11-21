@@ -1,3 +1,14 @@
+/* --- NEW LAYOUT CONTAINER --- */
+.buttonHeaderContainer {
+  display: flex;
+  justify-content: space-between; /* Pushes items to opposite sides */
+  align-items: center; /* Vertically aligns the buttons */
+  /* Remove the margin-bottom from .backButton (done below) 
+       and apply it here to control spacing before the <h1> */
+  margin-bottom: 20px;
+  width: 100%; /* Ensure it spans the container width */
+}
+
 .galleryGrid {
   /* Main grid for the album page */
   display: grid;
@@ -25,6 +36,8 @@
   border-color: var(--color-accent-purple);
 }
 
+/* --- BUTTON STYLES --- */
+
 .backButton {
   /* Styles for the "Exit Album" button */
   background-color: var(--color-accent-orange);
@@ -35,12 +48,27 @@
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
 }
 
 .backButton:hover {
   background-color: var(--color-accent-purple); /* Purple hover for contrast */
   color: white;
+}
+
+.adminButton {
+  background-color: var(--color-accent-green);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.adminButton:hover {
+  background-color: #2e8b57; /* Darker green */
 }
 
 /* --- ERROR STYLES --- */
