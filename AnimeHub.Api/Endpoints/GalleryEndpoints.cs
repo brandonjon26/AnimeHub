@@ -206,6 +206,5 @@ namespace AnimeHub.Api.Endpoints
             .RequireAuthorization("AdminAccess")
             .WithOpenApi();
         }
-    }
-    }
+    }    
 }

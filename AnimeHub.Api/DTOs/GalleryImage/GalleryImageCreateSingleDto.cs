@@ -7,6 +7,7 @@
     // Metadata for the new image
     string ImageUrl,
     string AltText,
-    bool IsFeatured // Option to set the new image as the featured image (requires updating the old featured image)
+    bool IsFeatured, // Option to set the new image as the featured image (requires updating the old featured image)
+    bool IsMature
 );
 }
