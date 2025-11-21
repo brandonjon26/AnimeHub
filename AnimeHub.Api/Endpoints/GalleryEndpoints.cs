@@ -91,11 +91,6 @@ namespace AnimeHub.Api.Endpoints
             // ----------------------------------------------------------------------------
             group.MapPost("/batch", async (HttpContext context, GalleryInterface galleryService) =>
             {
-                //if (request.Files == null || request.Files.Length == 0)
-                //{
-                //    return Results.BadRequest("No files were provided for upload.");
-                //}
-
                 // Manually read the form data to force correct binding
                 IFormCollection form = await context.Request.ReadFormAsync();
 
@@ -145,10 +140,48 @@ namespace AnimeHub.Api.Endpoints
             // --------------------------------------------------------------------------
             // Endpoint 5: POST /api/gallery/single (Add single image to existing folder)
             // --------------------------------------------------------------------------
-            group.MapPost("/single", async (GalleryImageCreateSingleDto dto, GalleryInterface galleryService) =>
+            group.MapPost("/single", async (HttpContext context, GalleryInterface galleryService) =>
             {
-                GalleryImageDto? newImage = await galleryService.CreateSingleImageAsync(dto);
-                return newImage != null ? Results.Created($"/api/gallery/{dto.CategoryId}/{newImage.GalleryImageId}", newImage) : Results.BadRequest("Failed to add single image.");
+                // Manually read the form data to handle the multipart/form-data request
+                IFormCollection form = await context.Request.ReadFormAsync();
+
+                // 1. Retrieve the Metadata string
+                // NOTE: The frontend must name this part "Metadata"
+                string metadataString = form["Metadata"].FirstOrDefault() ?? "";
+
+                // 2. Retrieve the single File
+                IFormFile? file = form.Files.FirstOrDefault();
+
+                if (file == null)
+                {
+                    return Results.BadRequest("No file was provided for upload.");
+                }
+
+                // CRITICAL: Deserialize the JSON Metadata string into the DTO
+                GalleryImageCreateSingleDto? metadataDto;
+                try
+                {
+                    metadataDto = JsonSerializer.Deserialize<GalleryImageCreateSingleDto>(
+                      metadataString,
+                      new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                    );
+                }
+                catch (JsonException)
+                {
+                    return Results.BadRequest("Invalid JSON metadata format.");
+                }
+
+                if (metadataDto == null)
+                {
+                    return Results.BadRequest("Missing or invalid single image metadata.");
+                }
+
+                // CHANGE: Call the service with the DTO and the single IFormFile
+                GalleryImageDto? newImage = await galleryService.CreateSingleImageAsync(metadataDto, file);
+
+                return newImage != null
+                  ? Results.Created($"/api/gallery/{metadataDto.CategoryId}/{newImage.GalleryImageId}", newImage)
+                  : Results.BadRequest("Failed to add single image.");
             })
             .WithName("CreateSingleGalleryImage")
             .RequireAuthorization("AdminAccess")

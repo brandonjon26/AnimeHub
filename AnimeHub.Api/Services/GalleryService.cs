@@ -163,9 +163,10 @@ namespace AnimeHub.Api.Services
         /// <summary>
         /// POST /single: Adds a single image to an existing category.
         /// </summary>
-        /// <param name="dto"></param>
-        /// <returns></returns>
-        public async Task<GalleryImageDto?> CreateSingleImageAsync(GalleryImageCreateSingleDto dto)
+        /// <param name="dto">Image metadata (CategoryId, AltText, IsFeatured, etc.).</param>
+        /// <param name="file">The single IFormFile uploaded by the user.</param>
+        /// <returns>The newly created GalleryImageDto.</returns>
+        public async Task<GalleryImageDto?> CreateSingleImageAsync(GalleryImageCreateSingleDto dto, IFormFile file)
         {
             // 1. Business Logic: Validate Category Existence
             GalleryImageCategory? category = await _galleryRepository.GetCategoryByIdAsync(dto.CategoryId);
@@ -195,10 +196,17 @@ namespace AnimeHub.Api.Services
             IEnumerable<GalleryImage> images = await _galleryRepository.GetByCategoryWithCategoryAsync(dto.CategoryId);
             isMatureContent = images.First().IsMatureContent;
 
+            // **SIMULATE FILE STORAGE AND URL GENERATION**
+            // In a production application, this should call a secure file storage service.
+
+            // Get a safe filename. We don't need the category name embedded since it's a single add.
+            string safeFileName = Path.GetFileName(file.FileName);
+            string imageUrl = @$"\images\ayami\{safeFileName}"; // Placeholder URL
+
             // 4. Mapping: Create new entity
             GalleryImage newImage = new GalleryImage
             {
-                ImageUrl = dto.ImageUrl,
+                ImageUrl = imageUrl,
                 AltText = dto.AltText,
                 IsFeatured = dto.IsFeatured,
                 IsMatureContent = isMatureContent, // Assuming category entity has IsMature field (check your Category Entity)
