@@ -12,7 +12,7 @@ namespace AnimeHub.Api.Services
 
         // CREATE Operations
         Task<int> CreateImageBatchAsync(GalleryImageCreateBatchDto dto, IFormFile[] files);
-        Task<GalleryImageDto?> CreateSingleImageAsync(GalleryImageCreateSingleDto dto);
+        Task<GalleryImageDto?> CreateSingleImageAsync(GalleryImageCreateSingleDto dto, IFormFile file);
 
         // UPDATE Operations
         Task<bool> UpdateGalleryFolderAsync(int categoryId, GalleryImageUpdateFolderDto dto);
