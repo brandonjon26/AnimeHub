@@ -109,15 +109,19 @@ export class GalleryClient {
     file: File
   ): Promise<GalleryImage> {
     const formData = new FormData();
-    formData.append("File", file); // Assuming the backend expects a single file key 'File'
 
-    // Append all DTO metadata fields as strings for the form data
-    formData.append("CategoryId", metadata.categoryId.toString());
-    formData.append("ImageUrl", metadata.imageUrl);
-    formData.append("AltText", metadata.altText);
-    formData.append("IsFeatured", metadata.isFeatured.toString());
-    formData.append("IsMatureContent", metadata.isMatureContent.toString()); // The new flag
+    // 1. Serialize the entire metadata object to a JSON string
+    // 🔑 FIX: Append the full metadata as a JSON string under the key "Metadata"
+    // This must match the backend's expected key: form["Metadata"]
+    formData.append("Metadata", JSON.stringify(metadata));
 
+    // 2. Append the file
+    // 🔑 FIX: The backend is using form.Files.FirstOrDefault(), so the key name
+    // doesn't strictly need to be "Files" or "File," but it must be included.
+    // Let's use "file" or "File" for clarity, but the backend extracts the first file found.
+    formData.append("file", file); // Using a lowercase 'file' key for safety/convention
+
+    // 3. Send the POST request
     const response = await apiClient.post<GalleryImage>(
       `${GALLERY_BASE_PATH}/single`,
       formData,
