@@ -118,5 +118,17 @@ namespace AnimeHub.Api.Repositories
         {
             return await _context.SaveChangesAsync();
         }
+
+        /// <summary>
+        /// Explicitly sets the Entity Framework Core state of a detached or loaded entity to Unchanged.
+        /// This is useful to prevent EF Core from trying to save related entities 
+        /// when only the primary entity (TEntity) is the target of the SaveChanges call.
+        /// </summary>
+        /// <param name="entity"></param>
+        public void SetEntityStateUnchanged(T entity)
+        {
+            // Set the state to Unchanged, ensuring EF knows this entity should not be part of the INSERT/UPDATE operation.
+            _context.Entry(entity).State = EntityState.Unchanged;
+        }
     }
 }
