@@ -19,6 +19,10 @@ namespace AnimeHub.Api.Repositories
         Task Update(T entity);
         Task Delete(T entity);
         Task DeleteRange(IEnumerable<T> entities);
+
+
+        // Misc Methods
         Task<int> SaveChangesAsync();
+        void SetEntityStateUnchanged(T entity);
     }
 }
