@@ -85,10 +85,12 @@ const ImageManagerModal: React.FC<ImageManagerModalProps> = ({
 
   // --- Effect: Update form fields when a new image is selected for UPDATE ---
   useEffect(() => {
+    const data = imageToEdit || initialImageState;
+
     if (selectedView === "UPDATE" && imageToEdit) {
-      setAltText(imageToEdit.altText);
-      setIsFeatured(imageToEdit.isFeatured);
-      setIsMature(imageToEdit.isMatureContent);
+      setAltText(data.altText);
+      setIsFeatured(data.isFeatured);
+      setIsMature(imageToEdit?.isMatureContent ?? initialImageState.isMature);
       setTargetCategoryId(currentCategory.galleryImageCategoryId);
     } else if (selectedView === "ADD") {
       // Reset to defaults for ADD view

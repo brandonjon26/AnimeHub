@@ -219,6 +219,9 @@ namespace AnimeHub.Api.Services
             await _galleryRepository.Add(newImage);
             await _galleryRepository.SaveChangesAsync();
 
+            // Set the navigation property here instead
+            newImage.Category = category;
+
             // 6. Mapping: Return the newly created DTO
             return _mapper.Map<GalleryImageDto>(newImage);
         }
