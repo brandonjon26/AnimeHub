@@ -45,8 +45,7 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
   // Get user role for authorization
   const { user } = useAuth();
   // Check if the user is an Admin or Moderator (assuming roles are 'Admin' or 'Moderator')
-  const isGalleryAdmin =
-    user?.roles[0] === "Admin" || user?.roles[0] === "Mage";
+  const isAdminAccess = user?.roles[0] === "Admin" || user?.roles[0] === "Mage";
 
   const profileId = profile.ayamiProfileId;
 
@@ -84,8 +83,10 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
           <div className={styles.bioFlexContainer}>
             {/* Static image remains for the bio section */}
             <div
-              className={styles.headshotContainer}
-              onClick={() => setIsProfileModalOpen(true)}
+              className={`${styles.headshotContainer} ${
+                !isAdminAccess ? styles.headshotContainerDisabled : ""
+              }`}
+              onClick={() => isAdminAccess && setIsProfileModalOpen(true)}
             >
               <img
                 src="/images/ayami/Ayami_Bio_Page_3.png"
@@ -93,7 +94,9 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
                 className={styles.headshotImage}
               />
 
-              <span className={styles.editOverlay}>Edit Profile</span>
+              {isAdminAccess && (
+                <span className={styles.editOverlay}>Edit Profile</span>
+              )}
             </div>
 
             <div className={styles.bioText}>
@@ -154,7 +157,7 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
           <h2>{profile.firstName}'s Albums</h2>
 
           {/* 🔑 ADMIN QUICK-ACCESS TOOLS */}
-          {isGalleryAdmin && (
+          {isAdminAccess && (
             <div className={styles.adminQuickAccess}>
               <button
                 className={styles.adminButton}
