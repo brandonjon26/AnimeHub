@@ -76,6 +76,18 @@
   opacity: 1; /* Show the overlay on hover */
 }
 
+/* New class to disable the click appearance */
+.headshotContainerDisabled {
+  cursor: default; /* Change cursor back to default arrow */
+  pointer-events: none; /* Prevents any mouse events (like hover) from firing */
+}
+
+/* Ensure the disabled class overrides the hover styles */
+.headshotContainerDisabled:hover {
+  box-shadow: none; /* Remove hover glow/shadow */
+  opacity: 1; /* Remove opacity change on hover */
+}
+
 .bioText {
   flex-grow: 1;
 }
