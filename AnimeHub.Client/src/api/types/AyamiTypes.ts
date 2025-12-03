@@ -32,6 +32,7 @@ export interface AyamiProfileDto {
   lastName: string;
   japaneseFirstName: string;
   japaneseLastName: string;
+  greetingAudioUrl: string;
   vibe: string;
   height: string;
   bodyType: string;

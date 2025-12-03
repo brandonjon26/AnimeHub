@@ -8,6 +8,7 @@ namespace AnimeHub.Api.DTOs.Ayami
         string LastName,
         string JapaneseFirstName,
         string JapaneseLastName,
+        string GreetingAudioUrl,
         string Vibe,
         string Height,
         string BodyType,
