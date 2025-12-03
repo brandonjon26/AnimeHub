@@ -37,7 +37,17 @@ namespace AnimeHub.Api.Mapping
                 )
                 // You would continue mapping all other AyamiProfileDto constructor parameters here
                 .ForCtorParam("FirstName", opt => opt.MapFrom(src => src.FirstName))
-                // ... all other simple properties ...
+                .ForCtorParam("LastName", opt => opt.MapFrom(src => src.LastName))
+                .ForCtorParam("JapaneseFirstName", opt => opt.MapFrom(src => src.JapaneseFirstName))
+                .ForCtorParam("JapaneseLastName", opt => opt.MapFrom(src => src.JapaneseLastName))
+                .ForCtorParam("GreetingAudioUrl", opt => opt.MapFrom(_ => string.Empty)) // <-- Placeholder! Populated in Service.
+                .ForCtorParam("Vibe", opt => opt.MapFrom(src => src.Vibe))
+                .ForCtorParam("Height", opt => opt.MapFrom(src => src.Height))
+                .ForCtorParam("BodyType", opt => opt.MapFrom(src => src.BodyType))
+                .ForCtorParam("Hair", opt => opt.MapFrom(src => src.Hair))
+                .ForCtorParam("Eyes", opt => opt.MapFrom(src => src.Eyes))
+                .ForCtorParam("Skin", opt => opt.MapFrom(src => src.Skin))
+                .ForCtorParam("PrimaryEquipment", opt => opt.MapFrom(src => src.PrimaryEquipment))
                 .ForCtorParam("Bio", opt => opt.MapFrom(src => src.Bio));
 
             // Map Accessory Input DTO to Accessory Entity

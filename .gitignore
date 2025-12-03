@@ -152,6 +152,7 @@ $RECYCLE.BIN/
 # Ignore large static assets in the client's public folder
 AnimeHub.Client/public/images/ayami/
 AnimeHub.Client/public/images/chiara/
+AnimeHub.Client/public/audio
 
 ### IV. TESTING, COVERAGE, AND ADD-INS ###
 
