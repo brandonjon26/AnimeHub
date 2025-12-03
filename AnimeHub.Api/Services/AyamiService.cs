@@ -33,8 +33,18 @@ namespace AnimeHub.Api.Services
                 return null;
             }
 
+            // Map the entity to the DTO
+            AyamiProfileDto profileDto = _mapper.Map<AyamiProfileDto>(profile);
+
+            // Manually set the static audio URL after mapping
+            // Records are immutable, so we must use 'with' to create a new instance with the updated property.
+            profileDto = profileDto with
+            {
+                GreetingAudioUrl = "/audio/ayami/Ayami_Voice_Greeting.mp3" // The static URL path
+            };
+
             // Maps the Entity structure (with Attires and Accessories) to the DTO structure.
-            return _mapper.Map<AyamiProfileDto>(profile);
+            return profileDto;
         }
 
         // --- UPDATE ---

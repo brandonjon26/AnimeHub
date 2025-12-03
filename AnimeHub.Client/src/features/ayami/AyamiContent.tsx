@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   type GalleryImage,
@@ -42,6 +42,10 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isGalleryAdminModalOpen, setIsGalleryAdminModalOpen] = useState(false);
 
+  // Audio management
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
   // Get user role for authorization
   const { user } = useAuth();
   // Check if the user is an Admin or Moderator (assuming roles are 'Admin' or 'Moderator')
@@ -69,12 +73,63 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
     return isAdult;
   });
 
+  // Play/Pause Audio
+  const handlePlayGreeting = () => {
+    if (!audioRef.current) return;
+
+    // If currently paused, play it
+    if (audioRef.current.paused) {
+      // Always reset to start before playing if it's not the first time
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch((error) => {
+        // Catch promise rejection (e.g., if user hasn't interacted with the page yet)
+        console.error("Audio playback failed:", error);
+      });
+      setIsPlaying(true);
+    } else {
+      // If currently playing, pause it and reset
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+  };
+
+  // Reset playback state when audio finishes
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      const handleEnded = () => setIsPlaying(false);
+      audio.addEventListener("ended", handleEnded);
+      return () => {
+        audio.removeEventListener("ended", handleEnded);
+      };
+    }
+  }, []);
+
   return (
     <>
       {/* 1. TOP SECTION: Bio (Left) and Featured Photos (Right) */}
       <h1 className={styles.title}>
         Meet {fullName} ({japaneseName}) 🔮 The Bewitching Beauty {/*🌟*/}
+        {/* Play Button */}
+        {profile.greetingAudioUrl && (
+          <button
+            className={styles.audioButton}
+            onClick={handlePlayGreeting}
+            aria-label={
+              isPlaying ? "Pause Ayami's greeting" : "Play Ayami's greeting"
+            }
+          >
+            {/* Simple icon logic: use a speaker icon or play/pause symbols */}
+            {isPlaying ? "🔈" : "🔊"}
+          </button>
+        )}
       </h1>
+
+      {/* Hidden Audio Element (Loaded via URL from DTO) */}
+      {profile.greetingAudioUrl && (
+        <audio ref={audioRef} src={profile.greetingAudioUrl} preload="auto" />
+      )}
 
       {/* Reuses the existing flex wrapper class */}
       <div className={styles.contentWrapper}>
