@@ -14,6 +14,33 @@
   margin-top: 30px;
 }
 
+/* Styling for the Audio Button */
+.audioButton {
+  /* Style the button to blend in or stand out as an icon */
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem; /* Make the icon size appropriate for the h1 */
+  margin-left: 10px;
+  padding: 0;
+  transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+  vertical-align: middle; /* Align icon with the middle of the text */
+
+  /* Ensure it doesn't shift the title text */
+  display: inline-block;
+}
+
+.audioButton:hover {
+  opacity: 0.8;
+  transform: scale(1.1); /* Subtle hover effect */
+}
+
+/* Ensure the icon is visible against the title text background if needed */
+.audioButton::after {
+  /* Optional: If you need a background circle or highlight */
+  content: "";
+}
+
 .bioArea {
   flex-grow: 2;
 }
