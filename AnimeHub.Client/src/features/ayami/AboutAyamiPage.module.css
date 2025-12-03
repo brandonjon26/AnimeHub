@@ -236,3 +236,91 @@
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
+
+/* 🔑 NEW: Styles for the Interactive Lore Component */
+.loreContainer {
+  /* Container for the entire tabbed interface */
+  width: 100%;
+  margin-top: 10px;
+}
+
+.tabContainer {
+  /* Flex container for the tabs themselves */
+  display: flex;
+  border-bottom: 2px solid var(--color-bg-secondary);
+  margin-bottom: 20px;
+  padding-left: 0;
+  list-style: none;
+  overflow-x: auto; /* Allow scrolling if many tabs */
+}
+
+.tabButton {
+  /* Style for each tab header button */
+  background: none;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  color: var(--color-text-secondary);
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+  white-space: nowrap; /* Prevent tab names from wrapping */
+  margin-right: 5px;
+}
+
+.tabButton:hover {
+  color: var(--color-text-primary);
+  border-bottom-color: var(--color-accent-purple);
+}
+
+.tabActive {
+  /* Style for the currently selected tab */
+  color: var(--color-accent-orange);
+  border-bottom-color: var(--color-accent-orange);
+}
+
+.tabContent {
+  /* Container for the content panel */
+  padding: 0;
+}
+
+.loreSection {
+  /* Container for the content of a single active tab */
+  padding: 10px 0;
+  animation: fadeIn 0.5s ease-out; /* Subtle animation for content switch */
+}
+
+.loreSection h2 {
+  color: var(--color-accent-purple);
+  margin-bottom: 15px;
+}
+
+.loreParagraph {
+  /* Use this new class instead of .paragraph for lore text */
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+/* Redefine Key Details List styles to use within the new component structure */
+.loreSection .keyDetailsTitle {
+  color: var(--color-accent-orange);
+  margin-top: 25px;
+}
+
+.loreSection .keyList {
+  padding-left: 20px;
+  line-height: 1.8;
+}
+
+/* Keyframe for the fade in effect */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
