@@ -5,6 +5,7 @@ import {
   type GalleryCategory,
 } from "../../api/types/GalleryTypes";
 import { type AyamiProfileDto } from "../../api/types/AyamiTypes";
+import AyamiLoreReveal from "./AyamiLoreReveal";
 import AyamiProfileEditModal from "./AyamiProfileEditModal";
 import { useAuth } from "../../hooks/useAuth";
 import GalleryAdminModal from "./gallery/GalleryAdminModal";
@@ -17,20 +18,6 @@ interface AyamiContentProps {
   isAdult: boolean;
   onGalleryRefresh: () => void;
 }
-
-const renderBio = (text: string) => {
-  return text.split("\n\n").map((paragraph, index) => (
-    <p
-      key={index}
-      className={styles.paragraph}
-      dangerouslySetInnerHTML={{
-        __html: paragraph
-          .trim()
-          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-      }}
-    />
-  ));
-};
 
 const AyamiContent: React.FC<AyamiContentProps> = ({
   profile,
@@ -154,12 +141,14 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
               )}
             </div>
 
-            <div className={styles.bioText}>
+            {/* <div className={styles.bioText}>
               <h2>{profile.firstName}'s Story</h2>
               {renderBio(profile.bio)}
-            </div>
+            </div> */}
+
+            <AyamiLoreReveal profile={profile} />
           </div>
-          {/* Key Details List remains static */}
+          {/* Key Details List remains static
           <h3 className={styles.keyDetailsTitle}>Key Details</h3>
           <ul className={styles.keyList}>
             <li>
@@ -183,7 +172,7 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
             {equipmentAccessory && (
               <li>**Primary Weapon:** {equipmentAccessory.description}</li>
             )}
-          </ul>
+          </ul> */}
         </div>
 
         {/* RIGHT: Featured Photos Gallery (Replaces static content) */}
