@@ -9,12 +9,12 @@ namespace AnimeHub.Api.Services
     public class AyamiService : AyamiInterface
     {
         private readonly IAyamiRepository _repository;
-        private readonly IBaseRepository<AyamiAttire> _attireRepository;
-        private readonly IBaseRepository<AyamiAccessory> _accessoryRepository; // Need base repo for accessories
+        private readonly IBaseRepository<CharacterAttire> _attireRepository;
+        private readonly IBaseRepository<CharacterAccessory> _accessoryRepository; // Need base repo for accessories
         private readonly IBaseRepository<AccessoryAttireJoin> _joinRepository; // Need base repo for joins
         private readonly IMapper _mapper;
 
-        public AyamiService(IAyamiRepository repository, IBaseRepository<AyamiAttire> attireRepository, IBaseRepository<AyamiAccessory> accessoryRepository, IBaseRepository<AccessoryAttireJoin> joinRepository, IMapper mapper)
+        public AyamiService(IAyamiRepository repository, IBaseRepository<CharacterAttire> attireRepository, IBaseRepository<CharacterAccessory> accessoryRepository, IBaseRepository<AccessoryAttireJoin> joinRepository, IMapper mapper)
         {
             _repository = repository;
             _attireRepository = attireRepository;
@@ -26,7 +26,7 @@ namespace AnimeHub.Api.Services
         // --- READ ---
         public async Task<AyamiProfileDto?> GetAyamiProfileAsync()
         {
-            AyamiProfile? profile = await _repository.GetProfileWithDetailsAsync();
+            CharacterProfile? profile = await _repository.GetProfileWithDetailsAsync();
 
             if (profile == null)
             {
@@ -71,11 +71,11 @@ namespace AnimeHub.Api.Services
         public async Task<int?> AddAttireAsync(int profileId, AyamiAttireInputDto attireDto)
         {
             // Find the target profile
-            AyamiProfile? profile = await _repository.GetFirstOrDefaultAsync(p => p.AyamiProfileId == 3);
+            CharacterProfile? profile = await _repository.GetFirstOrDefaultAsync(p => p.AyamiProfileId == 3);
             if (profile is null) return null;
 
             // Map the DTO to the new Attire entity
-            AyamiAttire newAttire = _mapper.Map<AyamiAttire>(attireDto);
+            CharacterAttire newAttire = _mapper.Map<CharacterAttire>(attireDto);
 
             // Set the foreign key manually
             newAttire.ProfileId = profile.AyamiProfileId;
@@ -84,10 +84,10 @@ namespace AnimeHub.Api.Services
             foreach (AyamiAccessoryInputDto accessoryDto in attireDto.Accessories)
             {
                 // **Look for existing accessory by description to reuse it (Normalization Benefit)**
-                AyamiAccessory? existingAccessory = await _accessoryRepository.GetFirstOrDefaultAsync(
+                CharacterAccessory? existingAccessory = await _accessoryRepository.GetFirstOrDefaultAsync(
                     a => a.Description == accessoryDto.Description);
 
-                AyamiAccessory accessory;
+                CharacterAccessory accessory;
 
                 if (existingAccessory != null)
                 {
@@ -96,7 +96,7 @@ namespace AnimeHub.Api.Services
                 else
                 {
                     // If it doesn't exist, create and add the new unique Accessory entity
-                    accessory = _mapper.Map<AyamiAccessory>(accessoryDto);
+                    accessory = _mapper.Map<CharacterAccessory>(accessoryDto);
                     await _accessoryRepository.Add(accessory);
                 }
 

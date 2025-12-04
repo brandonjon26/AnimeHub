@@ -11,11 +11,11 @@ namespace AnimeHub.Api.Mapping
         public AyamiMappingProfile()
         {
             // Map Ayami Accessory Entity to DTO
-            CreateMap<AyamiAccessory, AyamiAccessoryDto>();
+            CreateMap<CharacterAccessory, AyamiAccessoryDto>();
 
             // Map Ayami Attire Entity to DTO
             // AutoMapper automatically handles the collection mapping for Accessories.
-            CreateMap<AyamiAttire, AyamiAttireDto>()
+            CreateMap<CharacterAttire, AyamiAttireDto>()
                 .ForCtorParam(
                     "Accessories", // Match the parameter name in the record's constructor
                     opt => opt.MapFrom(src => src.AccessoryLinks.Select(link => link.Accessory))
@@ -30,7 +30,7 @@ namespace AnimeHub.Api.Mapping
             // Map Ayami Profile Entity to DTO
             // AutoMapper automatically handles the collection mapping for Attires.
             // The English and Japanese names are mapped by convention.
-            CreateMap<AyamiProfile, AyamiProfileDto>()
+            CreateMap<CharacterProfile, AyamiProfileDto>()
                 .ForCtorParam(
                     "Attires", // Match the parameter name in AyamiProfileDto's constructor
                     opt => opt.MapFrom(src => src.Attires)
@@ -52,18 +52,18 @@ namespace AnimeHub.Api.Mapping
 
             // Map Accessory Input DTO to Accessory Entity
             // This is used when creating a new Accessory Entity from the DTO data.
-            CreateMap<AyamiAccessoryInputDto, AyamiAccessory>();
+            CreateMap<AyamiAccessoryInputDto, CharacterAccessory>();
 
             // Map Attire Input DTO to Attire Entity
             // Note: We ignore the Accessories collection here as we manually handle
             // the creation/linking of Accessories and the Join table in the service layer.
-            CreateMap<AyamiAttireInputDto, AyamiAttire>()
+            CreateMap<AyamiAttireInputDto, CharacterAttire>()
                 .ForMember(dest => dest.AccessoryLinks, opt => opt.Ignore())
                 .ForMember(dest => dest.Profile, opt => opt.Ignore());
 
             // Map Profile Update DTO for existing Entity update
             // This map is used to update an existing AyamiProfile object in the Service.
-            CreateMap<AyamiProfileUpdateDto, AyamiProfile>()
+            CreateMap<AyamiProfileUpdateDto, CharacterProfile>()
                 .ForMember(dest => dest.AyamiProfileId, opt => opt.Ignore()) // Don't overwrite the PK
                 .ForMember(dest => dest.Attires, opt => opt.Ignore()); // Don't overwrite the Attires collection
         }
