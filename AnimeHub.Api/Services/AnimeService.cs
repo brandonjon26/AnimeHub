@@ -21,25 +21,25 @@ namespace AnimeHub.Api.Services
 
         public async Task<IEnumerable<AnimeDto>> GetAllAnimesAsync()
         {
-            // 1. Get entities from the data layer (Repository)
+            // Get entities from the data layer (Repository)
             IEnumerable<Anime> animeEntities = await _animeRepository.GetAllAsync();
 
-            // 2. Map entities to DTOs
+            // Map entities to DTOs
             return _mapper.Map<IEnumerable<AnimeDto>>(animeEntities);
         }
 
         public async Task<AnimeDto?> GetAnimeByIdAsync(long id)
         {
-            // 1. Get the read-only entity from the data layer
+            // Get the read-only entity from the data layer
             Anime? animeEntity = await _animeRepository.GetReadOnlyByIdAsync(id);
 
-            // 2. Perform business logic/null check
+            // Perform business logic/null check
             if (animeEntity is null)
             {
                 return null;
             }
 
-            // 3. Map the entity to DTO and return
+            // Map the entity to DTO and return
             return _mapper.Map<AnimeDto>(animeEntity);
         }
     }

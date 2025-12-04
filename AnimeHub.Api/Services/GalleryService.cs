@@ -62,8 +62,6 @@ namespace AnimeHub.Api.Services
         {
             // Find the target category entity using a direct repository query 
             // Add a custom method to the *Category* repository for efficient lookup by name.
-
-            // TEMPORARY FIX (using existing methods)
             GalleryImageCategory? categoryEntity = (await _categoryRepository.GetAllAsync())
                                     .FirstOrDefault(c => c.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase));
 
@@ -101,18 +99,17 @@ namespace AnimeHub.Api.Services
         /// <returns>The ID of the newly created category, or 0 on failure.</returns>
         public async Task<int> CreateImageBatchAsync(GalleryImageCreateBatchDto dto, IFormFile[] files)
         {
-            // 1. Business Logic: Check if Category Name already exists
+            // Business Logic: Check if Category Name already exists
             GalleryImageCategory? existingCategory = await _categoryRepository.GetByNameAsync(dto.CategoryName);
             if (existingCategory != null)
             {
                 return 0; // Category already exists, creation failed
             }
 
-            // 2. Category Creation: Map DTO to Category Entity
+            // Category Creation: Map DTO to Category Entity
             GalleryImageCategory newCategory = _mapper.Map<GalleryImageCategory>(dto);
 
-            // 3. Repository: Add the new category and get its ID
-            // NOTE: We assume CreateNewCategoryAsync returns the ID (or 0 on failure).
+            // Repository: Add the new category and get its ID
             int categoryId = await _categoryRepository.CreateNewCategoryAsync(newCategory);
 
             if (categoryId <= 0)
@@ -120,7 +117,7 @@ namespace AnimeHub.Api.Services
                 return 0; // Failed to create category
             }
 
-            // 4. File and Entity Mapping
+            // File and Entity Mapping
             List<GalleryImage> newImages = new List<GalleryImage>();
             long featuredImageId = 0; // To store the ID of the featured image after saving
 
@@ -130,12 +127,11 @@ namespace AnimeHub.Api.Services
                 ImageMetadataDto imageMetadata = dto.Images[i];
 
                 // **SIMULATE FILE STORAGE AND URL GENERATION**
-                // In a real application, this is where you'd call a file storage service (e.g., Azure Blob, S3, local disk).
-                // Example: string imageUrl = await _fileStorageService.UploadAsync(file);
+                // Will call file storage service here in the future (e.g., Azure Blob, S3, local disk).
 
-                // For demonstration, we create a placeholder URL based on category and file name.
+                // Placeholder URL based on category and file name.
                 string safeCategoryName = dto.CategoryName.Replace(" ", "-").ToLower();
-                string safeFileName = Path.GetFileName(file.FileName); // Using Path.GetFileName for safety
+                string safeFileName = Path.GetFileName(file.FileName);
                 string imageUrl = @$"\images\ayami\{safeFileName}";
 
                 // Create the image entity
@@ -153,7 +149,7 @@ namespace AnimeHub.Api.Services
                 newImages.Add(newImage);
             }
 
-            // 5. Repository: Add all new image entities
+            // Repository: Add all new image entities
             await _galleryRepository.AddRangeAsync(newImages);
             int rowsAdded = await _galleryRepository.SaveChangesAsync();
 
@@ -168,14 +164,14 @@ namespace AnimeHub.Api.Services
         /// <returns>The newly created GalleryImageDto.</returns>
         public async Task<GalleryImageDto?> CreateSingleImageAsync(GalleryImageCreateSingleDto dto, IFormFile file)
         {
-            // 1. Business Logic: Validate Category Existence
+            // Business Logic: Validate Category Existence
             GalleryImageCategory? category = await _galleryRepository.GetCategoryByIdAsync(dto.CategoryId);
             if (category == null)
             {
                 return null; // Category must exist
             }
 
-            // 2. Business Logic: If IsFeatured, update the folder first
+            // Business Logic: If IsFeatured, update the folder first
             if (dto.IsFeatured)
             {
                 // Find the existing featured image's ID to use in the bulk update.
@@ -191,19 +187,19 @@ namespace AnimeHub.Api.Services
                 }
             }
 
-            // 3. Figure out if image should be flagged as matured content
+            // Figure out if image should be flagged as matured content
             bool isMatureContent = false;
             IEnumerable<GalleryImage> images = await _galleryRepository.GetByCategoryWithCategoryAsync(dto.CategoryId);
             isMatureContent = images.First().IsMatureContent;
 
             // **SIMULATE FILE STORAGE AND URL GENERATION**
-            // In a production application, this should call a secure file storage service.
+            // Will call file storage service here in the future
 
             // Get a safe filename. We don't need the category name embedded since it's a single add.
             string safeFileName = Path.GetFileName(file.FileName);
             string imageUrl = @$"\images\ayami\{safeFileName}"; // Placeholder URL
 
-            // 4. Mapping: Create new entity
+            // Mapping: Create new entity
             GalleryImage newImage = new GalleryImage
             {
                 ImageUrl = imageUrl,
@@ -215,7 +211,7 @@ namespace AnimeHub.Api.Services
                 DateModified = DateTime.UtcNow
             };
 
-            // 5. Repository: Add and Save
+            // Repository: Add and Save
             await _galleryRepository.Add(newImage);
             await _galleryRepository.SaveChangesAsync();
 
@@ -234,14 +230,14 @@ namespace AnimeHub.Api.Services
         /// <returns></returns>
         public async Task<bool> UpdateGalleryFolderAsync(int categoryId, GalleryImageUpdateFolderDto dto)
         {
-            // 1. Business Logic: Validate Category Existence
+            // Business Logic: Validate Category Existence
             GalleryImageCategory? category = await _galleryRepository.GetCategoryByIdAsync(categoryId);
             if (category == null)
             {
                 return false;
             }
 
-            // 2. Business Logic: Validate Featured Image ID belongs to the category
+            // Business Logic: Validate Featured Image ID belongs to the category
             // We ensure the featured image ID exists in the database before passing it to the bulk operation.
             GalleryImage? featuredImage = await _galleryRepository.GetReadOnlyByIdAsync(dto.FeaturedImageId);
             if (featuredImage == null || featuredImage.GalleryImageCategoryId != categoryId)
@@ -249,7 +245,7 @@ namespace AnimeHub.Api.Services
                 return false; // The featured image ID is invalid or belongs to another category
             }
 
-            // 3. Repository: Use bulk update method
+            // Repository: Use bulk update method
             // The repository method handles setting the mature flag for all images 
             // and toggling the IsFeatured flag across the whole category.
             int updatedCount = await _galleryRepository.UpdateImagesByCategoryIdAsync(
@@ -272,7 +268,7 @@ namespace AnimeHub.Api.Services
         /// <returns>True if the image was successfully updated, otherwise False.</returns>
         public async Task<bool> UpdateSingleImageAsync(long imageId, GalleryImageUpdateSingleDto dto)
         {
-            // 1. Retrieve the image to update (Needs to be tracked for changes)
+            // Retrieve the image to update (Needs to be tracked for changes)
             GalleryImage? imageToUpdate = await _galleryRepository.GetTrackedByIdAsync(imageId);
 
             if (imageToUpdate == null)
@@ -280,7 +276,7 @@ namespace AnimeHub.Api.Services
                 return false; // Image not found
             }
 
-            // 2. Validate the target category's existence
+            // Validate the target category's existence
             GalleryImageCategory? targetCategory = await _categoryRepository.GetReadOnlyByIdAsync(dto.NewGalleryImageCategoryId);
 
             if (targetCategory == null)
@@ -293,7 +289,7 @@ namespace AnimeHub.Api.Services
             int originalCategoryId = imageToUpdate.GalleryImageCategoryId;
             bool wasFeatured = imageToUpdate.IsFeatured;
 
-            // 3. Update Image Properties
+            // Update Image Properties
             imageToUpdate.IsMatureContent = dto.IsMatureContent;
             imageToUpdate.DateModified = DateTime.UtcNow;
 
@@ -322,7 +318,7 @@ namespace AnimeHub.Api.Services
             // that updates the whole category (or we would need a new DTO field for it).
             // This method is for *moving* and *maturing*, not setting the featured status.
 
-            // 4. Repository: Update the entity (already tracked) and save changes
+            // Repository: Update the entity (already tracked) and save changes
             await _galleryRepository.Update(imageToUpdate); // Update call for explicit clarity, though tracking handles it.
             int rowsAffected = await _galleryRepository.SaveChangesAsync();
 
@@ -336,10 +332,10 @@ namespace AnimeHub.Api.Services
         /// <returns></returns>
         public async Task<bool> DeleteGalleryFolderAsync(int categoryId)
         {
-            // 1. Repository: Use bulk delete method
+            // Repository: Use bulk delete method
             int deletedCount = await _galleryRepository.DeleteImagesByCategoryIdAsync(categoryId);
 
-            // 2. If images are successfully deleted, delete the category
+            // If images are successfully deleted, delete the category
             if (deletedCount > 0)
             {
                 try
@@ -368,7 +364,7 @@ namespace AnimeHub.Api.Services
         /// <returns></returns>
         public async Task<bool> DeleteImageAsync(long imageId)
         {
-            // 1. Repository: Get entity to track
+            // Repository: Get entity to track
             GalleryImage? imageToDelete = await _galleryRepository.GetTrackedByIdAsync(imageId);
 
             if (imageToDelete == null)
@@ -376,11 +372,11 @@ namespace AnimeHub.Api.Services
                 return false;
             }
 
-            // 2. Repository: Delete and Save
+            // Repository: Delete and Save
             await _galleryRepository.Delete(imageToDelete);
             int rowsDeleted = await _galleryRepository.SaveChangesAsync();
 
-            // 3. Business Logic: If the deleted image was the featured one, 
+            // Business Logic: If the deleted image was the featured one, 
             // a new featured image must be chosen (e.g., the oldest one in the folder).
             // For now, we skip this complex logic and let the admin handle setting a new featured image.
 

@@ -55,10 +55,10 @@ namespace AnimeHub.Api.Services
 
             if (profileToUpdate is null) return false;
 
-            // 1. Map DTO fields onto the existing Entity
+            // Map DTO fields onto the existing Entity
             _mapper.Map(updateDto, profileToUpdate);
 
-            // 2. Persist the changes
+            // Persist the changes
             await _repository.Update(profileToUpdate);
 
             int recordsAffected = await _repository.SaveChangesAsync();
@@ -70,17 +70,17 @@ namespace AnimeHub.Api.Services
         // --- CREATE ---
         public async Task<int?> AddAttireAsync(int profileId, AyamiAttireInputDto attireDto)
         {
-            // 1. Find the target profile
+            // Find the target profile
             AyamiProfile? profile = await _repository.GetFirstOrDefaultAsync(p => p.AyamiProfileId == 3);
             if (profile is null) return null;
 
-            // 2. Map the DTO to the new Attire entity
+            // Map the DTO to the new Attire entity
             AyamiAttire newAttire = _mapper.Map<AyamiAttire>(attireDto);
 
             // Set the foreign key manually
             newAttire.ProfileId = profile.AyamiProfileId;
 
-            // 3. Process Accessories and create the Join links
+            // Process Accessories and create the Join links
             foreach (AyamiAccessoryInputDto accessoryDto in attireDto.Accessories)
             {
                 // **Look for existing accessory by description to reuse it (Normalization Benefit)**
@@ -100,7 +100,7 @@ namespace AnimeHub.Api.Services
                     await _accessoryRepository.Add(accessory);
                 }
 
-                // 4. Create the link entity to connect the Attire and the Accessory
+                // Create the link entity to connect the Attire and the Accessory
                 newAttire.AccessoryLinks.Add(new AccessoryAttireJoin
                 {
                     Accessory = accessory,
@@ -108,7 +108,7 @@ namespace AnimeHub.Api.Services
                 });
             }
 
-            // 5. Add the new Attire (which cascades the creation of the join links)
+            // Add the new Attire (which cascades the creation of the join links)
             await _attireRepository.Add(newAttire); // Adding Attire to the main repo saves changes across the graph.
 
             int recordsAffected = await _repository.SaveChangesAsync();
@@ -123,12 +123,12 @@ namespace AnimeHub.Api.Services
             // Check to make sure we aren't deleting the last remaining attire (if you want to enforce that).
             // For now, we'll allow deletion unless it's a critical attire ID (like ID 1, if we hardcoded one).
 
-            // 1. Retrieve the Attire entity
+            // Retrieve the Attire entity
             var attireToDelete = await _repository.GetAttireByIdAsync(attireId); // Assumes we add a GetAttireByIdAsync to IAyamiRepository
 
             if (attireToDelete is null) return false;
 
-            // 2. Delete the Attire entity
+            // Delete the Attire entity
             // EF Core will automatically cascade the deletion to the AccessoryAttireJoins table.
             await _attireRepository.Delete(attireToDelete); // We must delete the attire entity itself, not the profile.
 

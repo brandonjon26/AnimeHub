@@ -60,7 +60,7 @@ namespace AnimeHub.Api.Data
                 Bio = "Ayami Kageyama ($\text{妖美 影山}$) is the enigmatic spirit of discovery and charm at the heart of AnimeHub. Hailing from a dark, ruined world somewhere on the outskirts of the Isekai multiverse, she carries herself with an effortless confidence that belies her petite stature.Her playful nature is only matched by her profound sense of mystery. Dressed in her signature midnight-black mini-dress, witch's hat, and gloves—all highlighted by subtle purple accents matching her mesmerizing eyes—she embodies both elegance and edge.Ayami wields a distinctive staff, not just as a weapon, but as a key to unlock the most compelling worlds and narratives in the AnimeHub universe. She is here to be your confident, charming, and alluring guide through all the deepest lore and most captivating stories the fandom has to offer."
             };
 
-            // 1. Primary Attire (Witch)
+            // Primary Attire (Witch)
             var witchAttire = new AyamiAttire
             {
                 Name = "Primary Attire (Witch)",
@@ -70,7 +70,7 @@ namespace AnimeHub.Api.Data
             // Link Accessories to Attire 1 (Witch)
             AddLinks(witchAttire, accessories, 1, 2, 3, 4); // Example: Hat, Thigh Ring, Gloves, Boots
 
-            // 2. Secondary Attire (Armored)
+            // Secondary Attire (Armored)
             var armoredAttire = new AyamiAttire
             {
                 Name = "Secondary Attire (Armored)",
@@ -80,7 +80,7 @@ namespace AnimeHub.Api.Data
             // Link Accessories to Attire 2 (Armored)
             AddLinks(armoredAttire, accessories, 5, 6, 7, 8, 9, 10); // Gauntlets, Cape, Necklace, Hair Clip, Thigh Ring, Dagger (Shared!)
 
-            // 3. Alluring Attire (New)
+            // Alluring Attire (New)
             var alluringAttire = new AyamiAttire
             {
                 Name = "Alluring Attire (New)",
@@ -183,14 +183,14 @@ namespace AnimeHub.Api.Data
         // Consolidated the existing application data seeding into a new async helper method
         private static async Task SeedApplicationDataAsync(AnimeHubDbContext context)
         {
-            // 1. Seed Gallery Categories (Lookup Table)
+            // Seed Gallery Categories (Lookup Table)
             if (!context.GalleryImageCategories.Any())
             {
                 context.GalleryImageCategories.AddRange(GalleryCategories);
                 await context.SaveChangesAsync();
             }
 
-            // 2. Seed Ayami Accessories first (Must be separate now)
+            // Seed Ayami Accessories first (Must be separate now)
             if (!context.AyamiAccessories.Any())
             {
                 // Must turn IDENTITY_INSERT ON to insert explicit IDs
@@ -208,7 +208,7 @@ namespace AnimeHub.Api.Data
                 }
             }
 
-            // 3. Seed Ayami Profile and Attires/Links
+            // Seed Ayami Profile and Attires/Links
             if (!context.AyamiProfiles.Any())
             {
                 // Retrieve the accessories just seeded to correctly link them
@@ -219,7 +219,7 @@ namespace AnimeHub.Api.Data
                 await context.SaveChangesAsync(); // Use async version
             }
 
-            // 3. (Anime seeding will go here later)
+            // (Anime seeding will go here later)
         }
 
         #endregion

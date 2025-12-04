@@ -56,12 +56,12 @@ namespace AnimeHub.Api.Services
                 return null;
             }
 
-            // 1. Apply changes from the DTO
+            // Apply changes from the DTO
             existingProfile.FirstName = dto.FirstName;
             existingProfile.LastName = dto.LastName;
             existingProfile.Location = dto.Location;
 
-            // 2. Check if Birthday changed and recalculate IsAdult flag
+            // Check if Birthday changed and recalculate IsAdult flag
             if (existingProfile.Birthday != dto.Birthday)
             {
                 existingProfile.Birthday = dto.Birthday;
@@ -69,7 +69,7 @@ namespace AnimeHub.Api.Services
                 existingProfile.IsAdult = CalculateIsAdult(dto.Birthday);
             }
 
-            // 3. Save changes
+            // Save changes
             await _repository.Update(existingProfile);
             await _repository.SaveChangesAsync();
 
@@ -78,7 +78,7 @@ namespace AnimeHub.Api.Services
 
         public async Task<bool> DeleteUserAccountAsync(string userId)
         {
-            // 1. Find the Identity user
+            // Find the Identity user
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
@@ -86,10 +86,7 @@ namespace AnimeHub.Api.Services
                 return false;
             }
 
-            // 2. Use UserManager to delete the user. 
-            // This is the primary table and will trigger the cascade delete 
-            // to the custom 'UserProfiles' table (provided you set up cascade delete 
-            // in the DbContext model configuration).
+            // Use UserManager to delete the user. This is the primary table and will trigger the cascade delete to the custom 'UserProfiles' table
             var result = await _userManager.DeleteAsync(user);
 
             return result.Succeeded;
@@ -97,7 +94,7 @@ namespace AnimeHub.Api.Services
 
         public async Task<bool> DeleteProfileAsync(string userId)
         {
-            // 1. Call the repository to delete the record (if found)
+            // Call the repository to delete the record
             bool profileFoundAndMarkedForDeletion = await _repository.Delete(userId);
 
             if (!profileFoundAndMarkedForDeletion)
@@ -105,7 +102,7 @@ namespace AnimeHub.Api.Services
                 return false;
             }
 
-            // 2. Commit the transaction
+            // Commit the transaction
             await _repository.SaveChangesAsync();
 
             return true;
