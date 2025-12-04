@@ -77,8 +77,8 @@ namespace AnimeHub.Api.Repositories
         /// <returns>The number of rows updated.</returns>
         public async Task<int> UpdateImagesByCategoryIdAsync(int categoryId, bool isMatureContent, long featuredImageId)
         {
-            // 1. Bulk update all images in the category to the new IsMatureContent flag 
-            //    and set IsFeatured to false (to un-feature the old image).
+            // Bulk update all images in the category to the new IsMatureContent flag 
+            // and set IsFeatured to false (to un-feature the old image).
             int bulkUpdateCount = await _dbSet
                 .Where(gi => gi.GalleryImageCategoryId == categoryId)
                 .ExecuteUpdateAsync(s => s
@@ -86,8 +86,8 @@ namespace AnimeHub.Api.Repositories
                     .SetProperty(gi => gi.IsFeatured, false)
                     .SetProperty(gi => gi.DateModified, DateTime.UtcNow)); // Set DateModified on all updated rows
 
-            // 2. Find the specific featured image and set its IsFeatured flag to true.
-            //    This is safer than a bulk update on the whole set, as we target one ID.
+            // Find the specific featured image and set its IsFeatured flag to true.
+            // This is safer than a bulk update on the whole set, as we target one ID.
             int featuredUpdateCount = await _dbSet
                 .Where(gi => gi.GalleryImageId == featuredImageId)
                 .ExecuteUpdateAsync(s => s

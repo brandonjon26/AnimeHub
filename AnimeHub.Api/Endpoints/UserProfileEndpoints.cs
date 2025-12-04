@@ -25,7 +25,7 @@ namespace AnimeHub.Api.Endpoints
                 .Produces(StatusCodes.Status403Forbidden) // Authorization failure
                 .Produces(StatusCodes.Status404NotFound);
 
-            // 🔑 NEW: DELETE /profile/{userId}
+            // DELETE /profile/{userId}
             group.MapDelete("/{userId}", DeleteProfile)
                 .WithName("DeleteProfile")
                 .Produces(StatusCodes.Status204NoContent)
@@ -45,7 +45,7 @@ namespace AnimeHub.Api.Endpoints
             [FromServices] UserProfileInterface profileService, // User's preferred interface name
             ClaimsPrincipal user) // Inject ClaimsPrincipal (The authenticated user)
         {
-            // 1.Ensure the authenticated user matches the requested userId
+            // Ensure the authenticated user matches the requested userId
             // The Identity Framework stores the User ID in the ClaimTypes.NameIdentifier
             string? authenticatedUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -55,7 +55,7 @@ namespace AnimeHub.Api.Endpoints
                 return Results.Forbid(); // Returns 403 Forbidden
             }
 
-            // 2. Proceed with business logic (only runs if the user is authorized)
+            // Proceed with business logic (only runs if the user is authorized)
             UserProfile? updatedProfile = await profileService.UpdateProfileAsync(userId, updateDto);
 
             if (updatedProfile == null)
@@ -74,7 +74,7 @@ namespace AnimeHub.Api.Endpoints
             [FromServices] UserProfileInterface profileService,
             ClaimsPrincipal user) // Inject the authenticated user
         {
-            // 1. AUTHORIZATION CHECK: Ensure the authenticated user matches the requested userId
+            // AUTHORIZATION CHECK: Ensure the authenticated user matches the requested userId
             string? authenticatedUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (authenticatedUserId is null || authenticatedUserId != userId)
@@ -83,7 +83,7 @@ namespace AnimeHub.Api.Endpoints
                 return Results.Forbid(); // 403 Forbidden
             }
 
-            // 2. Business Logic: Call service to delete the profile
+            // Business Logic: Call service to delete the profile
             bool success = await profileService.DeleteUserAccountAsync(userId);
 
             if (!success)
@@ -91,7 +91,7 @@ namespace AnimeHub.Api.Endpoints
                 return Results.NotFound($"User profile with ID {userId} not found.");
             }
 
-            // 3. Success: 204 No Content (Standard response for successful DELETE)
+            // Success: 204 No Content (Standard response for successful DELETE)
             return Results.NoContent();
         }
 

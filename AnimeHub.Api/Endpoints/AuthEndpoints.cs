@@ -45,7 +45,7 @@ namespace AnimeHub.Api.Endpoints
             [FromServices] AuthInterface authService,
             [FromServices] UserManager<IdentityUser> userManager)
         {
-            // 1. Pre-check for existing user (good practice for clearer error messages)
+            // Pre-check for existing user (good practice for clearer error messages)
             if (await userManager.FindByEmailAsync(registerDto.Email) != null ||
                 await userManager.FindByNameAsync(registerDto.UserName) != null)
             {
@@ -56,7 +56,7 @@ namespace AnimeHub.Api.Endpoints
                 });
             }
 
-            // 2. Call the service layer to perform registration and auto-login
+            // Call the service layer to perform registration and auto-login
             // Update variable type to UserResponseDto
             UserResponseDto? response = await authService.RegisterAsync(registerDto);
 
@@ -72,7 +72,7 @@ namespace AnimeHub.Api.Endpoints
                 return Results.BadRequest("Registration failed. Please check password complexity and details.");
             }
 
-            // 3. Return the fully formed DTO (Success case)
+            // Return the fully formed DTO (Success case)
             return Results.Ok(response);
         }
 
@@ -81,7 +81,7 @@ namespace AnimeHub.Api.Endpoints
          [FromBody] LoginDto loginDto,
          [FromServices] AuthInterface authService) // Only need IAuthService now
         {
-            // 1. Call the service layer to perform login, generate token, and map response
+            // Call the service layer to perform login, generate token, and map response
             UserResponseDto? response = await authService.LoginAsync(loginDto);
 
             if (response is null)
@@ -89,7 +89,7 @@ namespace AnimeHub.Api.Endpoints
                 return Results.Unauthorized();
             }
 
-            // 2. Return the fully formed, secure DTO
+            // Return the fully formed, secure DTO
             return Results.Ok(response);
         }
     }

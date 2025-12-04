@@ -32,7 +32,7 @@ namespace AnimeHub.Api.Services
 
         public async Task<UserResponseDto?> RegisterAsync(RegisterDto dto)
         {
-            // 1. Check if user already exists (by email or username)
+            // Check if user already exists (by email or username)
             if (await _userManager.FindByEmailAsync(dto.Email) != null ||
                 await _userManager.FindByNameAsync(dto.UserName) != null)
             {
@@ -41,7 +41,7 @@ namespace AnimeHub.Api.Services
                 // For simplicity here, the endpoint will handle the initial check (as written earlier).
             }
 
-            // 2. Create the new IdentityUser
+            // Create the new IdentityUser
             IdentityUser user = new IdentityUser
             {
                 UserName = dto.UserName,
@@ -49,26 +49,26 @@ namespace AnimeHub.Api.Services
                 EmailConfirmed = true
             };
 
-            // 3. Attempt to create the user with the given password
+            // Attempt to create the user with the given password
             IdentityResult result = await _userManager.CreateAsync(user, dto.Password);
 
             if (result.Succeeded)
             {
-                // 4. Assign the default 'Villager' role
+                // Assign the default 'Villager' role
                 // NOTE: We rely on the role being created via the Seed method later.
                 await _userManager.AddToRoleAsync(user, Roles.Villager);
 
-                // 5. Create the UserProfile record
+                // Create the UserProfile record
                 await _profileService.CreateProfileAsync(user.Id, dto);
 
-                // NEW STEP 6: Fetch roles and profile (Just like in LoginAsync)
+                // Fetch roles and profile (Just like in LoginAsync)
                 IList<string> roles = await _userManager.GetRolesAsync(user);
                 UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id);
 
-                // NEW STEP 7: Generate Token
+                // Generate Token
                 TokenResult tokenData = GenerateJwtToken(user, roles);
 
-                // NEW STEP 8: Mapping and Construction (Reusing LoginAsync's logic)
+                // Mapping and Construction (Reusing LoginAsync's logic)
                 UserResponseDto initialResponse = _mapper.Map<UserResponseDto>(user);
 
                 if (profile != null)
@@ -94,7 +94,7 @@ namespace AnimeHub.Api.Services
 
         public async Task<UserResponseDto?> LoginAsync(LoginDto dto)
         {
-            // 1. Find user by unified LoginIdentifier (Email or Username)
+            // Find user by unified LoginIdentifier (Email or Username)
             IdentityUser? user = dto.LoginIdentifier.Contains('@')
                 ? await _userManager.FindByEmailAsync(dto.LoginIdentifier)
                 : await _userManager.FindByNameAsync(dto.LoginIdentifier);
@@ -104,14 +104,14 @@ namespace AnimeHub.Api.Services
                 return null; // Login failed
             }
 
-            // 2. Fetch dependencies
+            // Fetch dependencies
             IList<string> roles = await _userManager.GetRolesAsync(user);
             UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id); // Fetch custom profile
 
-            // 3. Generate Token
+            // Generate Token
             TokenResult tokenData = GenerateJwtToken(user, roles);
 
-            // 4. Mapping and Construction
+            // Mapping and Construction
             UserResponseDto initialResponse = _mapper.Map<UserResponseDto>(user); // Map IdentityUser fields
 
             if (profile != null)
@@ -120,7 +120,7 @@ namespace AnimeHub.Api.Services
                 _mapper.Map(profile, initialResponse);
             }
 
-            // 5. Final assignment of calculated/generated fields
+            // Final assignment of calculated/generated fields
             // The 'with' expression creates a *new* record instance with the specified properties changed
             UserResponseDto finalResponse = initialResponse with
             {

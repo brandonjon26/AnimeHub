@@ -3,10 +3,8 @@ import { BrowserRouter, RouterProvider } from "react-router-dom";
 import { router } from "./routes/routes.tsx";
 import { ThemeProvider } from "./features/theme/ThemeContext.tsx";
 import { AuthProvider } from "./features/auth/AuthContext.tsx";
-// import { RouterProvider } from "react-router-dom";
-// import router from "./routes/routes.tsx";
 
-// 1. Create a client instance for TanStack Query
+// reate a client instance for TanStack Query
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

@@ -38,7 +38,7 @@ namespace AnimeHub.Api.Mapping
                 .ForMember(dest => dest.GalleryImageCategoryId, opt => opt.Ignore()) // Category change is complex, ignore for now
                 .ForMember(dest => dest.Category, opt => opt.Ignore());
 
-            // 2. ImageMetadataDto -> GalleryImage (for POST /batch processing)
+            // ImageMetadataDto -> GalleryImage (for POST /batch processing)
             // Maps the core image fields (Url, AltText, IsFeatured). 
             // The Service layer manually sets CategoryId, IsMatureContent, and Dates.
             CreateMap<ImageMetadataDto, GalleryImage>()
@@ -49,7 +49,7 @@ namespace AnimeHub.Api.Mapping
                 .ForMember(dest => dest.DateModified, opt => opt.Ignore())
                 .ForMember(dest => dest.Category, opt => opt.Ignore());
 
-            // 3. GalleryImageCreateSingleDto -> GalleryImage (for POST /single)
+            // GalleryImageCreateSingleDto -> GalleryImage (for POST /single)
             // Maps ImageUrl, AltText, IsFeatured. 
             // The Service layer manually sets CategoryId, IsMatureContent, and Dates.
             CreateMap<GalleryImageCreateSingleDto, GalleryImage>()
@@ -60,7 +60,7 @@ namespace AnimeHub.Api.Mapping
                 .ForMember(dest => dest.DateModified, opt => opt.Ignore())
                 .ForMember(dest => dest.Category, opt => opt.Ignore());
 
-            // 4. GalleryImageUpdateFolderDto -> GalleryImage 
+            // GalleryImageUpdateFolderDto -> GalleryImage 
             // NO MAPPING REQUIRED. The DTO is passed directly to the Repository's ExecuteUpdateAsync
             // for efficient bulk operation, bypassing AutoMapper.
         }
