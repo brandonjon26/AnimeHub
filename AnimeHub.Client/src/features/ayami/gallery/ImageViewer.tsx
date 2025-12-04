@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { type GalleryImage } from "../../../api/types/GalleryTypes";
-import styles from "./Gallery.module.css"; // 🔑 Import dedicated Gallery styles
+import styles from "./Gallery.module.css";
 
 interface ImageViewerProps {
   images: GalleryImage[];
@@ -46,10 +46,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
     // 🔑 Replaced inline styles with module class
     <div className={styles.viewerOverlay}>
       {/* Close Button */}
-      <button
-        onClick={onClose}
-        className={styles.viewerCloseButton} // 🔑 Use module style
-      >
+      <button onClick={onClose} className={styles.viewerCloseButton}>
         ✕ Close
       </button>
 
@@ -60,19 +57,19 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
         <img
           src={currentImage.imageUrl}
           alt={currentImage.altText}
-          className={styles.viewerImage} // 🔑 Use module style
+          className={styles.viewerImage}
         />
         {/* Previous Button */}
         <button
           onClick={() => navigateImage("prev")}
-          className={`${styles.viewerNavButton} ${styles.viewerPrev}`} // 🔑 Use module styles
+          className={`${styles.viewerNavButton} ${styles.viewerPrev}`}
         >
           &lt;
         </button>
         {/* Next Button */}
         <button
           onClick={() => navigateImage("next")}
-          className={`${styles.viewerNavButton} ${styles.viewerNext}`} // 🔑 Use module styles
+          className={`${styles.viewerNavButton} ${styles.viewerNext}`}
         >
           &gt;
         </button>
