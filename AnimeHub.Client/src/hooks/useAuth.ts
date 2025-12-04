@@ -15,7 +15,6 @@ export const useAuth = (): AuthContextType => {
     throw new Error("useAuth must be used within an AuthProvider");
   }
 
-  // // 🔑 THE NEW DEBUGGER
   // if (context.user && context.user.token) {
   //   // This logs every time a component consumes the *authenticated* state
   //   console.log(

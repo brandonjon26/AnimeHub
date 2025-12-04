@@ -141,7 +141,7 @@ const Register: React.FC = () => {
       <div className={styles["login-box"]} style={{ maxWidth: "500px" }}>
         {" "}
         {/* Wider box for more fields */}
-        <h2>Join AnimeHub</h2>
+        <h2>🔮 Join AnimeHub! 🔮</h2>
         <form onSubmit={handleSubmit} className={styles["login-form"]}>
           {generalError && (
             <p
@@ -315,7 +315,7 @@ const Register: React.FC = () => {
           </button>
         </form>
         <p className={styles["register-link-text"]}>
-          Already have an account? <Link to="/login">Login Here</Link>
+          Already have an account? <Link to="/login">Login Here!</Link> 🌟
         </p>
       </div>
     </div>
