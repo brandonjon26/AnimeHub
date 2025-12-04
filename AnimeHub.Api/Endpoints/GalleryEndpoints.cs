@@ -50,21 +50,21 @@ namespace AnimeHub.Api.Endpoints
                 ClaimsPrincipal userPrincipal = context.User;
                 bool isAdult = false;
 
-                // 1. Check if the user is authenticated at all
+                // Check if the user is authenticated at all
                 if (userPrincipal.Identity != null && userPrincipal.Identity.IsAuthenticated)
                 {
-                    // 2. Find the standard User ID (NameIdentifier) claim
+                    // Find the standard User ID (NameIdentifier) claim
                     // This claim holds the unique ASP.NET Identity User ID (Guid).
                     string? userId = userPrincipal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
                     if (!string.IsNullOrEmpty(userId))
                     {
-                        // 3. Use the User ID to fetch the profile from the database
+                        // Use the User ID to fetch the profile from the database
                         UserProfile? profile = await userProfileService.GetProfileByUserIdAsync(userId);
 
                         if (profile != null)
                         {
-                            // 4. Retrieve the IsAdult flag from the profile DTO
+                            // Retrieve the IsAdult flag from the profile DTO
                             isAdult = profile.IsAdult;
                         }
                     }
@@ -94,10 +94,10 @@ namespace AnimeHub.Api.Endpoints
                 // Manually read the form data to force correct binding
                 IFormCollection form = await context.Request.ReadFormAsync();
 
-                // 1. Retrieve the Metadata string
+                // Retrieve the Metadata string
                 string metadataString = form["Metadata"].FirstOrDefault() ?? "";
 
-                // 2. Retrieve the Files array
+                // Retrieve the Files array
                 IFormFileCollection formFiles = form.Files;
                 IFormFile[] files = formFiles.ToArray();
 
@@ -145,11 +145,11 @@ namespace AnimeHub.Api.Endpoints
                 // Manually read the form data to handle the multipart/form-data request
                 IFormCollection form = await context.Request.ReadFormAsync();
 
-                // 1. Retrieve the Metadata string
+                // Retrieve the Metadata string
                 // NOTE: The frontend must name this part "Metadata"
                 string metadataString = form["Metadata"].FirstOrDefault() ?? "";
 
-                // 2. Retrieve the single File
+                // Retrieve the single File
                 IFormFile? file = form.Files.FirstOrDefault();
 
                 if (file == null)
