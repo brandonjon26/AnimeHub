@@ -13,8 +13,6 @@ namespace AnimeHub.Api.DTOs.Auth
         [StringLength(50)]
         public string LastName { get; init; } = string.Empty;
 
-        // Note: Birthday is typically not allowed to be updated after initial registration, 
-        // but we'll include it here for maximum flexibility if needed.
         [Required]
         public DateOnly Birthday { get; init; }
 

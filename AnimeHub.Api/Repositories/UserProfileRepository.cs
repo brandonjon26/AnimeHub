@@ -36,7 +36,7 @@ namespace AnimeHub.Api.Repositories
 
         public async Task<bool> Delete(string userId)
         {
-            // 1. Find the profile using the primary key
+            // Find the profile using the primary key
             var profileToDelete = await _dbSet.FindAsync(userId);
 
             if (profileToDelete == null)
@@ -45,7 +45,7 @@ namespace AnimeHub.Api.Repositories
                 return false;
             }
 
-            // 2. Mark for removal
+            // Mark for removal
             _dbSet.Remove(profileToDelete);
 
             // NOTE: We rely on the service layer to call SaveChangesAsync() after this, 

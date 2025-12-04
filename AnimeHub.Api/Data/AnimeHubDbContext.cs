@@ -32,10 +32,10 @@ namespace AnimeHub.Api.Data
             // Configure the one-to-one relationship between IdentityUser and UserProfile
             modelBuilder.Entity<UserProfile>(userProfile =>
             {
-                // 1. Define the Primary Key (First block, separate is required)
+                // Define the Primary Key (First block, separate is required)
                 userProfile.HasKey(up => up.UserId);
 
-                // 2. Define the One-to-One relationship (Second block)
+                // Define the One-to-One relationship (Second block)
                 // CRITICAL: Use the generic HasOne(up => up.User!)
                 userProfile.HasOne(up => up.User!)
                            .WithOne()

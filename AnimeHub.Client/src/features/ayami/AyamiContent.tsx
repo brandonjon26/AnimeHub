@@ -141,38 +141,8 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
               )}
             </div>
 
-            {/* <div className={styles.bioText}>
-              <h2>{profile.firstName}'s Story</h2>
-              {renderBio(profile.bio)}
-            </div> */}
-
             <AyamiLoreReveal profile={profile} />
           </div>
-          {/* Key Details List remains static
-          <h3 className={styles.keyDetailsTitle}>Key Details</h3>
-          <ul className={styles.keyList}>
-            <li>
-              <b>Full Name:</b> {fullName} ({japaneseName})
-            </li>
-            <li>
-              <b>Vibe:</b> {profile.vibe}
-            </li>
-            <li>
-              <b>Height:</b> {profile.height}
-            </li>
-            <li>
-              <b>Eyes:</b> {profile.eyes}
-            </li>
-            <li>
-              <b>Hair:</b> {profile.hair}
-            </li>
-            <li>
-              <b>Equipment:</b> {profile.primaryEquipment}
-            </li>
-            {equipmentAccessory && (
-              <li>**Primary Weapon:** {equipmentAccessory.description}</li>
-            )}
-          </ul> */}
         </div>
 
         {/* RIGHT: Featured Photos Gallery (Replaces static content) */}
