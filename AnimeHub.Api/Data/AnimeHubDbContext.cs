@@ -1,5 +1,5 @@
 ﻿using AnimeHub.Api.Entities;
-using AnimeHub.Api.Entities.Ayami;
+using AnimeHub.Api.Entities.Character;
 using AnimeHub.Api.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -19,10 +19,13 @@ namespace AnimeHub.Api.Data
         public DbSet<Anime> Anime {  get; set; }
         public DbSet<GalleryImage> GalleryImages { get; set; }
         public DbSet<GalleryImageCategory> GalleryImageCategories { get; set; }
-        public DbSet<AyamiProfile> AyamiProfiles { get; set; }
-        public DbSet<AyamiAttire> AyamiAttires { get; set; }
-        public DbSet<AyamiAccessory> AyamiAccessories { get; set; }
+        public DbSet<CharacterProfile> CharacterProfiles { get; set; }
+        public DbSet<CharacterAttire> CharacterAttires { get; set; }
+        public DbSet<CharacterAccessory> CharacterAccessories { get; set; }
         public DbSet<AccessoryAttireJoin> AccessoryAttireJoins { get; set; }
+        public DbSet<LoreType> LoreTypes { get; set; }
+        public DbSet<LoreEntry> LoreEntries { get; set; }
+        public DbSet<CharacterLoreLink> CharacterLoreLinks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -57,26 +60,58 @@ namespace AnimeHub.Api.Data
                       .IsRequired();
             });
 
-            // Configure the Ayami Profile relationships
-            modelBuilder.Entity<AyamiProfile>()
-                .HasMany(p => p.Attires)
+            // Configure the Character Profile relationships (One-to-Many Attires)
+            modelBuilder.Entity<CharacterProfile>(characterProfile =>
+            {
+                characterProfile.HasMany(p => p.Attires)
                 .WithOne(a => a.Profile)
-                .HasForeignKey(a => a.ProfileId)
+                .HasForeignKey(a => a.CharacterProfileId)
                 .IsRequired();
+
+                // Self-referencing Best Friend link (One-to-Optional-One/Many)
+                characterProfile.HasOne(p => p.BestFriend)
+                    .WithOne() // Or .WithMany() if a character can have many best friends who also consider them a best friend
+                    .HasForeignKey<CharacterProfile>(p => p.BestFriendCharacterId)
+                    .IsRequired(false) // Allows BestFriendCharacterId to be null
+                    .OnDelete(DeleteBehavior.Restrict); // Important to prevent circular delete issues
+            });
+
+            // Configure the Greatest Feat link (One-to-Many, starting from CharacterProfile)
+            modelBuilder.Entity<CharacterProfile>()
+                .HasOne(p => p.GreatestFeatLore) // CharacterProfile has ONE GreatestFeatLore
+                .WithMany() // LoreEntry has MANY CharacterProfiles (using the FK on CharacterProfile)
+                .HasForeignKey(p => p.GreatestFeatLoreId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Configure the new Many-to-Many relationship (MUST BE KEPT)
             modelBuilder.Entity<AccessoryAttireJoin>()
-                .HasKey(aat => new { aat.AttireId, aat.AccessoryId }); // Composite Primary Key
+                .HasKey(aat => new { aat.CharacterAttireId, aat.CharacterAccessoryId }); // Composite Primary Key
 
             modelBuilder.Entity<AccessoryAttireJoin>()
                 .HasOne(aat => aat.Attire)
                 .WithMany(a => a.AccessoryLinks)
-                .HasForeignKey(aat => aat.AttireId);
+                .HasForeignKey(aat => aat.CharacterAttireId);
 
             modelBuilder.Entity<AccessoryAttireJoin>()
                 .HasOne(aat => aat.Accessory)
                 .WithMany(acc => acc.AttireLinks)
-                .HasForeignKey(aat => aat.AccessoryId);
+                .HasForeignKey(aat => aat.CharacterAccessoryId);
+
+            // Configure the Many-to-Many relationship for Characters and Lore
+            modelBuilder.Entity<CharacterLoreLink>()
+                // Define the Composite Primary Key
+                .HasKey(cll => new { cll.CharacterProfileId, cll.LoreEntryId });
+
+            modelBuilder.Entity<CharacterLoreLink>()
+                .HasOne(cll => cll.CharacterProfile)
+                .WithMany(p => p.LoreLinks)
+                .HasForeignKey(cll => cll.CharacterProfileId);
+
+            modelBuilder.Entity<CharacterLoreLink>()
+                .HasOne(cll => cll.LoreEntry)
+                .WithMany(l => l.CharacterLinks)
+                .HasForeignKey(cll => cll.LoreEntryId);
         }
     }
 }

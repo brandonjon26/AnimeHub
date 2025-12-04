@@ -2,12 +2,12 @@
 
 namespace AnimeHub.Api.Repositories
 {
-    public interface IAyamiRepository : IBaseRepository<AyamiProfile>
+    public interface IAyamiRepository : IBaseRepository<CharacterProfile>
     {
         // Retrieves the single Ayami Profile entry (ID is likely always 1).
-        Task<AyamiProfile?> GetProfileWithDetailsAsync();
+        Task<CharacterProfile?> GetProfileWithDetailsAsync();
 
         // Method to fetch a single Attire entity for deletion
-        Task<AyamiAttire?> GetAttireByIdAsync(int attireId);
+        Task<CharacterAttire?> GetAttireByIdAsync(int attireId);
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AnimeHub.Api.Repositories
 {
-    public class AyamiRepository : BaseRepository<AyamiProfile>, IAyamiRepository
+    public class AyamiRepository : BaseRepository<CharacterProfile>, IAyamiRepository
     {
         public AyamiRepository(AnimeHubDbContext context) 
             : base(context)
@@ -13,7 +13,7 @@ namespace AnimeHub.Api.Repositories
         }
 
         // Retrieves the profile and eagerly loads all related Attires and Accessories.
-        public async Task<AyamiProfile?> GetProfileWithDetailsAsync()
+        public async Task<CharacterProfile?> GetProfileWithDetailsAsync()
         {
             return await _context.AyamiProfiles
                 .Include(p => p.Attires)
@@ -23,7 +23,7 @@ namespace AnimeHub.Api.Repositories
         }
 
         // Implementation of GetAttireByIdAsync
-        public async Task<AyamiAttire?> GetAttireByIdAsync(int attireId)
+        public async Task<CharacterAttire?> GetAttireByIdAsync(int attireId)
         {
             // We use the context directly to access the AyamiAttires table
             return await _context.AyamiAttires.FirstOrDefaultAsync(a => a.AyamiAttireId == attireId);
