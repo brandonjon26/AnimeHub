@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 
-namespace AnimeHub.Api.Entities.Character
+namespace AnimeHub.Api.Entities.Character.Lore
 {
     public class LoreType
     {

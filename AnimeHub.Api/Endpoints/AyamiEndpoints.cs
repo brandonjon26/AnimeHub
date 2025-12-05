@@ -23,7 +23,7 @@ namespace AnimeHub.Api.Endpoints
             group.MapGet("/", async (AyamiInterface service) =>
             {
                 // Retrieve the full Ayami profile, including Attires and Accessories
-                AyamiProfileDto? profile = await service.GetAyamiProfileAsync();
+                CharacterProfileDto? profile = await service.GetAyamiProfileAsync();
 
                 // Return 404 if the single profile entry doesn't exist
                 return profile is null ? Results.NotFound() : Results.Ok(profile);
@@ -55,7 +55,7 @@ namespace AnimeHub.Api.Endpoints
             // CREATE: Add a new Attire
             group.MapPost("/{profileId}/attire", async (
                 int profileId,
-                [FromBody] AyamiAttireInputDto attireDto,
+                [FromBody] CharacterAttireInputDto attireDto,
                 AyamiInterface service) =>
             {
                 var newId = await service.AddAttireAsync(profileId, attireDto);

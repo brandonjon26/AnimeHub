@@ -24,7 +24,7 @@ namespace AnimeHub.Api.Services
         }
 
         // --- READ ---
-        public async Task<AyamiProfileDto?> GetAyamiProfileAsync()
+        public async Task<CharacterProfileDto?> GetAyamiProfileAsync()
         {
             CharacterProfile? profile = await _repository.GetProfileWithDetailsAsync();
 
@@ -34,7 +34,7 @@ namespace AnimeHub.Api.Services
             }
 
             // Map the entity to the DTO
-            AyamiProfileDto profileDto = _mapper.Map<AyamiProfileDto>(profile);
+            CharacterProfileDto profileDto = _mapper.Map<CharacterProfileDto>(profile);
 
             // Manually set the static audio URL after mapping
             // Records are immutable, so we must use 'with' to create a new instance with the updated property.
@@ -68,7 +68,7 @@ namespace AnimeHub.Api.Services
         }
 
         // --- CREATE ---
-        public async Task<int?> AddAttireAsync(int profileId, AyamiAttireInputDto attireDto)
+        public async Task<int?> AddAttireAsync(int profileId, CharacterAttireInputDto attireDto)
         {
             // Find the target profile
             CharacterProfile? profile = await _repository.GetFirstOrDefaultAsync(p => p.AyamiProfileId == 3);
@@ -81,7 +81,7 @@ namespace AnimeHub.Api.Services
             newAttire.ProfileId = profile.AyamiProfileId;
 
             // Process Accessories and create the Join links
-            foreach (AyamiAccessoryInputDto accessoryDto in attireDto.Accessories)
+            foreach (CharacterAccessoryInputDto accessoryDto in attireDto.Accessories)
             {
                 // **Look for existing accessory by description to reuse it (Normalization Benefit)**
                 CharacterAccessory? existingAccessory = await _accessoryRepository.GetFirstOrDefaultAsync(
