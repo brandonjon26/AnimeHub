@@ -1,7 +1,7 @@
 ﻿using AnimeHub.Api.Data;
 using AnimeHub.Api.DTOs.Auth;
 using AnimeHub.Api.Entities;
-using AnimeHub.Api.Entities.Ayami;
+using AnimeHub.Api.Entities.Character;
 using AnimeHub.Api.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,17 +27,17 @@ namespace AnimeHub.Api.Data
         // Define all unique, reusable accessories ONCE.
         private static readonly CharacterAccessory[] AllUniqueAccessories = new CharacterAccessory[]
         {
-            new CharacterAccessory { AyamiAccessoryId = 1, Description = "Stylish black witch's hat with subtle purple trim", IsWeapon = false },
-            new CharacterAccessory { AyamiAccessoryId = 2, Description = "Decorative purple thigh ring", IsWeapon = false },
-            new CharacterAccessory { AyamiAccessoryId = 3, Description = "Long black gloves", IsWeapon = false }, // Added for completeness
-            new CharacterAccessory { AyamiAccessoryId = 4, Description = "Knee-high black boots", IsWeapon = false }, // Added for completeness
-            new CharacterAccessory { AyamiAccessoryId = 5, Description = "Black gloved gauntlets", IsWeapon = false },
-            new CharacterAccessory { AyamiAccessoryId = 6, Description = "Flowing purple Waist Cape/Fantasy Tasset", IsWeapon = false },
-            new CharacterAccessory { AyamiAccessoryId = 7, Description = "Smaller glowing amethyst necklace and black choker", IsWeapon = false },
-            new CharacterAccessory { AyamiAccessoryId = 8, Description = "Small dark purple hair clip with a subtle gem", IsWeapon = false },
-            new CharacterAccessory { AyamiAccessoryId = 9, Description = "Black thigh ring with a purple gem", IsWeapon = false },
-            new CharacterAccessory { AyamiAccessoryId = 10, Description = "Dagger attached to the waist", IsWeapon = true }, // Shared Accessory!
-            new CharacterAccessory { AyamiAccessoryId = 11, Description = "Purple bow (tied to the half-up/half-down style)", IsWeapon = false }
+            new CharacterAccessory { CharacterAccessoryId = 1, Description = "Stylish black witch's hat with subtle purple trim", IsWeapon = false },
+            new CharacterAccessory { CharacterAccessoryId = 2, Description = "Decorative purple thigh ring", IsWeapon = false },
+            new CharacterAccessory { CharacterAccessoryId = 3, Description = "Long black gloves", IsWeapon = false }, // Added for completeness
+            new CharacterAccessory { CharacterAccessoryId = 4, Description = "Knee-high black boots", IsWeapon = false }, // Added for completeness
+            new CharacterAccessory { CharacterAccessoryId = 5, Description = "Black gloved gauntlets", IsWeapon = false },
+            new CharacterAccessory { CharacterAccessoryId = 6, Description = "Flowing purple Waist Cape/Fantasy Tasset", IsWeapon = false },
+            new CharacterAccessory { CharacterAccessoryId = 7, Description = "Smaller glowing amethyst necklace and black choker", IsWeapon = false },
+            new CharacterAccessory { CharacterAccessoryId = 8, Description = "Small dark purple hair clip with a subtle gem", IsWeapon = false },
+            new CharacterAccessory { CharacterAccessoryId = 9, Description = "Black thigh ring with a purple gem", IsWeapon = false },
+            new CharacterAccessory { CharacterAccessoryId = 10, Description = "Dagger attached to the waist", IsWeapon = true }, // Shared Accessory!
+            new CharacterAccessory { CharacterAccessoryId = 11, Description = "Purple bow (tied to the half-up/half-down style)", IsWeapon = false }
         };
 
         // Define the Attires separately, linking them to the Profile.
@@ -65,7 +65,7 @@ namespace AnimeHub.Api.Data
             {
                 Name = "Primary Attire (Witch)",
                 Description = "Sleek, strapless, sleeveless very short black mini-dress with subtle purple trim, featuring a form-fitting bodice that transitions into a loose, flowing skirt, long black gloves, and knee-high black boots.",
-                Hairstyle = profile.Hair
+                HairstyleDescription = profile.Hair
             };
             // Link Accessories to Attire 1 (Witch)
             AddLinks(witchAttire, accessories, 1, 2, 3, 4); // Example: Hat, Thigh Ring, Gloves, Boots
@@ -75,7 +75,7 @@ namespace AnimeHub.Api.Data
             {
                 Name = "Secondary Attire (Armored)",
                 Description = "Black, tight-fitting, sleeveless, strapless one-piece (open back) with armor details/purple accents; shorter purple skirt; knee-high black armor-type boots.",
-                Hairstyle = profile.Hair
+                HairstyleDescription = profile.Hair
             };
             // Link Accessories to Attire 2 (Armored)
             AddLinks(armoredAttire, accessories, 5, 6, 7, 8, 9, 10); // Gauntlets, Cape, Necklace, Hair Clip, Thigh Ring, Dagger (Shared!)
@@ -85,7 +85,7 @@ namespace AnimeHub.Api.Data
             {
                 Name = "Alluring Attire (New)",
                 Description = "Purple, tight-fitting, high-neck, sleeveless one-piece (open stomach/back); thigh-high black boots; signature black gloves.",
-                Hairstyle = "Long, wavy black hair pulled back in a half-up/half-down style with a purple bow."
+                HairstyleDescription = "Long, wavy black hair pulled back in a half-up/half-down style with a purple bow."
             };
             // Link Accessories to Attire 3 (Alluring)
             AddLinks(alluringAttire, accessories, 3, 7, 9, 10, 11); // Gloves, Necklace, Thigh Ring, Dagger (Shared!), Purple Bow
@@ -102,7 +102,7 @@ namespace AnimeHub.Api.Data
         {
             foreach (var id in accessoryIds)
             {
-                var accessory = accessories.First(a => a.AyamiAccessoryId == id);
+                var accessory = accessories.First(a => a.CharacterAccessoryId == id);
                 attire.AccessoryLinks.Add(new AccessoryAttireJoin { Accessory = accessory });
             }
         }
@@ -191,14 +191,14 @@ namespace AnimeHub.Api.Data
             }
 
             // Seed Ayami Accessories first (Must be separate now)
-            if (!context.AyamiAccessories.Any())
+            if (!context.CharacterAccessories.Any())
             {
                 // Must turn IDENTITY_INSERT ON to insert explicit IDs
                 context.Database.OpenConnection();
                 try
                 {
                     context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.AyamiAccessories ON");
-                    context.AyamiAccessories.AddRange(AllUniqueAccessories);
+                    context.CharacterAccessories.AddRange(AllUniqueAccessories);
                     await context.SaveChangesAsync(); // Use async version
                     context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.AyamiAccessories OFF");
                 }
@@ -209,13 +209,13 @@ namespace AnimeHub.Api.Data
             }
 
             // Seed Ayami Profile and Attires/Links
-            if (!context.AyamiProfiles.Any())
+            if (!context.CharacterProfiles.Any())
             {
                 // Retrieve the accessories just seeded to correctly link them
-                var seededAccessories = context.AyamiAccessories.ToList();
+                var seededAccessories = context.CharacterAccessories.ToList();
 
                 var profile = GetAyamiProfileData(seededAccessories);
-                context.AyamiProfiles.Add(profile);
+                context.CharacterProfiles.Add(profile);
                 await context.SaveChangesAsync(); // Use async version
             }
 
