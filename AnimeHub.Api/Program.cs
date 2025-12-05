@@ -53,7 +53,7 @@ builder.Services.AddAutoMapper((IServiceProvider serviceProvider, IMapperConfigu
     // Explicitly add your profile to the configuration
     config.AddProfile<AnimeMappingProfile>();
     config.AddProfile<GalleryMappingProfile>();
-    config.AddProfile<AyamiMappingProfile>();
+    config.AddProfile<CharacterMappingProfile>();
     config.AddProfile<AuthMappingProfile>();
 }, new Type[] { });
 
