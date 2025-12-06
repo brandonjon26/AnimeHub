@@ -20,7 +20,7 @@ namespace AnimeHub.Api.Endpoints
                 .WithTags(AyamiProfileTag);
 
             // GET /ayami-profile
-            group.MapGet("/", async (AyamiInterface service) =>
+            group.MapGet("/", async (CharacterInterface service) =>
             {
                 // Retrieve the full Ayami profile, including Attires and Accessories
                 CharacterProfileDto? profile = await service.GetAyamiProfileAsync();
@@ -37,7 +37,7 @@ namespace AnimeHub.Api.Endpoints
             group.MapPut("/{profileId}", async (
                 int profileId,
                 [FromBody] AyamiProfileUpdateDto updateDto,
-                AyamiInterface service) =>
+                CharacterInterface service) =>
             {
                 var success = await service.UpdateProfileAsync(profileId, updateDto);
                 return success ? Results.NoContent() : Results.NotFound();
@@ -56,7 +56,7 @@ namespace AnimeHub.Api.Endpoints
             group.MapPost("/{profileId}/attire", async (
                 int profileId,
                 [FromBody] CharacterAttireInputDto attireDto,
-                AyamiInterface service) =>
+                CharacterInterface service) =>
             {
                 var newId = await service.AddAttireAsync(profileId, attireDto);
                 if (newId is null)
@@ -81,7 +81,7 @@ namespace AnimeHub.Api.Endpoints
             // DELETE: Delete an Attire
             group.MapDelete("/attire/{attireId:int}", async (
                 [FromRoute] int attireId,
-                AyamiInterface service) =>
+                CharacterInterface service) =>
             {
                 var success = await service.DeleteAttireAsync(attireId);
                 return success ? Results.NoContent() : Results.NotFound();

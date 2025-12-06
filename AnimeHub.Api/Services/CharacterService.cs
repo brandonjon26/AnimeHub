@@ -1,32 +1,45 @@
 ﻿using AutoMapper;
-using AnimeHub.Api.DTOs.Ayami;
-using AnimeHub.Api.Entities.Ayami;
+using AnimeHub.Api.DTOs.Character;
+using AnimeHub.Api.DTOs.Character.Lore;
+using AnimeHub.Api.Entities;
+using AnimeHub.Api.Entities.Character;
+using AnimeHub.Api.Entities.Character.Lore;
 using AnimeHub.Api.Repositories;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AnimeHub.Api.Services
 {
-    public class AyamiService : AyamiInterface
+    public class CharacterService : CharacterInterface
     {
-        private readonly IAyamiRepository _repository;
+        private readonly ICharacterRepository _repository;
         private readonly IBaseRepository<CharacterAttire> _attireRepository;
         private readonly IBaseRepository<CharacterAccessory> _accessoryRepository; // Need base repo for accessories
         private readonly IBaseRepository<AccessoryAttireJoin> _joinRepository; // Need base repo for joins
+        // Base repository for Lore entities
+        private readonly IBaseRepository<LoreType> _loreTypeRepository;
+        private readonly IBaseRepository<LoreEntry> _loreEntryRepository;
+        private readonly IBaseRepository<CharacterLoreLink> _loreLinkRepository;
         private readonly IMapper _mapper;
 
-        public AyamiService(IAyamiRepository repository, IBaseRepository<CharacterAttire> attireRepository, IBaseRepository<CharacterAccessory> accessoryRepository, IBaseRepository<AccessoryAttireJoin> joinRepository, IMapper mapper)
+        public CharacterService(ICharacterRepository repository, IBaseRepository<CharacterAttire> attireRepository, IBaseRepository<CharacterAccessory> accessoryRepository, 
+                                IBaseRepository<AccessoryAttireJoin> joinRepository, IBaseRepository<LoreType> loreTypeRepository, IBaseRepository<LoreEntry> loreEntryRepository, 
+                                IBaseRepository<CharacterLoreLink> loreLinkRepository, IMapper mapper)
         {
             _repository = repository;
             _attireRepository = attireRepository;
             _accessoryRepository = accessoryRepository;
             _joinRepository = joinRepository;
+            _loreTypeRepository = loreTypeRepository;
+            _loreEntryRepository = loreEntryRepository;
+            _loreLinkRepository = loreLinkRepository;
             _mapper = mapper;
         }
 
         // --- READ ---
-        public async Task<CharacterProfileDto?> GetAyamiProfileAsync()
+        public async Task<CharacterProfileDto?> GetCharacterProfileAsync(string characterName)
         {
-            CharacterProfile? profile = await _repository.GetProfileWithDetailsAsync();
+            CharacterProfile? profile = await _repository.GetProfileWithDetailsAsync(characterName);
 
             if (profile == null)
             {
@@ -47,11 +60,32 @@ namespace AnimeHub.Api.Services
             return profileDto;
         }
 
+        // Read all Lore Types
+        public async Task<ICollection<LoreTypeDto>> GetAllLoreTypesAsync()
+        {
+            // Simple repository call to get all lookup entries
+            IEnumerable<LoreType> loreTypes = await _loreTypeRepository.GetAllAsync();
+            return _mapper.Map<ICollection<LoreTypeDto>>(loreTypes);
+        }
+
+        // Read a specific Lore Entry
+        public async Task<LoreEntryDto?> GetLoreEntryByIdAsync(int loreEntryId)
+        {
+            // Repository will need a method to include related entities (Type and Characters)
+            LoreEntry? entry = await _loreEntryRepository.GetFirstOrDefaultAsync(
+                l => l.LoreEntryId == loreEntryId,
+                includeProperties: new string[] { "LoreType", "CharacterLinks.CharacterProfile" }
+            );
+
+            return entry == null ? null : _mapper.Map<LoreEntryDto>(entry);
+        }
+
+
         // --- UPDATE ---
-        public async Task<bool> UpdateProfileAsync(int profileId, AyamiProfileUpdateDto updateDto)
+        public async Task<bool> UpdateProfileAsync(int profileId, CharacterProfileUpdateDto updateDto)
         {
             // The Ayami Profile is a singleton, so we always retrieve the first one.
-            var profileToUpdate = await _repository.GetFirstOrDefaultAsync(p => p.AyamiProfileId == profileId);
+            CharacterProfile? profileToUpdate = await _repository.GetFirstOrDefaultAsync(p => p.CharacterProfileId == profileId);
 
             if (profileToUpdate is null) return false;
 
@@ -67,25 +101,41 @@ namespace AnimeHub.Api.Services
             return recordsAffected > 0 ? true : false;
         }
 
+        // Update the Greatest Feat link
+        public async Task<bool> UpdateCharacterGreatestFeatAsync(int profileId, int loreEntryId)
+        {
+            CharacterProfile? profileToUpdate = await _repository.GetFirstOrDefaultAsync(p => p.CharacterProfileId == profileId);
+            if (profileToUpdate is null) return false;
+
+            // Set the foreign key directly
+            profileToUpdate.GreatestFeatLoreId = loreEntryId;
+
+            await _repository.Update(profileToUpdate);
+            int recordsAffected = await _repository.SaveChangesAsync();
+
+            return recordsAffected > 0;
+        }
+
+
         // --- CREATE ---
         public async Task<int?> AddAttireAsync(int profileId, CharacterAttireInputDto attireDto)
         {
             // Find the target profile
-            CharacterProfile? profile = await _repository.GetFirstOrDefaultAsync(p => p.AyamiProfileId == 3);
+            CharacterProfile? profile = await _repository.GetFirstOrDefaultAsync(p => p.CharacterProfileId == profileId);
             if (profile is null) return null;
 
             // Map the DTO to the new Attire entity
             CharacterAttire newAttire = _mapper.Map<CharacterAttire>(attireDto);
 
             // Set the foreign key manually
-            newAttire.ProfileId = profile.AyamiProfileId;
+            newAttire.CharacterProfileId = profile.CharacterProfileId;
 
             // Process Accessories and create the Join links
             foreach (CharacterAccessoryInputDto accessoryDto in attireDto.Accessories)
             {
                 // **Look for existing accessory by description to reuse it (Normalization Benefit)**
                 CharacterAccessory? existingAccessory = await _accessoryRepository.GetFirstOrDefaultAsync(
-                    a => a.Description == accessoryDto.Description);
+                    a => a.Description == accessoryDto.Description && a.UniqueEffect == accessoryDto.UniqueEffect);
 
                 CharacterAccessory accessory;
 
@@ -113,8 +163,41 @@ namespace AnimeHub.Api.Services
 
             int recordsAffected = await _repository.SaveChangesAsync();
 
-            return recordsAffected > 0 ? newAttire.AyamiAttireId: null;
+            return recordsAffected > 0 ? newAttire.CharacterAttireId : null;
         }
+
+        // Create a new Lore Entry
+        public async Task<int?> CreateLoreEntryAsync(LoreEntryInputDto loreEntryDto)
+        {
+            // 1. Map DTO to LoreEntry entity
+            LoreEntry newLoreEntry = _mapper.Map<LoreEntry>(loreEntryDto);
+
+            // 2. Add the Lore Entry
+            await _loreEntryRepository.Add(newLoreEntry);
+            await _repository.SaveChangesAsync(); // Save to get the LoreEntryId
+
+            // 3. Create CharacterLoreLink entities
+            foreach (int characterId in loreEntryDto.CharacterIds)
+            {
+                // Ensure character exists (optional check, but good practice)
+                CharacterProfile? character = await _repository.GetFirstOrDefaultAsync(p => p.CharacterProfileId == characterId);
+
+                if (character != null)
+                {
+                    CharacterLoreLink link = new CharacterLoreLink
+                    {
+                        CharacterProfileId = characterId,
+                        LoreEntryId = newLoreEntry.LoreEntryId
+                    };
+                    await _loreLinkRepository.Add(link);
+                }
+            }
+
+            int recordsAffected = await _repository.SaveChangesAsync();
+
+            return recordsAffected > 0 ? newLoreEntry.LoreEntryId : null;
+        }
+
 
         // --- DELETE ---
         public async Task<bool> DeleteAttireAsync(int attireId)
