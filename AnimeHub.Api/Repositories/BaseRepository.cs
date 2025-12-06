@@ -71,7 +71,21 @@ namespace AnimeHub.Api.Repositories
             return await _dbSet.FindAsync(id);
         }
 
-        public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
+        // SIMPLE OVERLOAD - Filter is optional. This is the simplest signature.
+        public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>>? filter = null)
+        {
+            IQueryable<T> query = _dbSet.AsNoTracking();
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            return await query.FirstOrDefaultAsync();
+        }
+
+        // STRING OVERLOAD - Requires filter. Calls the main implementation.
+        public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>>? filter, string? includeProperties = null)
         {
             IQueryable<T> query = _dbSet;
 
@@ -85,6 +99,27 @@ namespace AnimeHub.Api.Repositories
                 foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     query = query.Include(includeProp);
+                }
+            }
+
+            return await query.FirstOrDefaultAsync();
+        }
+
+        // ARRAY OVERLOAD - Requires filter. This is the MAIN implementation.
+        public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>>? filter, ICollection<string>? includeProperties = null)
+        {
+            IQueryable<T> query = _dbSet.AsNoTracking(); // Adding AsNoTracking as a safe default for non-tracking lookup
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (includeProperties != null && includeProperties.Any())
+            {
+                foreach (var includeProp in includeProperties) // Iterate through the clean collection
+                {
+                    query = query.Include(includeProp.Trim());
                 }
             }
 
