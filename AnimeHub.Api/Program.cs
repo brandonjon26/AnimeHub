@@ -65,13 +65,13 @@ builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped<IAnimeRepository, AnimeRepository>();
 builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
 builder.Services.AddScoped<IGalleryCategoryRepository, GalleryCategoryRepository>();
-builder.Services.AddScoped<IAyamiRepository, AyamiRepository>();
+builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
 builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 
 // Register the Anime Service (Scoped lifetime is standard for services)
 builder.Services.AddScoped<AnimeInterface, AnimeService>();
 builder.Services.AddScoped<GalleryInterface, GalleryService>();
-builder.Services.AddScoped<AyamiInterface, AyamiService>();
+builder.Services.AddScoped<CharacterInterface, CharacterService>();
 builder.Services.AddScoped<AuthInterface, AuthService>();
 builder.Services.AddScoped<UserProfileInterface, UserProfileService>();
 
