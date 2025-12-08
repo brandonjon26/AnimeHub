@@ -119,7 +119,7 @@ namespace AnimeHub.Api.Endpoints
             // GET /lore/types
             loreGroup.MapGet("/types", async (CharacterInterface service) =>
             {
-                var types = await service.GetAllLoreTypesAsync();
+                ICollection<LoreTypeDto> types = await service.GetAllLoreTypesAsync();
                 return Results.Ok(types);
             })
             .WithName("GetAllLoreTypes")
@@ -134,7 +134,7 @@ namespace AnimeHub.Api.Endpoints
                 [FromRoute] int loreEntryId,
                 CharacterInterface service) =>
             {
-                var entry = await service.GetLoreEntryByIdAsync(loreEntryId);
+                LoreEntryDto? entry = await service.GetLoreEntryByIdAsync(loreEntryId);
                 return entry is null ? Results.NotFound() : Results.Ok(entry);
             })
             .WithName("GetLoreEntryById")
@@ -149,7 +149,7 @@ namespace AnimeHub.Api.Endpoints
                 [FromBody] LoreEntryInputDto loreEntryDto,
                 CharacterInterface service) =>
             {
-                var newId = await service.CreateLoreEntryAsync(loreEntryDto);
+                int? newId = await service.CreateLoreEntryAsync(loreEntryDto);
                 if (newId is null)
                 {
                     return Results.BadRequest("Failed to create Lore Entry. Check if all character IDs are valid.");
@@ -171,13 +171,33 @@ namespace AnimeHub.Api.Endpoints
                 [FromBody] int loreEntryId, // The ID of the Lore Entry to link as the feat
                 CharacterInterface service) =>
             {
-                var success = await service.UpdateCharacterGreatestFeatAsync(profileId, loreEntryId);
+                bool success = await service.UpdateCharacterGreatestFeatAsync(profileId, loreEntryId);
                 return success ? Results.NoContent() : Results.NotFound();
             })
             .WithName("UpdateCharacterGreatestFeat")
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .RequireAuthorization("AdminAccess") // Restrict to Mage/Admin roles
+            .WithOpenApi();
+
+
+            // --- 9. DELETE: Delete a Lore Entry (Write) ---
+            // DELETE /lore/{loreEntryId}
+            loreGroup.MapDelete("/{loreEntryId:int}", async (
+                [FromRoute] int loreEntryId,
+                CharacterInterface service) =>
+            {
+                // The service layer handles the deletion AND the dependent CharacterProfile updates.
+                bool success = await service.DeleteLoreEntryAsync(loreEntryId);
+
+                return success ? Results.NoContent() : Results.NotFound();
+            })
+            .WithName("DeleteLoreEntry")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status403Forbidden)
+            .RequireAuthorization("AdminAccess") // Must be restricted, as it deletes data.
             .WithOpenApi();
         }
     }

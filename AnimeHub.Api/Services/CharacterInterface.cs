@@ -37,5 +37,8 @@ namespace AnimeHub.Api.Services
 
         // --- DELETE ---
         Task<bool> DeleteAttireAsync(int attireId);
+
+        // Deletes a Lore Entry and updates all dependent Character Profiles to use the Sentinel ID (0).
+        Task<bool> DeleteLoreEntryAsync(int loreEntryId);
     }
 }
