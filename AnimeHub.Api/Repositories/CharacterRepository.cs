@@ -17,10 +17,10 @@ namespace AnimeHub.Api.Repositories
         public async Task<CharacterProfile?> GetProfileWithDetailsAsync(string characterName)
         {
             // Normalize the input name for lookup (e.g., "Ayami" matches "ayami")
-            string normalizedName = characterName.Trim().ToLowerInvariant();
+            string normalizedName = characterName.Trim().ToLower();
 
             return await _context.CharacterProfiles
-                .Where(p => p.FirstName.ToLowerInvariant() == normalizedName)
+                .Where(p => p.FirstName.ToLower() == normalizedName)
                 .Include(p => p.BestFriend)
                 .Include(p => p.GreatestFeatLore)
                 .Include(p => p.Attires)
