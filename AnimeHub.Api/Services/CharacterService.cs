@@ -219,5 +219,52 @@ namespace AnimeHub.Api.Services
 
             return recordsAffected > 0 ? true : false;
         }
+
+        /// <summary>
+        /// Deletes a Lore Entry and updates all dependent Character Profiles to use the Sentinel ID (0).
+        /// This entire operation runs atomically via a single SaveChanges call (which handles ExecuteUpdate
+        /// and the pending Delete operation).
+        /// </summary>
+        /// <param name="loreEntryId"></param>
+        /// <returns>True or False</returns>
+        public async Task<bool> DeleteLoreEntryAsync(int loreEntryId)
+        {
+            // The sentinel ID we agreed upon (the primary key of the "No Feat" LoreEntry)
+            const int sentinelId = 0;
+
+            // Check if the entry to delete is the sentinel record itself.
+            if (loreEntryId == sentinelId)
+            {
+                // Prevent deleting the required sentinel record (LoreEntryId = 0).
+                // This is a critical business rule.
+                return false;
+            }
+
+            // Clear dependent CharacterProfile links using the efficient batch update.
+            // This ensures no foreign key conflicts with the database Restrict rule.
+            // We update the characters BEFORE deleting the Lore Entry.
+            int recordsUpdated = await _repository.ClearGreatestFeatLinkAsync(loreEntryId, sentinelId);
+
+            // Find and Delete the Lore Entry record.
+            LoreEntry? loreEntryToDelete = await _loreEntryRepository.GetTrackedByIdAsync(loreEntryId);
+
+            if (loreEntryToDelete == null)
+            {
+                // If the entry wasn't found, but we updated 0 records, we can still consider this success.
+                // If we updated > 0 records but the entity is null, this shouldn't happen, but we return false.
+                return recordsUpdated > 0 ? false : true;
+            }
+
+            // Delete the entry (and implicitly delete CharacterLoreLink records due to cascade delete).
+            await _loreEntryRepository.Delete(loreEntryToDelete);
+
+            // Commit the changes.
+            // This will execute the batched UPDATE (from ExecuteUpdate) and the DELETE (from Remove).
+            // EF Core handles these as one atomic transaction by default.
+            int recordsAffected = await _repository.SaveChangesAsync();
+
+            // Success if SaveChanges returns > 0 (meaning the delete was saved).
+            return recordsAffected > 0;
+        }
     }
 }
