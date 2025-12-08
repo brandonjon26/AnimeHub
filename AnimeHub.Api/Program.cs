@@ -196,7 +196,7 @@ app.MapControllers(); // Leave for now but will most likely delete later
 
 app.MapAnimeEndpoints();
 app.MapGalleryEndpoints();
-app.MapAyamiEndpoints();
+app.MapCharacterEndpoints();
 app.MapAuthEndpoints();
 app.MapUserProfileEndpoints();
 
