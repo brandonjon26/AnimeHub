@@ -82,8 +82,8 @@ namespace AnimeHub.Api.Data
                 .HasOne(p => p.GreatestFeatLore) // CharacterProfile has ONE GreatestFeatLore
                 .WithMany() // LoreEntry has MANY CharacterProfiles (using the FK on CharacterProfile)
                 .HasForeignKey(p => p.GreatestFeatLoreId)
-                .IsRequired(false)
-                .OnDelete(DeleteBehavior.SetNull);
+                .IsRequired(true)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Configure the new Many-to-Many relationship (MUST BE KEPT)
             modelBuilder.Entity<AccessoryAttireJoin>()

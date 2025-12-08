@@ -24,7 +24,7 @@ namespace AnimeHub.Api.Entities.Character
         [Required]
         public int Age { get; set; } = 18;
 
-        [MaxLength(50)]
+        [Required, MaxLength(50)]
         public string? Origin { get; set; } = "";
 
         [Required, MaxLength(255)]
@@ -48,7 +48,6 @@ namespace AnimeHub.Api.Entities.Character
         [Required, MaxLength(255)]
         public string UniquePower { get; set; } = string.Empty;
 
-        [Required, MaxLength(255)]
         public int GreatestFeatLoreId { get; set; } = 0;
 
         // Navigation property to the defining quest
