@@ -71,8 +71,8 @@ namespace AnimeHub.Api.Data
 
                 // Self-referencing Best Friend link (One-to-Optional-One/Many)
                 characterProfile.HasOne(p => p.BestFriend)
-                    .WithOne() // Or .WithMany() if a character can have many best friends who also consider them a best friend
-                    .HasForeignKey<CharacterProfile>(p => p.BestFriendCharacterId)
+                    .WithMany()
+                    .HasForeignKey(p => p.BestFriendCharacterId)
                     .IsRequired(false) // Allows BestFriendCharacterId to be null
                     .OnDelete(DeleteBehavior.Restrict); // Important to prevent circular delete issues
             });
