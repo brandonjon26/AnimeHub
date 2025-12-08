@@ -6,6 +6,7 @@
         Quest = 1,
         Origin = 2,
         Event = 3,
-        Flashback = 4
+        Flashback = 4,
+        Relationship = 5
     }
 }

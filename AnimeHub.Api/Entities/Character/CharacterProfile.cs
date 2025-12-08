@@ -69,7 +69,7 @@ namespace AnimeHub.Api.Entities.Character
         [ForeignKey(nameof(BestFriendCharacterId))]
         public CharacterProfile? BestFriend { get; set; }
 
-        [Required, MaxLength(500)]
+        [Required]
         public string RomanticTensionDescription { get; set; } = string.Empty;
 
         // Navigation Property for Attires
