@@ -1,7 +1,7 @@
 import React from "react";
-import styles from "./AyamiAvatar.module.css"; // For scoped styles
+import styles from "./CharacterAvatar.module.css"; // For scoped styles
 
-const AyamiAvatar: React.FC = () => {
+const CharacterAvatar: React.FC = () => {
   return (
     <div className={styles.avatarContainer}>
       <h3 className={styles.title}>AnimeHub Avatar</h3>
@@ -21,4 +21,4 @@ const AyamiAvatar: React.FC = () => {
   );
 };
 
-export default AyamiAvatar;
+export default CharacterAvatar;

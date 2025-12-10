@@ -67,8 +67,8 @@ namespace AnimeHub.Api.Endpoints
 
 
             // --- 3. CREATE: Add a new Attire (Write) ---
-            // POST /characters/{characterName}/attire/{profileId}
-            characterGroup.MapPost("/attire/{profileId:int}", async (
+            // POST /characters/{characterName}/{profileId}/attire
+            characterGroup.MapPost("/{profileId:int}/attire", async (
                 [FromRoute] int profileId,
                 [FromBody] CharacterAttireInputDto attireDto,
                 CharacterInterface service) =>

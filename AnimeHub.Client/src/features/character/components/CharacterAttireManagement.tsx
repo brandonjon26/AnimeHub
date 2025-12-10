@@ -1,19 +1,19 @@
 import React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  type AyamiProfileDto,
-  type AyamiAttireDto,
+  type CharacterProfileDto,
+  type CharacterAttireDto,
 } from "../../../api/types/CharacterTypes";
-import { AyamiClient } from "../../../api/AyamiClient";
-import AyamiAttireAddForm from "./AyamiAttireAddForm";
-import styles from "../AyamiProfileEditModal.module.css";
+import { CharacterClient } from "../../../api/CharacterClient";
+import CharacterAttireAddForm from "./CharacterAttireAddForm";
+import styles from "../CharacterProfileEditModal.module.css";
 
-interface AyamiAttireManagementProps {
-  profile: AyamiProfileDto;
+interface CharacterAttireManagementProps {
+  profile: CharacterProfileDto;
   profileId: number;
 }
 
-const AyamiAttireManagement: React.FC<AyamiAttireManagementProps> = ({
+const CharacterAttireManagement: React.FC<CharacterAttireManagementProps> = ({
   profile,
   profileId,
 }) => {
@@ -21,10 +21,13 @@ const AyamiAttireManagement: React.FC<AyamiAttireManagementProps> = ({
 
   // 🔑 TanStack Mutation for DELETE /ayami-profile/attire/{attireId}
   const deleteMutation = useMutation({
-    mutationFn: (attireId: number) => AyamiClient.deleteAttire(attireId),
+    mutationFn: (attireId: number) =>
+      CharacterClient.deleteAttire(profile.firstName.toLowerCase(), attireId),
     onSuccess: () => {
       // Invalidate the cache to force the profile to refetch and update the attire list
-      queryClient.invalidateQueries({ queryKey: ["ayamiProfile"] });
+      queryClient.invalidateQueries({
+        queryKey: ["characterProfile", profileId],
+      });
       // 🔑 FUTURE: Implement user feedback (e.g., toast message)
     },
     onError: (error) => {
@@ -48,12 +51,12 @@ const AyamiAttireManagement: React.FC<AyamiAttireManagementProps> = ({
     }
   };
 
-  const renderAttireCard = (attire: AyamiAttireDto) => (
-    <div key={attire.ayamiAttireId} className={styles.attireCard}>
+  const renderAttireCard = (attire: CharacterAttireDto) => (
+    <div key={attire.characterAttireId} className={styles.attireCard}>
       <div className={styles.attireHeader}>
         <h4 className={styles.attireTitle}>{attire.name}</h4>
         <button
-          onClick={() => handleDelete(attire.ayamiAttireId, attire.name)}
+          onClick={() => handleDelete(attire.characterAttireId, attire.name)}
           className={styles.deleteButton}
           disabled={deleteMutation.isPending || profile.attires.length === 1}
         >
@@ -62,14 +65,16 @@ const AyamiAttireManagement: React.FC<AyamiAttireManagementProps> = ({
       </div>
 
       <p className={styles.attireDescription}>{attire.description}</p>
-      <p className={styles.attireHairstyle}>Hairstyle: {attire.hairstyle}</p>
+      <p className={styles.attireHairstyle}>
+        Hairstyle: {attire.hairstyleDescription}
+      </p>
 
       <h5 className={styles.accessoryTitle}>
         Accessories ({attire.accessories.length})
       </h5>
       <ul className={styles.accessoryList}>
         {attire.accessories.map((acc) => (
-          <li key={acc.ayamiAccessoryId}>
+          <li key={acc.characterAccessoryId}>
             {acc.description}{" "}
             {acc.isWeapon && <span className={styles.weaponTag}>(Weapon)</span>}
           </li>
@@ -102,12 +107,13 @@ const AyamiAttireManagement: React.FC<AyamiAttireManagementProps> = ({
       {/* 2. Add New Attire (Create) */}
       <h3>Add New Attire</h3>
       <br />
-      <AyamiAttireAddForm
-        profileId={profile.ayamiProfileId}
+      <CharacterAttireAddForm
+        profile={profile}
+        profileId={profile.characterProfileId}
         onSuccess={handleAttireAdded}
       />
     </div>
   );
 };
 
-export default AyamiAttireManagement;
+export default CharacterAttireManagement;

@@ -1,48 +1,58 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  type AyamiAttireInput,
-  type AyamiAccessoryInput,
+  type CharacterProfileDto,
+  type CharacterAttireInput,
+  type CharacterAccessoryInput,
 } from "../../../api/types/CharacterTypes";
-import { AyamiClient } from "../../../api/AyamiClient";
-import styles from "../AyamiProfileEditModal.module.css";
+import { CharacterClient } from "../../../api/CharacterClient";
+import styles from "../CharacterProfileEditModal.module.css";
 
-interface AyamiAttireAddFormProps {
+interface CharacterAttireAddFormProps {
+  profile: CharacterProfileDto;
   profileId: number;
   onSuccess: () => void;
 }
 
 // 🔑 Initial state for a new accessory entry
-const initialAccessory: AyamiAccessoryInput = {
+const initialAccessory: CharacterAccessoryInput = {
   description: "",
   isWeapon: false,
 };
 
 // 🔑 Initial state for the entire attire form
-const initialAttireForm: AyamiAttireInput = {
+const initialAttireForm: CharacterAttireInput = {
   name: "",
+  attireType: "",
   description: "",
-  hairstyle: "",
+  hairstyleDescription: "",
   accessories: [initialAccessory], // Start with one accessory slot
 };
 
-const AyamiAttireAddForm: React.FC<AyamiAttireAddFormProps> = ({
+const CharacterAttireAddForm: React.FC<CharacterAttireAddFormProps> = ({
+  profile,
   profileId,
   onSuccess,
 }) => {
   const [attireData, setAttireData] =
-    useState<AyamiAttireInput>(initialAttireForm);
+    useState<CharacterAttireInput>(initialAttireForm);
   const queryClient = useQueryClient();
 
   // 🔑 TanStack Mutation for POST /ayami-profile/attire
   const addAttireMutation = useMutation({
-    mutationFn: (data: AyamiAttireInput) =>
-      AyamiClient.addAttire(profileId, data),
+    mutationFn: (data: CharacterAttireInput) =>
+      CharacterClient.addAttire(
+        profile.firstName.toLowerCase(),
+        profileId,
+        data
+      ),
     onSuccess: () => {
       // Reset the form state
       setAttireData(initialAttireForm);
       // Invalidate the cache to force the profile to refetch and update the list
-      queryClient.invalidateQueries({ queryKey: ["ayamiProfile"] });
+      queryClient.invalidateQueries({
+        queryKey: ["characterProfile", profileId],
+      });
       onSuccess(); // Optional: You might want to keep the modal open but switch tabs, or simply close.
       // For now, we'll let the user manage success feedback.
     },
@@ -121,7 +131,7 @@ const AyamiAttireAddForm: React.FC<AyamiAttireAddFormProps> = ({
       return;
     }
 
-    const dataToSubmit: AyamiAttireInput = {
+    const dataToSubmit: CharacterAttireInput = {
       ...attireData,
       accessories: accessoriesToSubmit,
     };
@@ -142,7 +152,7 @@ const AyamiAttireAddForm: React.FC<AyamiAttireAddFormProps> = ({
   const isAttireValid =
     attireData.name.trim() &&
     attireData.description.trim() &&
-    attireData.hairstyle.trim();
+    attireData.hairstyleDescription.trim();
   const canSubmit = isAttireValid && !isSubmitting;
 
   return (
@@ -169,7 +179,7 @@ const AyamiAttireAddForm: React.FC<AyamiAttireAddFormProps> = ({
           type="text"
           id="hairstyle"
           name="hairstyle"
-          value={attireData.hairstyle}
+          value={attireData.hairstyleDescription}
           onChange={handleAttireChange}
           required
         />
@@ -264,4 +274,4 @@ const AyamiAttireAddForm: React.FC<AyamiAttireAddFormProps> = ({
   );
 };
 
-export default AyamiAttireAddForm;
+export default CharacterAttireAddForm;

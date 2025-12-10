@@ -43,7 +43,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasKey("AnimeId");
 
-                    b.ToTable("Anime");
+                    b.ToTable("Anime", (string)null);
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.Character.AccessoryAttireJoin", b =>
@@ -58,7 +58,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasIndex("CharacterAccessoryId");
 
-                    b.ToTable("AccessoryAttireJoins");
+                    b.ToTable("AccessoryAttireJoins", (string)null);
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.Character.CharacterAccessory", b =>
@@ -83,7 +83,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasKey("CharacterAccessoryId");
 
-                    b.ToTable("CharacterAccessories");
+                    b.ToTable("CharacterAccessories", (string)null);
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.Character.CharacterAttire", b =>
@@ -121,7 +121,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasIndex("CharacterProfileId");
 
-                    b.ToTable("CharacterAttires");
+                    b.ToTable("CharacterAttires", (string)null);
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.Character.CharacterLoreLink", b =>
@@ -140,7 +140,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasIndex("LoreEntryId");
 
-                    b.ToTable("CharacterLoreLinks");
+                    b.ToTable("CharacterLoreLinks", (string)null);
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.Character.CharacterProfile", b =>
@@ -244,7 +244,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasIndex("GreatestFeatLoreId");
 
-                    b.ToTable("CharacterProfiles");
+                    b.ToTable("CharacterProfiles", (string)null);
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.Character.Lore.LoreEntry", b =>
@@ -272,7 +272,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasIndex("LoreTypeId");
 
-                    b.ToTable("LoreEntries");
+                    b.ToTable("LoreEntries", (string)null);
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.Character.Lore.LoreType", b =>
@@ -290,7 +290,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasKey("LoreTypeId");
 
-                    b.ToTable("LoreTypes");
+                    b.ToTable("LoreTypes", (string)null);
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.GalleryImage", b =>
@@ -330,7 +330,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasIndex("GalleryImageCategoryId");
 
-                    b.ToTable("GalleryImage");
+                    b.ToTable("GalleryImage", (string)null);
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.GalleryImageCategory", b =>
@@ -348,7 +348,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasKey("GalleryImageCategoryId");
 
-                    b.ToTable("GalleryImageCategory");
+                    b.ToTable("GalleryImageCategory", (string)null);
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.UserProfile", b =>
@@ -380,7 +380,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UserProfiles");
+                    b.ToTable("UserProfiles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

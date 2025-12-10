@@ -9,7 +9,7 @@ import styles from "./WelcomePage.module.css";
 const WelcomePage: React.FC = () => {
   // Placeholder image URLs for the two mascots
   const ayamiHeadshotImageUrl = "/images/ayami/Ayami_Bio_Page_3.png";
-  const chiaraHeadshotImageUrl = "/images/chiara/Chiara_Headshot_1.png";
+  const chiaraHeadshotImageUrl = "/images/chiara/Chiara_Headshot.png";
 
   return (
     // 1. Use the main container class

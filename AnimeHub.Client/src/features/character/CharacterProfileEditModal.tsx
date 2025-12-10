@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import { type AyamiProfileDto } from "../../api/types/CharacterTypes";
-import { AyamiProfileUpdateForm, AyamiAttireManagement } from "./components";
-import styles from "./AyamiProfileEditModal.module.css";
+import { type CharacterProfileDto } from "../../api/types/CharacterTypes";
+import {
+  CharacterProfileUpdateForm,
+  CharacterAttireManagement,
+} from "./components";
+import styles from "./CharacterProfileEditModal.module.css";
 
-interface AyamiProfileEditModalProps {
-  profile: AyamiProfileDto;
+interface CharacterProfileEditModalProps {
+  profile: CharacterProfileDto;
   profileId: number;
   onClose: () => void;
 }
@@ -14,7 +17,7 @@ const TABS = {
   ATTIRE: "Attire Management",
 };
 
-const AyamiProfileEditModal: React.FC<AyamiProfileEditModalProps> = ({
+const CharacterProfileEditModal: React.FC<CharacterProfileEditModalProps> = ({
   profile,
   profileId,
   onClose,
@@ -26,7 +29,7 @@ const AyamiProfileEditModal: React.FC<AyamiProfileEditModalProps> = ({
     switch (activeTab) {
       case TABS.PROFILE:
         return (
-          <AyamiProfileUpdateForm
+          <CharacterProfileUpdateForm
             profile={profile}
             profileId={profileId}
             onSuccess={onClose} // Close modal on successful update
@@ -34,7 +37,7 @@ const AyamiProfileEditModal: React.FC<AyamiProfileEditModalProps> = ({
         );
       case TABS.ATTIRE:
         return (
-          <AyamiAttireManagement profile={profile} profileId={profileId} />
+          <CharacterAttireManagement profile={profile} profileId={profileId} />
         );
       default:
         return null;
@@ -56,7 +59,7 @@ const AyamiProfileEditModal: React.FC<AyamiProfileEditModalProps> = ({
         {/* Ayami Headshot Image */}
         <div className={styles.headshotWrapper}>
           <img
-            src="/images/ayami/Ayami_Bio_Page_3.png" // Reusing the same image
+            src={`/images/${profile.firstName.toLowerCase()}/Ayami_Bio_Page_3.png`} // Reusing the same image
             alt={`${profile.firstName} Headshot`}
             className={styles.modalHeadshot}
           />
@@ -90,4 +93,4 @@ const AyamiProfileEditModal: React.FC<AyamiProfileEditModalProps> = ({
   );
 };
 
-export default AyamiProfileEditModal;
+export default CharacterProfileEditModal;

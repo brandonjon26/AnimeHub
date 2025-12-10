@@ -9,7 +9,7 @@ import ImageViewer from "./ImageViewer";
 import ImageManagerModal from "./ImageManagerModal";
 import { useAuth } from "../../../hooks/useAuth";
 import styles from "./Gallery.module.css";
-import pageStyles from "../AboutAyamiPage.module.css"; // Keep page container styles
+import pageStyles from "../AboutCharacterPage.module.css"; // Keep page container styles
 
 const galleryClient = new GalleryClient();
 

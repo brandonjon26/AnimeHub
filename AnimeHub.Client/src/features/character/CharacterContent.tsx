@@ -4,29 +4,38 @@ import {
   type GalleryImage,
   type GalleryCategory,
 } from "../../api/types/GalleryTypes";
-import { type AyamiProfileDto } from "../../api/types/CharacterTypes";
-import AyamiLoreReveal from "./AyamiLoreReveal";
-import AyamiProfileEditModal from "./AyamiProfileEditModal";
+import {
+  type CharacterProfileDto,
+  type CharacterProfileSummaryDto,
+} from "../../api/types/CharacterTypes";
+import CharacterLoreReveal from "./CharacterLoreReveal";
+import CharacterProfileEditModal from "./CharacterProfileEditModal";
 import { useAuth } from "../../hooks/useAuth";
 import GalleryAdminModal from "./gallery/GalleryAdminModal";
-import styles from "./AboutAyamiPage.module.css";
+import styles from "./AboutCharacterPage.module.css";
 
-interface AyamiContentProps {
-  profile: AyamiProfileDto;
+interface CharacterContentProps {
+  primaryProfile: CharacterProfileDto;
+  secondaryProfile: CharacterProfileDto | undefined;
   featuredImages: GalleryImage[];
   folders: GalleryCategory[];
   isAdult: boolean;
   onGalleryRefresh: () => void;
 }
 
-const AyamiContent: React.FC<AyamiContentProps> = ({
-  profile,
+const CharacterContent: React.FC<CharacterContentProps> = ({
+  primaryProfile,
+  secondaryProfile,
   featuredImages,
   folders,
   isAdult,
   onGalleryRefresh,
 }) => {
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  // Tracks which character is being edited. Null means modal is closed.
+  const [editingProfile, setEditingProfile] =
+    useState<CharacterProfileDto | null>(null);
+
+  // const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isGalleryAdminModalOpen, setIsGalleryAdminModalOpen] = useState(false);
 
   // Audio management
@@ -38,14 +47,14 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
   // Check if the user is an Admin or Moderator (assuming roles are 'Admin' or 'Moderator')
   const isAdminAccess = user?.roles[0] === "Admin" || user?.roles[0] === "Mage";
 
-  const profileId = profile.ayamiProfileId;
+  const profileId = primaryProfile.characterProfileId;
 
-  const fullName = `${profile.firstName} ${profile.lastName}`;
-  const japaneseName = `${profile.japaneseFirstName} ${profile.japaneseLastName}`;
+  const fullName = `${primaryProfile.firstName} ${primaryProfile.lastName}`;
+  const japaneseName = `${primaryProfile.japaneseFirstName} ${primaryProfile.japaneseLastName}`;
 
   // Get accessories from the first attire for the Key Details list
   // Note: In a larger app, you might choose a primary attire specifically.
-  const primaryAttire = profile.attires[0];
+  const primaryAttire = primaryProfile.attires[0];
   const equipmentAccessory = primaryAttire?.accessories.find(
     (acc) => acc.isWeapon
   );
@@ -59,6 +68,19 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
     // If the folder IS mature, only show it if the user is an adult.
     return isAdult;
   });
+
+  // --- NEW: Universal Profile Edit Handler ---
+  const handleEditClick = (profile: CharacterProfileDto) => {
+    if (isAdminAccess) {
+      setEditingProfile(profile);
+    }
+  };
+
+  // --- NEW: Universal Modal Close Handler ---
+  const handleProfileModalClose = () => {
+    setEditingProfile(null); // Close modal by resetting the editing profile state
+  };
+  // --- END Modal Handlers ---
 
   // Play/Pause Audio
   const handlePlayGreeting = () => {
@@ -99,12 +121,14 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
       <h1 className={styles.title}>
         Meet {fullName} ({japaneseName}) 🔮 The Bewitching Beauty {/*🌟*/}
         {/* Play Button */}
-        {profile.greetingAudioUrl && (
+        {primaryProfile.greetingAudioUrl && (
           <button
             className={styles.audioButton}
             onClick={handlePlayGreeting}
             aria-label={
-              isPlaying ? "Pause Ayami's greeting" : "Play Ayami's greeting"
+              isPlaying
+                ? `Pause ${primaryProfile.firstName}'s greeting`
+                : `Play ${primaryProfile.firstName}'s greeting`
             }
           >
             {/* Simple icon logic: use a speaker icon or play/pause symbols */}
@@ -114,8 +138,12 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
       </h1>
 
       {/* Hidden Audio Element (Loaded via URL from DTO) */}
-      {profile.greetingAudioUrl && (
-        <audio ref={audioRef} src={profile.greetingAudioUrl} preload="auto" />
+      {primaryProfile.greetingAudioUrl && (
+        <audio
+          ref={audioRef}
+          src={primaryProfile.greetingAudioUrl}
+          preload="auto"
+        />
       )}
 
       {/* Reuses the existing flex wrapper class */}
@@ -123,15 +151,15 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
         {/* LEFT: Bio/Text Area (Retaining original structure) */}
         <div className={styles.bioArea}>
           <div className={styles.bioFlexContainer}>
-            {/* Static image remains for the bio section */}
+            {/* Primary Character Headshot Click (Ayami) */}
             <div
               className={`${styles.headshotContainer} ${
                 !isAdminAccess ? styles.headshotContainerDisabled : ""
               }`}
-              onClick={() => isAdminAccess && setIsProfileModalOpen(true)}
+              onClick={() => handleEditClick(primaryProfile)}
             >
               <img
-                src="/images/ayami/Ayami_Bio_Page_3.png"
+                src={`/images/${primaryProfile.firstName.toLowerCase()}/Ayami_Bio_Page_3.png`}
                 alt={`${fullName} Headshot`}
                 className={styles.headshotImage}
               />
@@ -141,7 +169,11 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
               )}
             </div>
 
-            <AyamiLoreReveal profile={profile} />
+            <CharacterLoreReveal
+              primaryProfile={primaryProfile}
+              secondaryProfile={secondaryProfile}
+              onEditClick={handleEditClick}
+            />
           </div>
         </div>
 
@@ -168,7 +200,7 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
       {/* 2. BOTTOM SECTION: Album/Folder Links */}
       <div className={styles.albumsSection}>
         <div className={styles.galleryHeader}>
-          <h2>{profile.firstName}'s Albums</h2>
+          <h2>{primaryProfile.firstName}'s Albums</h2>
 
           {/* 🔑 ADMIN QUICK-ACCESS TOOLS */}
           {isAdminAccess && (
@@ -212,11 +244,11 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
       </div>
 
       {/* MODAL RENDERING */}
-      {isProfileModalOpen && (
-        <AyamiProfileEditModal
-          profile={profile}
-          profileId={profileId}
-          onClose={() => setIsProfileModalOpen(false)}
+      {editingProfile && (
+        <CharacterProfileEditModal
+          profile={editingProfile}
+          profileId={editingProfile.characterProfileId}
+          onClose={handleProfileModalClose}
         />
       )}
 
@@ -232,4 +264,4 @@ const AyamiContent: React.FC<AyamiContentProps> = ({
   );
 };
 
-export default AyamiContent;
+export default CharacterContent;

@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import AyamiContent from "./AyamiContent";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import CharacterContent from "./CharacterContent";
 import { GalleryClient } from "../../api/GalleryClient";
-import { AyamiClient } from "../../api/AyamiClient";
+import { CharacterClient } from "../../api/CharacterClient";
 import {
   type GalleryImage,
   type GalleryCategory,
 } from "../../api/types/GalleryTypes";
-import { type AyamiProfileDto } from "../../api/types/CharacterTypes";
+import { type CharacterProfileDto } from "../../api/types/CharacterTypes";
 import MainLayout from "../../components/common/MainLayout";
 import { useAuth } from "../../hooks/useAuth";
-import styles from "./AboutAyamiPage.module.css";
+import styles from "./AboutCharacterPage.module.css";
 
 // Initialize the client
 const galleryClient = new GalleryClient();
 
-const AboutAyamiPage: React.FC = () => {
+// Define the two characters we need to fetch
+const PRIMARY_CHARACTER_NAME = "Ayami";
+const SECONDARY_CHARACTER_NAME = "Chiara";
+
+const AboutCharacterPage: React.FC = () => {
   const location = useLocation();
   const { user } = useAuth(); // Get user context (assuming it contains isAdult)
   const isAdult = user?.isAdult ?? false; // Extract isAdult status, default to false if not logged in
@@ -27,12 +31,24 @@ const AboutAyamiPage: React.FC = () => {
 
   // --- TanStack Query Data Fetching ---
 
-  // 1. Fetch Ayami Profile Data
-  const profileQuery = useQuery<AyamiProfileDto, Error>({
-    queryKey: ["ayamiProfile"], // Unique key for the profile
-    queryFn: () => AyamiClient.getProfile(),
-    enabled: isIndexRoute, // Only run the query if we are on the index route
+  // 1. Fetch BOTH Character Profiles concurrently using useQueries
+  const characterQueries = useQueries({
+    queries: [
+      {
+        queryKey: ["characterProfile", PRIMARY_CHARACTER_NAME],
+        queryFn: () => CharacterClient.getProfile(PRIMARY_CHARACTER_NAME),
+        enabled: isIndexRoute,
+      },
+      {
+        queryKey: ["characterProfile", SECONDARY_CHARACTER_NAME],
+        queryFn: () => CharacterClient.getProfile(SECONDARY_CHARACTER_NAME),
+        enabled: isIndexRoute,
+      },
+    ],
   });
+
+  // Extract the individual query results
+  const [ayamiQuery, chiaraQuery] = characterQueries;
 
   // 2. Fetch Featured Images (Replacing old useEffect logic)
   const featuredQuery = useQuery({
@@ -54,8 +70,19 @@ const AboutAyamiPage: React.FC = () => {
   // --- Combine Loading & Error States ---
 
   const isLoading =
-    profileQuery.isLoading || featuredQuery.isLoading || foldersQuery.isLoading;
-  const error = profileQuery.error || featuredQuery.error || foldersQuery.error;
+    ayamiQuery.isLoading ||
+    chiaraQuery.isLoading ||
+    featuredQuery.isLoading ||
+    foldersQuery.isLoading;
+
+  const error =
+    ayamiQuery.error ||
+    chiaraQuery.error ||
+    featuredQuery.error ||
+    foldersQuery.error;
+
+  // Check specifically if the primary profile (Ayami) is missing or errored
+  const primaryError = ayamiQuery.error;
 
   if (isIndexRoute && isLoading) {
     return (
@@ -63,10 +90,10 @@ const AboutAyamiPage: React.FC = () => {
     );
   }
 
-  if (isIndexRoute && error) {
+  if (isIndexRoute && primaryError) {
     return (
       <div className={styles.pageContainer} style={{ color: "red" }}>
-        Error: Failed to load Ayami data: {error.message}
+        Error: Failed to load Primary Character data: {primaryError.message}
       </div>
     );
   }
@@ -83,7 +110,9 @@ const AboutAyamiPage: React.FC = () => {
   // --- Render Logic ---
 
   // Note: Data is guaranteed to exist here if isLoading is false and no error occurred.
-  const profile = profileQuery.data;
+  const primaryProfile = ayamiQuery.data;
+  // The secondary character, which might be null if the query failed (error check is above)
+  const secondaryProfile = chiaraQuery.data;
   const featuredImages = featuredQuery.data || [];
   const folders = foldersQuery.data || [];
 
@@ -93,9 +122,10 @@ const AboutAyamiPage: React.FC = () => {
       <Outlet />
 
       {/* Render AyamiContent ONLY if we are on the index route */}
-      {isIndexRoute && profile && (
-        <AyamiContent
-          profile={profile}
+      {isIndexRoute && primaryProfile && (
+        <CharacterContent
+          primaryProfile={primaryProfile}
+          secondaryProfile={secondaryProfile}
           featuredImages={featuredImages}
           folders={folders}
           isAdult={isAdult}
@@ -106,4 +136,4 @@ const AboutAyamiPage: React.FC = () => {
   );
 };
 
-export default AboutAyamiPage;
+export default AboutCharacterPage;
