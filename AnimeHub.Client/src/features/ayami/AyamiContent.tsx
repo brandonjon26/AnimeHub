@@ -4,7 +4,7 @@ import {
   type GalleryImage,
   type GalleryCategory,
 } from "../../api/types/GalleryTypes";
-import { type AyamiProfileDto } from "../../api/types/AyamiTypes";
+import { type AyamiProfileDto } from "../../api/types/CharacterTypes";
 import AyamiLoreReveal from "./AyamiLoreReveal";
 import AyamiProfileEditModal from "./AyamiProfileEditModal";
 import { useAuth } from "../../hooks/useAuth";

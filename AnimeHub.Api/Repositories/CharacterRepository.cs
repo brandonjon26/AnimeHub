@@ -26,6 +26,9 @@ namespace AnimeHub.Api.Repositories
                 .Include(p => p.Attires)
                 .ThenInclude(a => a.AccessoryLinks) // Navigate through the join table
                 .ThenInclude(aal => aal.Accessory) // Then include the actual Accessory entity
+                .Include(p => p.LoreLinks) // Include the join table entity (CharacterLoreLink)
+                .ThenInclude(cll => cll.LoreEntry) // Then include the actual Lore Entry entity
+                .ThenInclude(le => le.LoreType) // Then include the LoreType (Needed for DTO mapping of LoreType.Name)
                 .FirstOrDefaultAsync();
         }
 

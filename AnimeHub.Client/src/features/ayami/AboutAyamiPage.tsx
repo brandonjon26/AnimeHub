@@ -8,7 +8,7 @@ import {
   type GalleryImage,
   type GalleryCategory,
 } from "../../api/types/GalleryTypes";
-import { type AyamiProfileDto } from "../../api/types/AyamiTypes";
+import { type AyamiProfileDto } from "../../api/types/CharacterTypes";
 import MainLayout from "../../components/common/MainLayout";
 import { useAuth } from "../../hooks/useAuth";
 import styles from "./AboutAyamiPage.module.css";

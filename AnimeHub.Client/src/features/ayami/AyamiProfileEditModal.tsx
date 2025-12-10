@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { type AyamiProfileDto } from "../../api/types/AyamiTypes";
+import { type AyamiProfileDto } from "../../api/types/CharacterTypes";
 import { AyamiProfileUpdateForm, AyamiAttireManagement } from "./components";
 import styles from "./AyamiProfileEditModal.module.css";
 

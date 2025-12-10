@@ -27,7 +27,11 @@ namespace AnimeHub.Api.DTOs.Character
         // Nested Best Friend Profile (Optional, for simplified client consumption)
         CharacterProfileSummaryDto? BestFriend,
 
-        ICollection<CharacterAttireDto> Attires // List of all different outfits/attires
+        // List of all different outfits/attires
+        ICollection<CharacterAttireDto> Attires,
+
+        // Collection of all linked lore entries
+        ICollection<CharacterLoreLinkDto> LoreLinks
     );
 
     // A summary DTO for the nested Best Friend field to avoid circular references and over-fetching

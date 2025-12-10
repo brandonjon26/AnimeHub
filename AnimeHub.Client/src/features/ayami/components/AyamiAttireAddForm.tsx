@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   type AyamiAttireInput,
   type AyamiAccessoryInput,
-} from "../../../api/types/AyamiTypes";
+} from "../../../api/types/CharacterTypes";
 import { AyamiClient } from "../../../api/AyamiClient";
 import styles from "../AyamiProfileEditModal.module.css";
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { type AyamiProfileDto } from "../../api/types/AyamiTypes";
+import { type AyamiProfileDto } from "../../api/types/CharacterTypes";
 import styles from "./AboutAyamiPage.module.css";
 
 interface AyamiLoreRevealProps {

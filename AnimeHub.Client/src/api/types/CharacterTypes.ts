@@ -4,34 +4,50 @@
  * Interface for the Ayami Accessory DTO.
  * Used within AyamiAttireDto.
  */
-export interface AyamiAccessoryDto {
-  ayamiAccessoryId: number;
+export interface CharacterAccessoryDto {
+  characterAccessoryId: number;
   description: string;
   isWeapon: boolean;
+  uniqueEffect: string | null;
 }
 
 /**
  * Interface for the Ayami Attire DTO.
  * Used within AyamiProfileDto.
  */
-export interface AyamiAttireDto {
-  ayamiAttireId: number;
+export interface CharacterAttireDto {
+  characterAttireId: number;
   name: string;
+  attireType: string;
   description: string;
-  hairstyle: string;
-  accessories: AyamiAccessoryDto[]; // The normalized collection
+  hairstyleDescription: string;
+  accessories: CharacterAccessoryDto[]; // The normalized collection
+}
+
+/**
+ * Interface for a summarized Character Profile.
+ * Used for nested relationships (like BestFriend) to prevent circular references.
+ */
+export interface CharacterProfileSummaryDto {
+  characterProfileId: number;
+  firstName: string;
+  lastName: string;
+  vibe: string;
+  uniquePower: string;
 }
 
 /**
  * Interface for the full Ayami Profile DTO.
  */
-export interface AyamiProfileDto {
+export interface CharacterProfileDto {
   // Core Profile Fields
-  ayamiProfileId: number;
+  characterProfileId: number;
   firstName: string;
   lastName: string;
   japaneseFirstName: string;
   japaneseLastName: string;
+  age: number;
+  origin: string | null;
   greetingAudioUrl: string;
   vibe: string;
   height: string;
@@ -40,10 +56,15 @@ export interface AyamiProfileDto {
   eyes: string;
   skin: string;
   primaryEquipment: string;
+  uniquePower: string;
+  greatestFeat: string;
+  magicAptitude: string;
+  romanticTensionDescription: string;
   bio: string;
 
-  // Nested Attires
-  attires: AyamiAttireDto[];
+  // Nested Relationships
+  bestFriend: CharacterProfileSummaryDto | null;
+  attires: CharacterAttireDto[];
 }
 
 // --- INPUT DTOs (Data for PUT /ayami-profile and POST /ayami-profile/attire) ---
@@ -52,29 +73,33 @@ export interface AyamiProfileDto {
  * Input DTO for creating or updating an accessory.
  * Note: No ID is included as we rely on the description for reuse/lookup on the backend.
  */
-export interface AyamiAccessoryInput {
+export interface CharacterAccessoryInput {
   description: string;
   isWeapon: boolean;
+  uniqueEffect?: string | null;
 }
 
 /**
  * Input DTO for creating a new Ayami Attire.
  */
-export interface AyamiAttireInput {
+export interface CharacterAttireInput {
   name: string;
+  attireType: string;
   description: string;
-  hairstyle: string;
-  accessories: AyamiAccessoryInput[];
+  hairstyleDescription: string;
+  accessories: CharacterAccessoryInput[];
 }
 
 /**
  * Input DTO for updating the core Ayami Profile fields.
  */
-export interface AyamiProfileUpdateInput {
+export interface CharacterProfileUpdateInput {
   firstName: string;
   lastName: string;
   japaneseFirstName: string;
   japaneseLastName: string;
+  age: number;
+  origin: string | null;
   vibe: string;
   height: string;
   bodyType: string;
@@ -82,5 +107,9 @@ export interface AyamiProfileUpdateInput {
   eyes: string;
   skin: string;
   primaryEquipment: string;
+  uniquePower: string;
+  greatestFeatLoreId: number | 0;
+  magicAptitude: string;
+  romanticTensionDescription: string;
   bio: string;
 }

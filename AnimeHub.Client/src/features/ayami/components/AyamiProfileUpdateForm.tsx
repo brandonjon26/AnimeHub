@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"; // 🔑 Imp
 import {
   type AyamiProfileDto,
   type AyamiProfileUpdateInput,
-} from "../../../api/types/AyamiTypes";
+} from "../../../api/types/CharacterTypes";
 import { AyamiClient } from "../../../api/AyamiClient";
 import styles from "../AyamiProfileEditModal.module.css"; // Use the modal's styles
 
