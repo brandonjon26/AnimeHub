@@ -1,8 +1,8 @@
-// --- READ DTOs (Data from GET /ayami-profile) ---
+// --- READ DTOs (Data from GET /characters/{characterName}) ---
 
 /**
- * Interface for the Ayami Accessory DTO.
- * Used within AyamiAttireDto.
+ * Interface for the Character Accessory DTO.
+ * Used within CharacterAttireDto.
  */
 export interface CharacterAccessoryDto {
   characterAccessoryId: number;
@@ -12,8 +12,8 @@ export interface CharacterAccessoryDto {
 }
 
 /**
- * Interface for the Ayami Attire DTO.
- * Used within AyamiProfileDto.
+ * Interface for the Character Attire DTO.
+ * Used within CharacterProfileDto.
  */
 export interface CharacterAttireDto {
   characterAttireId: number;
@@ -22,6 +22,15 @@ export interface CharacterAttireDto {
   description: string;
   hairstyleDescription: string;
   accessories: CharacterAccessoryDto[]; // The normalized collection
+}
+
+/**
+ * Interface for the Character Lore Link DTO.
+ * Represents a specific character's involvement (role) in a Lore Entry.
+ */
+export interface CharacterLoreLinkDto {
+  characterRole: string | null;
+  loreEntry: LoreEntryDto;
 }
 
 /**
@@ -37,7 +46,7 @@ export interface CharacterProfileSummaryDto {
 }
 
 /**
- * Interface for the full Ayami Profile DTO.
+ * Interface for the full Character Profile DTO.
  */
 export interface CharacterProfileDto {
   // Core Profile Fields
@@ -65,9 +74,31 @@ export interface CharacterProfileDto {
   // Nested Relationships
   bestFriend: CharacterProfileSummaryDto | null;
   attires: CharacterAttireDto[];
+  loreLinks: CharacterLoreLinkDto[];
 }
 
-// --- INPUT DTOs (Data for PUT /ayami-profile and POST /ayami-profile/attire) ---
+/**
+ * Interface for the Lore Type DTO.
+ * Used for lookup tables (e.g., Quest, Origin, Event).
+ */
+export interface LoreTypeDto {
+  loreTypeId: number;
+  name: string;
+}
+
+/**
+ * Interface for a full Lore Entry DTO.
+ * Includes the title, narrative, type, and involved characters.
+ */
+export interface LoreEntryDto {
+  loreEntryId: number;
+  title: string;
+  loreType: string;
+  narrative: string;
+  charactersInvolved: CharacterProfileSummaryDto[]; // Uses the summary DTO defined earlier
+}
+
+// --- INPUT DTOs (Data for PUT /characters/{name}/profile and POST /characters/{name}/attire) ---
 
 /**
  * Input DTO for creating or updating an accessory.
@@ -80,7 +111,7 @@ export interface CharacterAccessoryInput {
 }
 
 /**
- * Input DTO for creating a new Ayami Attire.
+ * Input DTO for creating a new Character Attire.
  */
 export interface CharacterAttireInput {
   name: string;
@@ -91,7 +122,7 @@ export interface CharacterAttireInput {
 }
 
 /**
- * Input DTO for updating the core Ayami Profile fields.
+ * Input DTO for updating the core Character Profile fields.
  */
 export interface CharacterProfileUpdateInput {
   firstName: string;
@@ -112,4 +143,14 @@ export interface CharacterProfileUpdateInput {
   magicAptitude: string;
   romanticTensionDescription: string;
   bio: string;
+}
+
+/**
+ * Input DTO for creating a new Lore Entry.
+ */
+export interface LoreEntryInputDto {
+  title: string;
+  loreTypeId: number;
+  narrative: string;
+  characterIds: number[]; // Array of character IDs linked to this entry
 }

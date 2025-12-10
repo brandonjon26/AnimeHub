@@ -1,7 +1,7 @@
 import React, { type ReactNode, useState } from "react";
 import { NavLink, useLocation, Outlet } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
-import AyamiAvatar from "../AyamiAvatar";
+import CharacterAvatar from "../CharacterAvatar";
 import { useAuth } from "../../../hooks/useAuth";
 import UserMenu from "../UserMenu";
 import styles from "./MainLayout.module.css";
@@ -123,7 +123,7 @@ const MainLayout: React.FC = () => {
         {/* Right Avatar (Vision: Custom AnimeHub Character) */}
         {isHomePage && (
           <aside className={styles.avatarArea}>
-            <AyamiAvatar />
+            <CharacterAvatar />
           </aside>
         )}
       </main>

@@ -7,8 +7,8 @@ import {
 } from "react-router-dom";
 import MainLayout from "./../components/common/MainLayout/MainLayout.tsx";
 import HomePage from "../features/home/HomePage";
-import AboutAyamiPage from "../features/ayami/AboutAyamiPage";
-import GalleryFolderPage from "../features/ayami/gallery/GalleryFolderPage";
+import AboutCharacterPage from "../features/character/AboutCharacterPage.tsx";
+import GalleryFolderPage from "../features/character/gallery/GalleryFolderPage.tsx";
 import Login from "../features/auth/Login.tsx";
 import Register from "../features/auth/Register.tsx";
 import ProtectedRoute from "../features/auth/ProtectedRoute.tsx";
@@ -51,7 +51,7 @@ const routeConfig: RouteObject[] = [
           // Ayami/Gallery Routes (NESTED STRUCTURE)
           {
             path: "ayami",
-            element: <AboutAyamiPage />,
+            element: <AboutCharacterPage />,
             children: [
               {
                 // Matches paths like /ayami/Standard%20Anime%20Isekai
