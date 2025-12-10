@@ -16,6 +16,8 @@ namespace AnimeHub.Api.Services
         // Retrieves a specific Lore Entry by ID.
         Task<LoreEntryDto?> GetLoreEntryByIdAsync(int loreEntryId);
 
+        Task<ICollection<LoreEntrySummaryDto>> GetAllLoreEntriesAsync();
+
 
         // --- UPDATE ---
 

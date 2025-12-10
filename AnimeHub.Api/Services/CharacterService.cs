@@ -80,6 +80,21 @@ namespace AnimeHub.Api.Services
             return entry == null ? null : _mapper.Map<LoreEntryDto>(entry);
         }
 
+        /// <summary>
+        /// Retrieves all lore entries as a lightweight summary list for populating dropdowns.
+        /// </summary>
+        /// <returns>A Collection of Lore Entries</returns>
+        public async Task<ICollection<LoreEntrySummaryDto>> GetAllLoreEntriesAsync()
+        {
+            // 1. Call the new repository method to get all entities (as ICollection<LoreEntry>)
+            ICollection<LoreEntry> loreEntities = await _repository.GetAllLoreEntriesAsync();
+
+            // 2. Map the collection of entities to the collection of summary DTOs
+            ICollection<LoreEntrySummaryDto> loreDtos = _mapper.Map<ICollection<LoreEntrySummaryDto>>(loreEntities);
+
+            return loreDtos;
+        }
+
 
         // --- UPDATE ---
         public async Task<bool> UpdateProfileAsync(int profileId, CharacterProfileUpdateDto updateDto)
