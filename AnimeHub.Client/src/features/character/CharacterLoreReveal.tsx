@@ -57,7 +57,7 @@ const SecondaryCharacterCard: React.FC<SecondaryCharacterCardProps> = ({
       <div className={styles.headshotContainer}>
         {/* Image source needs to be dynamic for Chiara */}
         <img
-          src={`/images/${secondaryProfile.firstName.toLowerCase()}/Chiara_Headshot.png`}
+          src={`/images/headshot/${secondaryProfile.firstName.toLowerCase()}/Headshot.png`}
           alt={`${secondaryProfile.firstName} Headshot`}
           className={styles.headshotImage}
         />
@@ -206,62 +206,70 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
             {renderBio(primaryProfile.bio)}
 
             <h3 className={styles.keyDetailsTitle}>Key Details</h3>
-            <ul className={styles.keyList}>
-              <li>
-                <b>Full Name:</b> {fullName} ({japaneseName})
-              </li>
-              <li>
-                <b>Age:</b> {primaryProfile.age}
-              </li>
-              <li>
-                <b>Origin:</b> {primaryProfile.origin || "Unknown Realm"}
-              </li>
-              <li>
-                <b>Vibe:</b> {primaryProfile.vibe}
-              </li>
-              <li>
-                <b>Height:</b> {primaryProfile.height}
-              </li>
-              <li>
-                <b>Body Type:</b> {primaryProfile.bodyType}
-              </li>
-              <li>
-                <b>Eyes:</b> {primaryProfile.eyes}
-              </li>
-              <li>
-                <b>Hair:</b> {primaryProfile.hair}
-              </li>
-              <li>
-                <b>Skin:</b> {primaryProfile.hair}
-              </li>
-              <li className={styles.detailSeparator}>
-                <b>Unique Power:</b> {primaryProfile.uniquePower}
-              </li>
-              <li>
-                <b>Magic Aptitude:</b> {primaryProfile.magicAptitude}
-              </li>
-              <li>
-                <b>Greatest Feat:</b> {primaryProfile.greatestFeat}
-              </li>
-              <li>
-                <b>Romantic Tension:</b>{" "}
-                {primaryProfile.romanticTensionDescription}
-              </li>
-              <li>
-                <b>Equipment:</b> {primaryProfile.primaryEquipment}
-              </li>
-              {equipmentAccessory && (
-                <li>
-                  <b>Primary Weapon:</b> {equipmentAccessory.description}
-                </li>
-              )}
-              {primaryProfile.bestFriend && (
-                <li>
-                  <b>Best Friend:</b> {primaryProfile.bestFriend.firstName}{" "}
-                  {primaryProfile.bestFriend.lastName}
-                </li>
-              )}
-            </ul>
+            <div className={styles.keyDetailsWrapper}>
+              <div className={styles.keyItem}>
+                <ul className={`${styles.keyList} ${styles.detailSeparator}`}>
+                  <li>
+                    <b>Full Name:</b> {fullName} ({japaneseName})
+                  </li>
+                  <li>
+                    <b>Age:</b> {primaryProfile.age}
+                  </li>
+                  <li>
+                    <b>Origin:</b> {primaryProfile.origin || "Unknown Realm"}
+                  </li>
+                  <li>
+                    <b>Vibe:</b> {primaryProfile.vibe}
+                  </li>
+                  <li>
+                    <b>Height:</b> {primaryProfile.height}
+                  </li>
+                  <li>
+                    <b>Body Type:</b> {primaryProfile.bodyType}
+                  </li>
+                  <li>
+                    <b>Eyes:</b> {primaryProfile.eyes}
+                  </li>
+                  <li>
+                    <b>Hair:</b> {primaryProfile.hair}
+                  </li>
+                  <li>
+                    <b>Skin:</b> {primaryProfile.hair}
+                  </li>
+                </ul>
+              </div>
+              <div className={styles.keyItem}>
+                <ul className={styles.keyList}>
+                  <li>
+                    <b>Unique Power:</b> {primaryProfile.uniquePower}
+                  </li>
+                  <li>
+                    <b>Magic Aptitude:</b> {primaryProfile.magicAptitude}
+                  </li>
+                  <li>
+                    <b>Greatest Feat:</b> {primaryProfile.greatestFeat}
+                  </li>
+                  <li>
+                    <b>Romantic Tension:</b>{" "}
+                    {primaryProfile.romanticTensionDescription}
+                  </li>
+                  <li>
+                    <b>Equipment:</b> {primaryProfile.primaryEquipment}
+                  </li>
+                  {equipmentAccessory && (
+                    <li>
+                      <b>Primary Weapon:</b> {equipmentAccessory.description}
+                    </li>
+                  )}
+                  {primaryProfile.bestFriend && (
+                    <li>
+                      <b>Best Friend:</b> {primaryProfile.bestFriend.firstName}{" "}
+                      {primaryProfile.bestFriend.lastName}
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
           </div>
         )}
 

@@ -174,13 +174,27 @@ const CharacterAttireAddForm: React.FC<CharacterAttireAddFormProps> = ({
 
       {/* Hairstyle */}
       <div className={styles.inputGroup}>
-        <label htmlFor="hairstyle">Hairstyle</label>
+        <label htmlFor="hairstyleDescription">Hairstyle</label>
         <input
           type="text"
-          id="hairstyle"
-          name="hairstyle"
+          id="hairstyleDescription"
+          name="hairstyleDescription"
           value={attireData.hairstyleDescription}
           onChange={handleAttireChange}
+          required
+        />
+      </div>
+
+      {/* Attire Type */}
+      <div className={styles.inputGroup}>
+        <label htmlFor="attireType">Attire Type</label>
+        <input
+          type="text"
+          id="attireType"
+          name="attireType"
+          value={attireData.attireType}
+          onChange={handleAttireChange}
+          placeholder="e.g., Secondary, Battle, etc"
           required
         />
       </div>

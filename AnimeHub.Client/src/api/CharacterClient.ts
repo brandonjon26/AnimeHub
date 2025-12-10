@@ -40,7 +40,7 @@ export const CharacterClient = {
   ): Promise<void> => {
     // Returns 204 No Content on success
     await apiClient.put(
-      `${CHARACTER_BASE_URL}/${characterName}/profile${profileId}`,
+      `${CHARACTER_BASE_URL}/${characterName}/profile/${profileId}`,
       data
     );
   },

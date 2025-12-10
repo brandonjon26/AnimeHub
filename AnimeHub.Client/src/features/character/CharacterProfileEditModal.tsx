@@ -56,10 +56,10 @@ const CharacterProfileEditModal: React.FC<CharacterProfileEditModalProps> = ({
           </button>
         </div>
 
-        {/* Ayami Headshot Image */}
+        {/* Character Headshot Image */}
         <div className={styles.headshotWrapper}>
           <img
-            src={`/images/${profile.firstName.toLowerCase()}/Ayami_Bio_Page_3.png`} // Reusing the same image
+            src={`/images/headshot/${profile.firstName.toLowerCase()}/Headshot.png`} // Reusing the same image
             alt={`${profile.firstName} Headshot`}
             className={styles.modalHeadshot}
           />

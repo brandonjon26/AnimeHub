@@ -74,7 +74,7 @@ namespace AnimeHub.Api.Mapping
                 // Mapping the Greatest Feat Title via LoreEntry
                 .ForCtorParam(
                     "GreatestFeat",
-                    opt => opt.MapFrom(src => src.GreatestFeatLore != null ? src.GreatestFeatLore.Title : "Unknown")
+                    opt => opt.MapFrom(src => src.GreatestFeatLore) // AutoMapper will use the summary DTO mapping defined below
                 )
                 // Mapping the nested BestFriend object
                 .ForCtorParam(
@@ -104,6 +104,11 @@ namespace AnimeHub.Api.Mapping
 
 
             // --- 4. LORE SYSTEM MAPPINGS ---
+
+            // Lore Entry Entity to lightweight Summary DTO (Read)
+            CreateMap<LoreEntry, LoreEntrySummaryDto>()
+                .ForCtorParam("LoreEntryId", opt => opt.MapFrom(src => src.LoreEntryId))
+                .ForCtorParam("Title", opt => opt.MapFrom(src => src.Title));
 
             // Lore Type Entity to DTO (Read)
             CreateMap<LoreType, LoreTypeDto>();

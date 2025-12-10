@@ -159,7 +159,7 @@ const CharacterContent: React.FC<CharacterContentProps> = ({
               onClick={() => handleEditClick(primaryProfile)}
             >
               <img
-                src={`/images/${primaryProfile.firstName.toLowerCase()}/Ayami_Bio_Page_3.png`}
+                src={`/images/headshot/${primaryProfile.firstName.toLowerCase()}/Headshot.png`}
                 alt={`${fullName} Headshot`}
                 className={styles.headshotImage}
               />
