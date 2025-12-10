@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using AnimeHub.Api.DTOs.Character.Lore;
+using System.Collections.Generic;
 
 namespace AnimeHub.Api.DTOs.Character
 {
@@ -19,7 +20,7 @@ namespace AnimeHub.Api.DTOs.Character
         string Skin,
         string PrimaryEquipment,
         string UniquePower,
-        string GreatestFeat, // Still a string here for display via DTO logic later
+        LoreEntrySummaryDto GreatestFeat, // Still a string here for display via DTO logic later
         string MagicAptitude,
         string RomanticTensionDescription,
         string Bio, // The full narrative biography

@@ -11,19 +11,37 @@
 .keyDetailsTitle {
   margin-top: 25px;
   color: var(--color-accent-orange);
+  padding-bottom: 15px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid var(--color-bg-secondary);
+}
+
+.keyDetailsWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 20px;
+}
+
+.keyItem {
+  flex: 1;
+  padding: 10px;
+}
+
+.keyItem .detailSeparator {
+  /* Adds extra vertical spacing before the item */
+  padding-right: 15px;
+  margin-right: 5px;
+}
+
+.keyItem:first-child {
+  /* Target the first .keyItem div (the left column) */
+  border-right: 1px solid var(--color-bg-secondary);
 }
 
 .keyList {
   padding-left: 20px;
   line-height: 1.8;
-}
-
-.keyList .detailSeparator {
-  /* Adds extra vertical spacing before the item */
-  padding-top: 15px;
-  margin-top: 5px;
-  /* Optional: A very subtle horizontal line */
-  border-top: 1px solid var(--color-bg-secondary);
 }
 
 .contentWrapper {
