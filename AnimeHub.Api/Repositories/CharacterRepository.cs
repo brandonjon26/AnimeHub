@@ -1,6 +1,7 @@
 ﻿using AnimeHub.Api.Data;
 using AnimeHub.Api.Entities;
 using AnimeHub.Api.Entities.Character;
+using AnimeHub.Api.Entities.Character.Lore;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
@@ -37,6 +38,19 @@ namespace AnimeHub.Api.Repositories
         {
             // We use the context directly to access the AyamiAttires table
             return await _context.CharacterAttires.FirstOrDefaultAsync(a => a.CharacterAttireId == attireId);
+        }
+
+        /// <summary>
+        /// Retrieves a lightweight list of all Lore Entries available in the database.
+        /// </summary>
+        /// <returns>List of Lore Entries</returns>
+        public async Task<ICollection<LoreEntry>> GetAllLoreEntriesAsync()
+        {
+            // Fetch all entries without tracking them, as they are only used for DTO mapping
+            return await _context.LoreEntries
+                .AsNoTracking()
+                .OrderBy(le => le.Title)
+                .ToListAsync();
         }
 
         /// <summary>

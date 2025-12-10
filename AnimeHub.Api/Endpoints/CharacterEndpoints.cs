@@ -115,7 +115,21 @@ namespace AnimeHub.Api.Endpoints
             // NEW LORE ENDPOINTS (Read access is open to all Villager/Mage/Admin)
             // -----------------------------------------------------------------
 
-            // --- 5. GET: Get All Lore Types ---
+            // --- 5. GET: Get All Lore Entries (Summary) ---
+            // GET /lore
+            loreGroup.MapGet("/", async (CharacterInterface service) =>
+            {
+                // This returns ICollection<LoreEntrySummaryDto>
+                var loreEntries = await service.GetAllLoreEntriesAsync();
+                return Results.Ok(loreEntries);
+            })
+            .WithName("GetAllLoreEntries")
+            .WithDescription("Retrieves a summary list of all available Lore Entries (ID and Title) for selection/dropdowns.")
+            .RequireAuthorization() // Requires ANY logged-in user (Villager, Mage, Admin)
+            .WithOpenApi();
+
+
+            // --- 6. GET: Get All Lore Types ---
             // GET /lore/types
             loreGroup.MapGet("/types", async (CharacterInterface service) =>
             {
@@ -128,7 +142,7 @@ namespace AnimeHub.Api.Endpoints
             .WithOpenApi();
 
 
-            // --- 6. GET: Get Single Lore Entry ---
+            // --- 7. GET: Get Single Lore Entry ---
             // GET /lore/{loreEntryId}
             loreGroup.MapGet("/{loreEntryId:int}", async (
                 [FromRoute] int loreEntryId,
@@ -143,7 +157,7 @@ namespace AnimeHub.Api.Endpoints
             .WithOpenApi();
 
 
-            // --- 7. POST: Create New Lore Entry (Write) ---
+            // --- 8. POST: Create New Lore Entry (Write) ---
             // POST /lore
             loreGroup.MapPost("/", async (
                 [FromBody] LoreEntryInputDto loreEntryDto,
@@ -164,7 +178,7 @@ namespace AnimeHub.Api.Endpoints
             .WithOpenApi();
 
 
-            // --- 8. PUT: Update Character's Greatest Feat (Write) ---
+            // --- 9. PUT: Update Character's Greatest Feat (Write) ---
             // PUT /characters/{characterName}/greatest-feat/{profileId}
             characterGroup.MapPut("/greatest-feat/{profileId:int}", async (
                 [FromRoute] int profileId,
@@ -181,7 +195,7 @@ namespace AnimeHub.Api.Endpoints
             .WithOpenApi();
 
 
-            // --- 9. DELETE: Delete a Lore Entry (Write) ---
+            // --- 10. DELETE: Delete a Lore Entry (Write) ---
             // DELETE /lore/{loreEntryId}
             loreGroup.MapDelete("/{loreEntryId:int}", async (
                 [FromRoute] int loreEntryId,
