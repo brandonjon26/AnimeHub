@@ -83,7 +83,12 @@ namespace AnimeHub.Api.Mapping
                 )
                 // Placeholders & Collections
                 .ForCtorParam("GreetingAudioUrl", opt => opt.MapFrom(_ => string.Empty)) // Still a placeholder
-                .ForCtorParam("Attires", opt => opt.MapFrom(src => src.Attires));
+                .ForCtorParam("Attires", opt => opt.MapFrom(src => src.Attires))
+                // Map the join collection to the DTO collection
+                .ForCtorParam(
+                    "LoreLinks",
+                    opt => opt.MapFrom(src => src.LoreLinks) // AutoMapper will use the CharacterLoreLink mapping (see below)
+                );
 
             // Character Profile Summary DTO
             CreateMap<CharacterProfile, CharacterProfileSummaryDto>();
@@ -112,12 +117,19 @@ namespace AnimeHub.Api.Mapping
                     opt => opt.MapFrom(src => src.CharacterLinks.Select(link => link.CharacterProfile))
                 );
 
+            // CharacterLoreLink Entity (Join Table) to DTO (Read)
+            // This maps the join entity itself, allowing us to include the CharacterRole
+            CreateMap<CharacterLoreLink, CharacterLoreLinkDto>()
+                .ForCtorParam("CharacterRole", opt => opt.MapFrom(src => src.CharacterRole))
+                // AutoMapper handles the nested LoreEntry mapping automatically
+                .ForCtorParam("LoreEntry", opt => opt.MapFrom(src => src.LoreEntry));
+
             // Lore Entry Input DTO to Lore Entry Entity (Write)
             // Note: We ignore the collections as the service layer handles the CharacterLinks and the LoreType is mapped via ID.
             CreateMap<LoreEntryInputDto, LoreEntry>()
                 .ForMember(dest => dest.LoreTypeId, opt => opt.MapFrom(src => src.LoreTypeId)) // Map the ID from the DTO
                 .ForMember(dest => dest.CharacterLinks, opt => opt.Ignore()) // Manually handled in service
-                .ForMember(dest => dest.LoreType, opt => opt.Ignore()); // Ignore navigation property
+                .ForMember(dest => dest.LoreType, opt => opt.Ignore()); // Ignore navigation property            
         }
     }
 }

@@ -18,7 +18,7 @@ namespace AnimeHub.Api.DTOs.Character
         [Required][MaxLength(100)] string Skin,
         [Required][MaxLength(500)] string PrimaryEquipment,
         [Required][MaxLength(255)] string UniquePower,
-        [Required][MaxLength(255)] string GreatestFeat,
+        [Required] int? GreatestFeatLoreId,
         [Required][MaxLength(100)] string MagicAptitude,
         [Required][MaxLength(500)] string RomanticTensionDescription,
         [Required][MaxLength(2000)] string Bio

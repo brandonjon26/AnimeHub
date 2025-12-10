@@ -14,7 +14,7 @@ namespace AnimeHub.Api.Entities.Character
         public int LoreEntryId { get; set; }
         public LoreEntry LoreEntry { get; set; } = null!;
 
-        // 🔑 NEW: We can optionally add a field to describe the character's role in the quest.
+        // We can optionally add a field to describe the character's role in the quest.
         [MaxLength(255)]
         public string? CharacterRole { get; set; } // e.g., "Protagonist", "Supporting Character"
     }

@@ -3,7 +3,7 @@ import {
   type AyamiProfileDto,
   type AyamiProfileUpdateInput,
   type AyamiAttireInput,
-} from "./types/AyamiTypes";
+} from "./types/CharacterTypes";
 import axios, { AxiosError, isAxiosError } from "axios";
 
 const AYAMI_BASE_URL = "/ayami-profile";
