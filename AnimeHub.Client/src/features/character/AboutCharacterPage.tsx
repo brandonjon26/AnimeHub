@@ -17,8 +17,8 @@ import styles from "./AboutCharacterPage.module.css";
 const galleryClient = new GalleryClient();
 
 // Define the two characters we need to fetch
-const PRIMARY_CHARACTER_NAME = "Ayami";
-const SECONDARY_CHARACTER_NAME = "Chiara";
+const PRIMARY_CHARACTER_NAME = "ayami";
+const SECONDARY_CHARACTER_NAME = "chiara";
 
 const AboutCharacterPage: React.FC = () => {
   const location = useLocation();

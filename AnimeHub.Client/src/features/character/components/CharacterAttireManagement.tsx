@@ -1,5 +1,5 @@
 import React from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import {
   type CharacterProfileDto,
   type CharacterAttireDto,
@@ -19,25 +19,94 @@ const CharacterAttireManagement: React.FC<CharacterAttireManagementProps> = ({
 }) => {
   const queryClient = useQueryClient();
 
+  // Get the profile *data* directly from the cache
+  const fullProfile = queryClient.getQueryData<CharacterProfileDto>(
+    ["characterProfile", profile.firstName.toLowerCase()] // **This requires the stale prop for the key!**
+  );
+
+  // Define the consistent route name
+  const characterRouteName = profile.firstName.toLowerCase();
+
+  const { data: liveProfile, isPending: isProfileLoading } = useQuery({
+    queryKey: ["characterProfile", characterRouteName],
+    // We don't need a queryFn because the data is already in the cache from the parent page's useQueries.
+    // This useQuery hook simply subscribes this component to that existing cache entry.
+    // We will only call the function if data is missing (not expected here)
+    queryFn: () => CharacterClient.getProfile(characterRouteName),
+    enabled: !!characterRouteName,
+    // StaleTime of Infinity ensures it doesn't refetch until manually told (via mutation)
+    staleTime: Infinity,
+  });
+
+  // Use the liveProfile data instead of the prop
+  const profileToRender = liveProfile ?? profile; // Fallback to prop if cache is somehow empty
+
   // 🔑 TanStack Mutation for DELETE /ayami-profile/attire/{attireId}
   const deleteMutation = useMutation({
     mutationFn: (attireId: number) =>
-      CharacterClient.deleteAttire(profile.firstName.toLowerCase(), attireId),
+      CharacterClient.deleteAttire(characterRouteName, attireId),
+
+    // 🔑 NEW: Optimistic Deletion Logic
+    onMutate: async (attireIdToDelete) => {
+      // 1. Cancel any outgoing refetches to prevent them from overwriting our optimistic update
+      await queryClient.cancelQueries({
+        queryKey: ["characterProfile", characterRouteName],
+      });
+
+      // 2. Snapshot the previous profile value
+      const previousProfile = queryClient.getQueryData<CharacterProfileDto>([
+        "characterProfile",
+        characterRouteName,
+      ]);
+
+      // 3. Optimistically remove the attire from the cache
+      if (previousProfile) {
+        const newAttires = previousProfile.attires.filter(
+          (attire) => attire.characterAttireId !== attireIdToDelete
+        );
+
+        const newProfile = {
+          ...previousProfile,
+          attires: newAttires,
+        };
+
+        // Manually set the new data in the cache, instantly removing the attire
+        queryClient.setQueryData(
+          ["characterProfile", characterRouteName],
+          newProfile
+        );
+      }
+
+      // Return the snapshot for use in onError
+      return { previousProfile };
+    },
+
     onSuccess: () => {
       // Invalidate the cache to force the profile to refetch and update the attire list
-      queryClient.invalidateQueries({
-        queryKey: ["characterProfile", profileId],
+      queryClient.refetchQueries({
+        queryKey: ["characterProfile", characterRouteName],
       });
       // 🔑 FUTURE: Implement user feedback (e.g., toast message)
     },
-    onError: (error) => {
+
+    onError: (error, attireIdToDelete, context) => {
       console.error("Attire deletion failed:", error);
-      alert("Failed to delete attire. Check console for details.");
+
+      // Rollback to the previous cached value
+      if (context?.previousProfile) {
+        queryClient.setQueryData(
+          ["characterProfile", characterRouteName],
+          context.previousProfile
+        );
+      }
+
+      // Implement robust error handling (will re-add the deleted attire)
+      alert(`Failed to delete attire: ${error.message}. Attire restored.`);
     },
   });
 
   const handleDelete = (attireId: number, attireName: string) => {
-    if (profile.attires.length === 1) {
+    if (profileToRender.attires.length === 1) {
       alert("You must always keep at least one attire for Ayami's profile.");
       return;
     }
@@ -58,7 +127,9 @@ const CharacterAttireManagement: React.FC<CharacterAttireManagementProps> = ({
         <button
           onClick={() => handleDelete(attire.characterAttireId, attire.name)}
           className={styles.deleteButton}
-          disabled={deleteMutation.isPending || profile.attires.length === 1}
+          disabled={
+            deleteMutation.isPending || profileToRender.attires.length === 1
+          }
         >
           {deleteMutation.isPending ? "Deleting..." : "Delete Attire"}
         </button>
@@ -95,8 +166,8 @@ const CharacterAttireManagement: React.FC<CharacterAttireManagementProps> = ({
       {/* 1. Attire List (Read/Delete) */}
       <h3>Current Attires</h3>
       <div className={styles.attireListContainer}>
-        {profile.attires.length > 0 ? (
-          profile.attires.map(renderAttireCard)
+        {profileToRender.attires.length > 0 ? (
+          profileToRender.attires.map(renderAttireCard)
         ) : (
           <p>No attires found.</p>
         )}
