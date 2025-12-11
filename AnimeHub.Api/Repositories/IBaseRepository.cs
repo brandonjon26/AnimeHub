@@ -11,7 +11,9 @@ namespace AnimeHub.Api.Repositories
         Task<T?> GetReadOnlyByIdAsync(int id);
         Task<T?> GetTrackedByIdAsync(long id); // Find by primary key for read/write (Tracking required for UPDATE/DELETE)
         Task<T?> GetTrackedByIdAsync(int id);
-        Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null);
+        Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>>? filter = null); // This is the method that can be called with only filter or no filter.
+        Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>>? filter, string? includeProperties = null); // Requires a filter, uses the simpler string include
+        Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>>? filter, ICollection<string>? includeProperties = null); // ARRAY OVERLOAD(Requires a filter, uses the ICollection<string> include)
 
 
         // CRUD Methods
