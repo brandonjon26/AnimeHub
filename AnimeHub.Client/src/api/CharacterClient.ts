@@ -6,6 +6,7 @@ import {
   type LoreTypeDto,
   type LoreEntryDto,
   type LoreEntryInputDto,
+  type LoreEntrySummaryDto,
 } from "./types/CharacterTypes";
 import axios, { AxiosError, isAxiosError } from "axios";
 
@@ -79,6 +80,16 @@ export const CharacterClient = {
   },
 
   // --- LORE SYSTEM OPERATIONS ---
+
+  /**
+   * READ: GET /lore
+   * Fetches a summary list of all available Lore Entries (ID and Title) for dropdowns.
+   */
+  getAllLoreEntries: async (): Promise<LoreEntrySummaryDto[]> => {
+    // 🔑 NEW METHOD DEFINITION
+    const response = await apiClient.get<LoreEntrySummaryDto[]>(LORE_BASE_URL);
+    return response.data;
+  },
 
   /**
    * READ: GET /lore/types

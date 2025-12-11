@@ -75,7 +75,7 @@ const SecondaryCharacterCard: React.FC<SecondaryCharacterCardProps> = ({
         </p>
         {/* Display Ayami's Greatest Feat if she has one, but link to Chiara's data */}
         <p>
-          <strong>Feat:</strong> {secondaryProfile.greatestFeat}
+          <strong>Feat:</strong> {secondaryProfile.greatestFeat?.title}
         </p>
       </div>
       {/* Assume edit overlay is handled by the onClick wrapper in the parent component */}
@@ -247,7 +247,7 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
                     <b>Magic Aptitude:</b> {primaryProfile.magicAptitude}
                   </li>
                   <li>
-                    <b>Greatest Feat:</b> {primaryProfile.greatestFeat}
+                    <b>Greatest Feat:</b> {primaryProfile.greatestFeat?.title}
                   </li>
                   <li>
                     <b>Romantic Tension:</b>{" "}
