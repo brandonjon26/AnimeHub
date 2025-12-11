@@ -35,6 +35,9 @@ const CharacterContent: React.FC<CharacterContentProps> = ({
   const [editingProfile, setEditingProfile] =
     useState<CharacterProfileDto | null>(null);
 
+  // Used to force re-mount of the modal after a successful mutation
+  const [profileModalKey, setProfileModalKey] = useState(0);
+
   // const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isGalleryAdminModalOpen, setIsGalleryAdminModalOpen] = useState(false);
 
@@ -69,16 +72,21 @@ const CharacterContent: React.FC<CharacterContentProps> = ({
     return isAdult;
   });
 
-  // --- NEW: Universal Profile Edit Handler ---
+  // --- Universal Profile Edit Handler ---
   const handleEditClick = (profile: CharacterProfileDto) => {
     if (isAdminAccess) {
       setEditingProfile(profile);
     }
   };
 
-  // --- NEW: Universal Modal Close Handler ---
-  const handleProfileModalClose = () => {
+  // --- Universal Modal Close/Mutation Success Handler ---
+  const handleMutationSuccess = () => {
     setEditingProfile(null); // Close modal by resetting the editing profile state
+
+    // Increment the key to force the modal to re-mount/re-initialize.
+    // This is crucial because the primaryProfile prop, which holds the stale attire list,
+    // will now be freshly re-read from the parent's useQuery cache on the next render.
+    setProfileModalKey((prev) => prev + 1);
   };
   // --- END Modal Handlers ---
 
@@ -246,9 +254,10 @@ const CharacterContent: React.FC<CharacterContentProps> = ({
       {/* MODAL RENDERING */}
       {editingProfile && (
         <CharacterProfileEditModal
+          key={profileModalKey}
           profile={editingProfile}
           profileId={editingProfile.characterProfileId}
-          onClose={handleProfileModalClose}
+          onClose={handleMutationSuccess}
         />
       )}
 

@@ -56,19 +56,18 @@ const CharacterProfileUpdateForm: React.FC<CharacterProfileUpdateFormProps> = ({
 
   const queryClient = useQueryClient();
 
+  const characterRouteName = profile.firstName.toLowerCase();
+
   // TanStack Mutation for PUT /ayami-profile
   const updateMutation = useMutation({
     mutationFn: (data: CharacterProfileUpdateInput) =>
-      CharacterClient.updateProfile(
-        profile.firstName.toLowerCase(),
-        profileId,
-        data
-      ),
-    onSuccess: () => {
+      CharacterClient.updateProfile(characterRouteName, profileId, data),
+    onSuccess: async () => {
       // Invalidate the cache for the profile to force a refetch and update the UI
-      queryClient.invalidateQueries({
-        queryKey: ["characterProfile", profileId],
+      await queryClient.refetchQueries({
+        queryKey: ["characterProfile", characterRouteName],
       });
+
       onSuccess(); // Close the modal
     },
     onError: (error) => {
