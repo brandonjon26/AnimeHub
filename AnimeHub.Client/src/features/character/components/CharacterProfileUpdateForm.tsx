@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query"; // 🔑 Import TanStack Query tools
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query"; // 🔑 Import TanStack Query tools
 import {
   type CharacterProfileDto,
   type CharacterProfileUpdateInput,
+  type LoreEntrySummaryDto,
 } from "../../../api/types/CharacterTypes";
 import { CharacterClient } from "../../../api/CharacterClient";
 import styles from "../CharacterProfileEditModal.module.css"; // Use the modal's styles
@@ -18,6 +19,19 @@ const CharacterProfileUpdateForm: React.FC<CharacterProfileUpdateFormProps> = ({
   profileId,
   onSuccess,
 }) => {
+  // Fetch all available Lore Entries for the dropdown
+  const { data: loreEntries, isLoading: isLoadingLore } = useQuery<
+    LoreEntrySummaryDto[]
+  >({
+    queryKey: ["allLoreEntries"],
+    queryFn: () => CharacterClient.getAllLoreEntries(),
+  });
+
+  // 🔑 NEW: Safely extract the current Greatest Feat ID from the object
+  const initialLoreId = profile.greatestFeat
+    ? profile.greatestFeat.loreEntryId
+    : 0;
+
   // State for form inputs, initialized with current profile data
   const [formData, setFormData] = useState<CharacterProfileUpdateInput>({
     firstName: profile.firstName,
@@ -34,8 +48,7 @@ const CharacterProfileUpdateForm: React.FC<CharacterProfileUpdateFormProps> = ({
     skin: profile.skin,
     primaryEquipment: profile.primaryEquipment,
     uniquePower: profile.uniquePower,
-    // greatestFeatLoreId: profile.greatestFeatLoreId || 0,
-    greatestFeatLoreId: 0,
+    greatestFeatLoreId: initialLoreId || 0,
     magicAptitude: profile.magicAptitude,
     romanticTensionDescription: profile.romanticTensionDescription,
     bio: profile.bio,
@@ -66,13 +79,15 @@ const CharacterProfileUpdateForm: React.FC<CharacterProfileUpdateFormProps> = ({
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value, type } = e.target;
 
     // Handle numeric inputs correctly
     let newValue: string | number = value;
-    if (type === "number") {
+    if (type === "number" || name === "greatestFeatLoreId") {
       // Ensure the value is converted to a number, or 0 if empty/invalid
       newValue = parseInt(value) || 0;
     }
@@ -103,8 +118,7 @@ const CharacterProfileUpdateForm: React.FC<CharacterProfileUpdateFormProps> = ({
     skin: profile.skin,
     primaryEquipment: profile.primaryEquipment,
     uniquePower: profile.uniquePower,
-    // greatestFeatLoreId: profile.greatestFeatLoreId || 0,
-    greatestFeatLoreId: 0,
+    greatestFeatLoreId: initialLoreId || 0,
     magicAptitude: profile.magicAptitude,
     romanticTensionDescription: profile.romanticTensionDescription,
     bio: profile.bio,
@@ -112,6 +126,11 @@ const CharacterProfileUpdateForm: React.FC<CharacterProfileUpdateFormProps> = ({
 
   const isSubmitting = updateMutation.isPending;
   const isDirty = JSON.stringify(formData) !== JSON.stringify(initialData);
+
+  // If Lore data is loading, block the form submission/display.
+  if (isLoadingLore) {
+    return <div className={styles.formLoading}>Loading Lore Entries...</div>;
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -286,15 +305,32 @@ const CharacterProfileUpdateForm: React.FC<CharacterProfileUpdateFormProps> = ({
           />
         </div>
         <div className={styles.inputGroup}>
-          <label htmlFor="greatestFeatLoreId">Greatest Feat Lore ID</label>
-          <input
+          <label htmlFor="greatestFeatLoreId">Greatest Feat</label>
+          <select
+            id="greatestFeatLoreId"
+            name="greatestFeatLoreId" // Value must be the ID
+            value={formData.greatestFeatLoreId} // Handler uses the existing universal handleChange
+            onChange={handleChange}
+            required
+          >
+            {/* Option for 'No Feat Selected' (Lore ID 0 is the sentinel value) */}
+            <option value={0}>-- None / Select Feat --</option>
+
+            {/* Render options from the fetched data */}
+            {loreEntries?.map((entry) => (
+              <option key={entry.loreEntryId} value={entry.loreEntryId}>
+                {entry.title}
+              </option>
+            ))}
+          </select>
+          {/* <input
             type="number"
             id="greatestFeatLoreId"
             name="greatestFeatLoreId"
             value={formData.greatestFeatLoreId}
             onChange={handleChange}
             required
-          />
+          /> */}
         </div>
         <div className={styles.inputGroupFull}>
           <label htmlFor="primaryEquipment">Primary Equipment</label>

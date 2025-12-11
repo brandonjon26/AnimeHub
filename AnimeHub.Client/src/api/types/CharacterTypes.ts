@@ -46,6 +46,16 @@ export interface CharacterProfileSummaryDto {
 }
 
 /**
+ * Interface for a lightweight Lore Entry Summary DTO.
+ * Used for nested fields (like GreatestFeat) and for populating dropdown lists.
+ */
+export interface LoreEntrySummaryDto {
+  // 🔑 NEW DTO DEFINITION
+  loreEntryId: number;
+  title: string;
+}
+
+/**
  * Interface for the full Character Profile DTO.
  */
 export interface CharacterProfileDto {
@@ -66,7 +76,7 @@ export interface CharacterProfileDto {
   skin: string;
   primaryEquipment: string;
   uniquePower: string;
-  greatestFeat: string;
+  greatestFeat: LoreEntrySummaryDto | null; // Nested relationship
   magicAptitude: string;
   romanticTensionDescription: string;
   bio: string;

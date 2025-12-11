@@ -99,8 +99,7 @@ namespace AnimeHub.Api.Mapping
                 .ForMember(dest => dest.Attires, opt => opt.Ignore()) // Don't overwrite collections
                 .ForMember(dest => dest.BestFriend, opt => opt.Ignore()) // Ignore navigation property
                 .ForMember(dest => dest.BestFriendCharacterId, opt => opt.Ignore()) // Ignore FK for Best Friend
-                .ForMember(dest => dest.GreatestFeatLore, opt => opt.Ignore()) // Ignore navigation property
-                .ForMember(dest => dest.GreatestFeatLoreId, opt => opt.Ignore()); // We ignore this FK; it will be updated by a separate service call
+                .ForMember(dest => dest.GreatestFeatLore, opt => opt.Ignore()); // Ignore navigation property
 
 
             // --- 4. LORE SYSTEM MAPPINGS ---
