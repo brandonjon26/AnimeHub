@@ -4,6 +4,7 @@ using AnimeHub.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AnimeHub.Api.Migrations
 {
     [DbContext(typeof(AnimeHubDbContext))]
-    partial class AnimeHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251208234300_UpdateCharacterProfileTable")]
+    partial class UpdateCharacterProfileTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,7 +46,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasKey("AnimeId");
 
-                    b.ToTable("Anime", (string)null);
+                    b.ToTable("Anime");
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.Character.AccessoryAttireJoin", b =>
@@ -58,7 +61,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasIndex("CharacterAccessoryId");
 
-                    b.ToTable("AccessoryAttireJoins", (string)null);
+                    b.ToTable("AccessoryAttireJoins");
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.Character.CharacterAccessory", b =>
@@ -83,7 +86,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasKey("CharacterAccessoryId");
 
-                    b.ToTable("CharacterAccessories", (string)null);
+                    b.ToTable("CharacterAccessories");
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.Character.CharacterAttire", b =>
@@ -121,7 +124,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasIndex("CharacterProfileId");
 
-                    b.ToTable("CharacterAttires", (string)null);
+                    b.ToTable("CharacterAttires");
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.Character.CharacterLoreLink", b =>
@@ -140,7 +143,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasIndex("LoreEntryId");
 
-                    b.ToTable("CharacterLoreLinks", (string)null);
+                    b.ToTable("CharacterLoreLinks");
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.Character.CharacterProfile", b =>
@@ -244,7 +247,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasIndex("GreatestFeatLoreId");
 
-                    b.ToTable("CharacterProfiles", (string)null);
+                    b.ToTable("CharacterProfiles");
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.Character.Lore.LoreEntry", b =>
@@ -272,7 +275,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasIndex("LoreTypeId");
 
-                    b.ToTable("LoreEntries", (string)null);
+                    b.ToTable("LoreEntries");
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.Character.Lore.LoreType", b =>
@@ -290,7 +293,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasKey("LoreTypeId");
 
-                    b.ToTable("LoreTypes", (string)null);
+                    b.ToTable("LoreTypes");
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.GalleryImage", b =>
@@ -330,7 +333,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasIndex("GalleryImageCategoryId");
 
-                    b.ToTable("GalleryImage", (string)null);
+                    b.ToTable("GalleryImage");
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.GalleryImageCategory", b =>
@@ -348,7 +351,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasKey("GalleryImageCategoryId");
 
-                    b.ToTable("GalleryImageCategory", (string)null);
+                    b.ToTable("GalleryImageCategory");
                 });
 
             modelBuilder.Entity("AnimeHub.Api.Entities.UserProfile", b =>
@@ -380,7 +383,7 @@ namespace AnimeHub.Api.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UserProfiles", (string)null);
+                    b.ToTable("UserProfiles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

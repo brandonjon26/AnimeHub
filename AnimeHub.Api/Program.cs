@@ -53,7 +53,7 @@ builder.Services.AddAutoMapper((IServiceProvider serviceProvider, IMapperConfigu
     // Explicitly add your profile to the configuration
     config.AddProfile<AnimeMappingProfile>();
     config.AddProfile<GalleryMappingProfile>();
-    config.AddProfile<AyamiMappingProfile>();
+    config.AddProfile<CharacterMappingProfile>();
     config.AddProfile<AuthMappingProfile>();
 }, new Type[] { });
 
@@ -65,13 +65,13 @@ builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped<IAnimeRepository, AnimeRepository>();
 builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
 builder.Services.AddScoped<IGalleryCategoryRepository, GalleryCategoryRepository>();
-builder.Services.AddScoped<IAyamiRepository, AyamiRepository>();
+builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
 builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 
 // Register the Anime Service (Scoped lifetime is standard for services)
 builder.Services.AddScoped<AnimeInterface, AnimeService>();
 builder.Services.AddScoped<GalleryInterface, GalleryService>();
-builder.Services.AddScoped<AyamiInterface, AyamiService>();
+builder.Services.AddScoped<CharacterInterface, CharacterService>();
 builder.Services.AddScoped<AuthInterface, AuthService>();
 builder.Services.AddScoped<UserProfileInterface, UserProfileService>();
 
@@ -196,7 +196,7 @@ app.MapControllers(); // Leave for now but will most likely delete later
 
 app.MapAnimeEndpoints();
 app.MapGalleryEndpoints();
-app.MapAyamiEndpoints();
+app.MapCharacterEndpoints();
 app.MapAuthEndpoints();
 app.MapUserProfileEndpoints();
 
