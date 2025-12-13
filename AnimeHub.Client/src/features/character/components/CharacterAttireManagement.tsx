@@ -163,26 +163,38 @@ const CharacterAttireManagement: React.FC<CharacterAttireManagementProps> = ({
 
   return (
     <div>
-      {/* 1. Attire List (Read/Delete) */}
-      <h3>Current Attires</h3>
-      <div className={styles.attireListContainer}>
-        {profileToRender.attires.length > 0 ? (
-          profileToRender.attires.map(renderAttireCard)
-        ) : (
-          <p>No attires found.</p>
-        )}
+      <div className={styles.attireSplitContainer}>
+        {/* -------------------------------------- */}
+        {/* ADD NEW ATTIRE FORM (FIXED LEFT PANEL) */}
+        {/* -------------------------------------- */}
+        <div className={styles.attireAddFormPanel}>
+          <h3 className={styles.attirePanelTitle}>Add New Attire</h3>
+          {/* Remove the unnecessary <br /> */}
+          <CharacterAttireAddForm
+            profile={profile}
+            profileId={profile.characterProfileId}
+            onSuccess={handleAttireAdded}
+          />
+        </div>
+
+        {/* ------------------------------------ */}
+        {/* ATTIRE LIST (SCROLLABLE RIGHT PANEL) */}
+        {/* ------------------------------------ */}
+        <div className={styles.attireListPanel}>
+          <h3 className={styles.attirePanelTitle}>
+            Current Attires ({profileToRender.attires.length})
+          </h3>
+
+          {/* The existing attireListContainer class is good for vertical spacing of cards */}
+          <div className={styles.attireListContainer}>
+            {profileToRender.attires.length > 0 ? (
+              profileToRender.attires.map(renderAttireCard)
+            ) : (
+              <p>No attires found.</p>
+            )}
+          </div>
+        </div>
       </div>
-
-      <hr className={styles.divider} />
-
-      {/* 2. Add New Attire (Create) */}
-      <h3>Add New Attire</h3>
-      <br />
-      <CharacterAttireAddForm
-        profile={profile}
-        profileId={profile.characterProfileId}
-        onSuccess={handleAttireAdded}
-      />
     </div>
   );
 };
