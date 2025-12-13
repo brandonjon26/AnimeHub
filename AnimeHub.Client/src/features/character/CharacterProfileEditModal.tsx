@@ -44,6 +44,11 @@ const CharacterProfileEditModal: React.FC<CharacterProfileEditModalProps> = ({
     }
   };
 
+  // Get the class names for the modal body
+  const modalBodyClasses = `${styles.modalBody} ${
+    activeTab === TABS.ATTIRE ? styles.attireLayoutBody : styles.profileFormBody // Use the new class for padding on the default tab
+  }`;
+
   return (
     // Modal Backdrop
     <div className={styles.modalBackdrop} onClick={onClose}>
@@ -80,7 +85,8 @@ const CharacterProfileEditModal: React.FC<CharacterProfileEditModalProps> = ({
           ))}
         </div>
 
-        <div className={styles.modalBody}>{renderContent()}</div>
+        {/* Conditionally apply a class for the Attire layout */}
+        <div className={modalBodyClasses}>{renderContent()}</div>
 
         <div className={styles.modalFooter}>
           {/* The Save button moved inside the form, so this is just for closing */}
