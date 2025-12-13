@@ -215,8 +215,6 @@ const CharacterAttireAddForm: React.FC<CharacterAttireAddFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className={styles.formGrid}>
-      {/* <h3>New Attire Details</h3> */}
-
       {/* Attire Name */}
       <div className={styles.inputGroup}>
         <label htmlFor="attireName">Attire Name</label>
