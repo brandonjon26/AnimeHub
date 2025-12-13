@@ -3,11 +3,31 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: top;
   height: 100vh;
-  padding: 40px;
+  padding: 100px;
   text-align: center;
-  background-color: var(--color-bg-primary);
+  /* background-color: var(--color-bg-primary); */
+}
+
+/* Base style for the full-page, non-scrolling wallpaper */
+.wallpaperLayer {
+  position: fixed; /* Fixes the image relative to the viewport */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover; /* Ensures the image covers the entire screen */
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1; /* Puts the wallpaper behind the content/forms */
+  transition: all 0.5s ease-in-out; /* Smooth transition for swapping backgrounds */
+}
+
+/* 🔑 NEW: Specific class for the Welcome Page Wallpaper */
+.welcomeWallpaper {
+  /* Placeholder Path - Set your desired image path here! */
+  background-image: url("/images/wallpaper/AnimeHub_Wallpaper_3.png");
 }
 
 .contentWrapper {
@@ -42,7 +62,7 @@
   padding: 30px;
   background-color: var(--color-bg-secondary);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
 }
 
 .welcomeContent h2 {
