@@ -83,6 +83,76 @@ const SecondaryCharacterCard: React.FC<SecondaryCharacterCardProps> = ({
   );
 };
 
+// --- NEW COMPONENT: Nested Vertical Attire Navigation ---
+
+interface AttireDetailsContentProps {
+  profile: CharacterProfileDto;
+}
+
+const AttireDetailsContent: React.FC<AttireDetailsContentProps> = ({
+  profile,
+}) => {
+  // Use the first attire's name as the default active one
+  const [activeAttireName, setActiveAttireName] = useState<string>(
+    profile.attires[0]?.name || ""
+  );
+
+  const activeAttire = profile.attires.find((a) => a.name === activeAttireName);
+
+  if (!activeAttire) {
+    return <p>No attire details available.</p>;
+  }
+
+  return (
+    // NOTE: This class needs styling to implement the desired flex/grid layout for nested nav
+    <div className={styles.attireLayout}>
+      {/* 1. Vertical Navigation Bar (Left Side) */}
+      <nav className={styles.attireVerticalNav}>
+        <h4 className={styles.verticalNavHeader}>Attire List</h4>
+        {profile.attires.map((attire) => (
+          <button
+            key={attire.name}
+            className={`${styles.verticalNavLink} ${
+              activeAttireName === attire.name
+                ? styles.verticalNavLinkActive
+                : ""
+            }`}
+            onClick={() => setActiveAttireName(attire.name)}
+          >
+            {attire.name}
+          </button>
+        ))}
+      </nav>
+
+      {/* 2. Attire Details Content (Right Side) */}
+      <div className={styles.attireDetailsContent}>
+        <h2>
+          {activeAttire.name} Details ({activeAttire.attireType})
+        </h2>
+        <p className={styles.loreParagraph}>{activeAttire.description}</p>
+
+        <h3 className={styles.keyDetailsTitle}>Hairstyle</h3>
+        <p className={styles.loreParagraph}>
+          {activeAttire.hairstyleDescription}
+        </p>
+
+        <h3 className={styles.keyDetailsTitle}>Accessories</h3>
+        <ul className={styles.keyList}>
+          {activeAttire.accessories.map((acc) => (
+            <li key={acc.characterAccessoryId}>
+              <b>{acc.isWeapon ? "Weapon" : "Accessory"}:</b> {acc.description}
+              {acc.uniqueEffect && <span> (Effect: {acc.uniqueEffect})</span>}
+            </li>
+          ))}
+          {activeAttire.accessories.length === 0 && (
+            <li>No special accessories recorded for this attire.</li>
+          )}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
 // --- CORE COMPONENT ---
 
 const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
@@ -108,28 +178,27 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
   // Since all lore links are already loaded on Ayami's profile, we just need to list them.
   // We can further refine this in the future if needed, but for now, we show all linked lore.
   const sharedLoreEntries = primaryProfile.loreLinks;
-
   const hasSharedLore = sharedLoreEntries.length > 0;
+
+  // Helper function for Best Friend Tab content (now separate)
+  const renderBestFriendTab = () => (
+    <div className={styles.loreSection}>
+      <h2>{secondaryProfile?.firstName}'s Profile Summary</h2>
+      {secondaryProfile ? (
+        <SecondaryCharacterCard
+          secondaryProfile={secondaryProfile}
+          onEditClick={onEditClick}
+        />
+      ) : (
+        <p>No best friend data available.</p>
+      )}
+    </div>
+  );
 
   // Prepare content for a Shared Quest Tab
   const renderSharedLoreTab = () => (
     <div className={styles.loreSection}>
       <h2>Shared Universe Links</h2>
-
-      {/* Display Secondary Character (Chiara) summary */}
-      {secondaryProfile ? (
-        <>
-          <h3 className={styles.keyDetailsTitle}>
-            {secondaryProfile.firstName} {secondaryProfile.lastName}
-          </h3>
-          <SecondaryCharacterCard
-            secondaryProfile={secondaryProfile}
-            onEditClick={onEditClick}
-          />
-        </>
-      ) : (
-        <p>No secondary character data available.</p>
-      )}
 
       <h3 className={styles.keyDetailsTitle}>
         Linked Lore Entries ({sharedLoreEntries.length})
@@ -145,7 +214,10 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
                 <p className={styles.loreLinkSummary}>
                   {link.loreEntry.narrative.substring(0, 150)}...
                 </p>
-                {/* Future: Add a button to view full LoreEntry details */}
+                {/* 🔑 Item 2: Placeholder for View Full Lore button */}
+                <button className={styles.viewLoreButton}>
+                  View Full Lore
+                </button>
               </li>
             )
           )}
@@ -162,40 +234,50 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
     <div className={styles.loreContainer}>
       {/* Tab Navigation */}
       <div className={styles.tabContainer}>
-        {/* 1. Core Lore Tab */}
+        {/* 1. Lore & Details */}
         <button
           className={`${styles.tabButton} ${
             activeTab === "lore" ? styles.tabActive : ""
           }`}
           onClick={() => setActiveTab("lore")}
         >
-          📜 Lore & Details
+          📜 Lore & Details 📜
         </button>
 
-        {/* 2. Shared Lore Tab (Item 3.5 & Chiara Integration) */}
+        {/* 2. Best Friend (NEW Separate Tab) */}
         {secondaryProfile && ( // Only show if we successfully fetched the secondary character
           <button
             className={`${styles.tabButton} ${
-              activeTab === "shared" ? styles.tabActive : ""
+              activeTab === "bestFriend" ? styles.tabActive : ""
             }`}
-            onClick={() => setActiveTab("shared")}
+            onClick={() => setActiveTab("bestFriend")}
           >
-            🤝 Shared Quest & Best Friend
+            💜 Best Friend ❤️
           </button>
         )}
 
-        {/* 3. Attire Tabs (one for each attire) */}
-        {primaryProfile.attires.map((attire) => (
+        {/* 3. Shared Quest (NEW Separate Tab) */}
+        {primaryProfile.loreLinks.length > 0 && (
           <button
-            key={attire.name}
             className={`${styles.tabButton} ${
-              activeTab === attire.name ? styles.tabActive : ""
+              activeTab === "sharedQuest" ? styles.tabActive : ""
             }`}
-            onClick={() => setActiveTab(attire.name)}
+            onClick={() => setActiveTab("sharedQuest")}
           >
-            {attire.name}
+            🗺️ Shared Quest 🗺️
           </button>
-        ))}
+        )}
+
+        {primaryProfile.attires.length > 0 && (
+          <button
+            className={`${styles.tabButton} ${
+              activeTab === "attires" ? styles.tabActive : ""
+            }`}
+            onClick={() => setActiveTab("attires")}
+          >
+            👗 Attires/Outfits 👗
+          </button>
+        )}
       </div>
 
       {/* Tab Content */}
@@ -273,41 +355,17 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
           </div>
         )}
 
-        {/* Render Shared Lore / Best Friend Tab */}
-        {activeTab === "shared" && secondaryProfile && renderSharedLoreTab()}
+        {/* 🔑 Render Best Friend Tab Content */}
+        {activeTab === "bestFriend" &&
+          secondaryProfile &&
+          renderBestFriendTab()}
 
-        {/* Render Attire Detail when an attire tab is active */}
-        {primaryProfile.attires.map(
-          (attire) =>
-            activeTab === attire.name && (
-              <div key={attire.name} className={styles.loreSection}>
-                <h2>
-                  {attire.name} Details ({attire.attireType})
-                </h2>
-                <p className={styles.loreParagraph}>{attire.description}</p>
+        {/* 🔑 Render Shared Quest Tab Content */}
+        {activeTab === "sharedQuest" && renderSharedLoreTab()}
 
-                <h3 className={styles.keyDetailsTitle}>Hairstyle</h3>
-                <p className={styles.loreParagraph}>
-                  {attire.hairstyleDescription}
-                </p>
-
-                <h3 className={styles.keyDetailsTitle}>Accessories</h3>
-                <ul className={styles.keyList}>
-                  {attire.accessories.map((acc) => (
-                    <li key={acc.characterAccessoryId}>
-                      <b>{acc.isWeapon ? "Weapon" : "Accessory"}:</b>{" "}
-                      {acc.description}
-                      {acc.uniqueEffect && (
-                        <span> (Effect: {acc.uniqueEffect})</span>
-                      )}
-                    </li>
-                  ))}
-                  {attire.accessories.length === 0 && (
-                    <li>No special accessories recorded for this attire.</li>
-                  )}
-                </ul>
-              </div>
-            )
+        {/* 🔑 Render Attires/Outfits Tab Content (NEW Structure) */}
+        {activeTab === "attires" && primaryProfile.attires.length > 0 && (
+          <AttireDetailsContent profile={primaryProfile} />
         )}
       </div>
     </div>
