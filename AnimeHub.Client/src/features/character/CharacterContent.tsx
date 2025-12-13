@@ -181,6 +181,7 @@ const CharacterContent: React.FC<CharacterContentProps> = ({
               primaryProfile={primaryProfile}
               secondaryProfile={secondaryProfile}
               onEditClick={handleEditClick}
+              isAdminAccess={isAdminAccess}
             />
           </div>
         </div>
