@@ -87,73 +87,77 @@ const Login: React.FC = () => {
   }
 
   return (
-    <div className={styles["login-container"]}>
-      <div className={styles["login-box"]}>
-        <h2>🔮 Welcome Back, Traveler! 🔮</h2>
-        <form onSubmit={handleSubmit} className={styles["login-form"]}>
-          {/* Display General Errors (e.g., 401 Unauthorized) */}
-          {generalError && (
-            <p
-              className={`${styles["error-message"]} ${styles["general-error"]}`}
+    <>
+      <div className={`${styles.wallpaperLayer} ${styles.loginWallpaper}`} />
+
+      <div className={styles["login-container"]}>
+        <div className={styles["login-box"]}>
+          <h2>🔮 Welcome Back, Traveler! 🔮</h2>
+          <form onSubmit={handleSubmit} className={styles["login-form"]}>
+            {/* Display General Errors (e.g., 401 Unauthorized) */}
+            {generalError && (
+              <p
+                className={`${styles["error-message"]} ${styles["general-error"]}`}
+              >
+                {generalError}
+              </p>
+            )}
+
+            {/* Email Input */}
+            <div className={styles["form-group"]}>
+              <label htmlFor="loginIdentifier">Username or Email</label>
+              <input
+                type="text"
+                id="loginIdentifier"
+                name="loginIdentifier"
+                value={formData.loginIdentifier}
+                onChange={handleChange}
+                disabled={isLoading}
+                aria-invalid={!!getValidationError("loginIdentifier")}
+                required
+              />
+              {getValidationError("loginIdentifier") && (
+                <p className={styles["error-message"]}>
+                  {getValidationError("loginIdentifier")}
+                </p>
+              )}
+            </div>
+
+            {/* Password Input */}
+            <div className={styles["form-group"]}>
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                disabled={isLoading}
+                aria-invalid={!!getValidationError("password")}
+                required
+              />
+              {getValidationError("password") && (
+                <p className={styles["error-message"]}>
+                  {getValidationError("password")}
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={styles["submit-button"]}
             >
-              {generalError}
-            </p>
-          )}
+              {isLoading ? "Connecting..." : "Login"}
+            </button>
+          </form>
 
-          {/* Email Input */}
-          <div className={styles["form-group"]}>
-            <label htmlFor="loginIdentifier">Username or Email</label>
-            <input
-              type="text"
-              id="loginIdentifier"
-              name="loginIdentifier"
-              value={formData.loginIdentifier}
-              onChange={handleChange}
-              disabled={isLoading}
-              aria-invalid={!!getValidationError("loginIdentifier")}
-              required
-            />
-            {getValidationError("loginIdentifier") && (
-              <p className={styles["error-message"]}>
-                {getValidationError("loginIdentifier")}
-              </p>
-            )}
-          </div>
-
-          {/* Password Input */}
-          <div className={styles["form-group"]}>
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              disabled={isLoading}
-              aria-invalid={!!getValidationError("password")}
-              required
-            />
-            {getValidationError("password") && (
-              <p className={styles["error-message"]}>
-                {getValidationError("password")}
-              </p>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={styles["submit-button"]}
-          >
-            {isLoading ? "Connecting..." : "Login"}
-          </button>
-        </form>
-
-        <p className={styles["register-link-text"]}>
-          New to AnimeHub? <Link to="/register">Create an Account!</Link> 🌟
-        </p>
+          <p className={styles["register-link-text"]}>
+            New to AnimeHub? <Link to="/register">Create an Account!</Link> 🌟
+          </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
