@@ -12,6 +12,7 @@ interface CharacterLoreRevealProps {
   primaryProfile: CharacterProfileDto;
   secondaryProfile: CharacterProfileDto | undefined;
   onEditClick: (character: CharacterProfileDto) => void;
+  isAdminAccess: boolean;
 }
 
 // Helper function to render markdown-style bio text (using primary profile data)
@@ -34,53 +35,117 @@ const renderBio = (text: string) => {
 interface SecondaryCharacterCardProps {
   secondaryProfile: CharacterProfileDto;
   onEditClick: (character: CharacterProfileDto) => void;
+  isAdminAccess: boolean;
 }
 
 const SecondaryCharacterCard: React.FC<SecondaryCharacterCardProps> = ({
   secondaryProfile,
   onEditClick,
+  isAdminAccess,
 }) => {
-  // Assuming isAdminAccess logic is available (either passed down or imported via useAuth)
-  // Since this is a nested component, let's assume it has access to useAuth or the check is passed down.
-  // We will assume `isAdminAccess` is passed down, or better, keep the responsibility with the parent.
-  // For now, we will just implement the click handler.
+  // For public visibility expansion
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const handleEditClick = () => {
+  // For public visibility
+  const handleToggleExpand = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent the image click handler from firing if it were on the card
+    setIsExpanded((prev) => !prev);
+  };
+
+  // For admin edit (only tied to image)
+  const handleAdminEditClick = () => {
     onEditClick(secondaryProfile);
   };
+
+  const fullBio = secondaryProfile.bio;
 
   // Using a separate component to keep this clean.
   return (
     <div
-      className={styles.secondaryCharacterCard}
-      onClick={handleEditClick}
-      title={`Edit ${secondaryProfile.firstName} Profile`}
+      className={`${styles.secondaryCharacterCard} ${
+        !isAdminAccess ? styles.secondaryCharacterCardNoHover : ""
+      }`} // 🔑 ADD NO-HOVER CLASS
     >
-      <div className={styles.headshotContainer}>
+      {/* 1. Image Container (Admin Click Target) */}
+      <div
+        className={`${styles.headshotContainer} ${
+          !isAdminAccess ? styles.headshotContainerDisabled : ""
+        }`} // Reuse base styling
+        onClick={handleAdminEditClick} // 🔑 NEW: Only image is clickable
+        title={
+          isAdminAccess
+            ? `Edit ${secondaryProfile.firstName} Profile`
+            : `${secondaryProfile.firstName}'s Headshot`
+        }
+      >
         {/* Image source needs to be dynamic for Chiara */}
         <img
           src={`/images/headshot/${secondaryProfile.firstName.toLowerCase()}/Headshot.png`}
           alt={`${secondaryProfile.firstName} Headshot`}
           className={styles.headshotImage}
         />
+        {isAdminAccess && <span className={styles.editOverlay}>Edit</span>}
       </div>
 
+      {/* 2. Summary Details (Public/Expandable Area) */}
       <div className={styles.summaryDetails}>
-        <h4>
-          {secondaryProfile.firstName} {secondaryProfile.lastName}
-        </h4>
+        <div className={styles.summaryHeader}>
+          <h4>
+            {secondaryProfile.firstName} {secondaryProfile.lastName}
+          </h4>
+
+          {/* 🔑 NEW: EXPAND/COLLAPSE BUTTON */}
+          <button
+            className={styles.expandButton} // Need to style this
+            onClick={handleToggleExpand}
+            aria-expanded={isExpanded}
+            aria-controls={`bio-for-${secondaryProfile.firstName}`}
+            title={isExpanded ? "Collapse Details" : "Expand Details"}
+          >
+            {isExpanded ? "▲" : "▼"}
+          </button>
+        </div>
+
+        {/* Fixed Summary Content */}
         <p>
           <strong>Vibe:</strong> {secondaryProfile.vibe}
         </p>
         <p>
           <strong>Unique Power:</strong> {secondaryProfile.uniquePower}
         </p>
-        {/* Display Ayami's Greatest Feat if she has one, but link to Chiara's data */}
+        {/* Display Chiara's Greatest Feat if she has one, but link to Chiara's data */}
         <p>
-          <strong>Feat:</strong> {secondaryProfile.greatestFeat?.title}
+          <strong>Greatest Feat:</strong> {secondaryProfile.greatestFeat?.title}
         </p>
+
+        {/* 🔑 EXPANDED CONTENT AREA */}
+        {isExpanded && (
+          <div
+            id={`bio-for-${secondaryProfile.firstName}`}
+            className={styles.expandedBioSection}
+          >
+            <h5 className={styles.keyDetailsTitle}>Full Biography</h5>
+            {renderBio(fullBio)} {/* Reuse the markdown helper */}
+            <h5 className={styles.keyDetailsTitle}>Core Details</h5>
+            {/* We can quickly list a few more details here if we want */}
+            <ul className={styles.keyList}>
+              <li>
+                <b>Age:</b> {secondaryProfile.age}
+              </li>
+              <li>
+                <b>Body Type:</b> {secondaryProfile.bodyType}
+              </li>
+              <li>
+                <b>Origin:</b> {secondaryProfile.origin}
+              </li>
+              <li>
+                <b>Best Friend:</b> {secondaryProfile.bestFriend?.firstName}{" "}
+                {secondaryProfile.bestFriend?.lastName} 💜
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
-      {/* Assume edit overlay is handled by the onClick wrapper in the parent component */}
     </div>
   );
 };
@@ -161,6 +226,7 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
   primaryProfile,
   secondaryProfile,
   onEditClick,
+  isAdminAccess,
 }) => {
   // State to manage which section is active: 'lore' (bio/key details) or an attire name
   const [activeTab, setActiveTab] = useState<string>("lore");
@@ -202,6 +268,7 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
         <SecondaryCharacterCard
           secondaryProfile={secondaryProfile}
           onEditClick={onEditClick}
+          isAdminAccess={isAdminAccess}
         />
       ) : (
         <p>No best friend data available.</p>
@@ -363,7 +430,7 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
                   {primaryProfile.bestFriend && (
                     <li>
                       <b>Best Friend:</b> {primaryProfile.bestFriend.firstName}{" "}
-                      {primaryProfile.bestFriend.lastName}
+                      {primaryProfile.bestFriend.lastName} ❤️
                     </li>
                   )}
                 </ul>
