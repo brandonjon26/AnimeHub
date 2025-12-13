@@ -7,12 +7,11 @@
   width: 100vw; /* Ensure it covers the width */
   position: relative; /* Ensure it stays in the normal document flow */
   z-index: 1; /* Ensure this container and its forms are ABOVE the wallpaper layer */
-  /* background-color: var(--color-bg-primary); */
 }
 
 /* Base style for the full-page, non-scrolling wallpaper */
 .wallpaperLayer {
-  position: fixed; /* 🔑 CRITICAL: Fixes the image relative to the viewport */
+  position: fixed; /* Fixes the image relative to the viewport */
   top: 0;
   left: 0;
   width: 100vw;
