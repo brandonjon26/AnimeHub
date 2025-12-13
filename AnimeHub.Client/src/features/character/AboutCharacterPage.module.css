@@ -512,6 +512,13 @@
   background-color: #2e8b57; /* Darker green on hover */
 }
 
+.sourceSection {
+  margin-top: 20px;
+  font-style: italic;
+  font-size: 0.9em;
+  color: var(--color-text-secondary);
+}
+
 /* Keyframe for the fade in effect */
 @keyframes fadeIn {
   from {
