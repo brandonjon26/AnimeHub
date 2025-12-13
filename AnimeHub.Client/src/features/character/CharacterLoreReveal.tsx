@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import Modal from "../../components/common/modal";
 import {
   type CharacterProfileDto,
   type CharacterProfileSummaryDto,
   type CharacterLoreLinkDto,
+  type LoreEntryDto,
 } from "../../api/types/CharacterTypes";
 import styles from "./AboutCharacterPage.module.css";
 
@@ -162,6 +164,18 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
 }) => {
   // State to manage which section is active: 'lore' (bio/key details) or an attire name
   const [activeTab, setActiveTab] = useState<string>("lore");
+  // State to hold the lore entry for the modal
+  const [modalLoreEntry, setModalLoreEntry] =
+    useState<CharacterLoreLinkDto | null>(null);
+
+  // Handlers to open and close the modal
+  const handleViewFullLore = (entry: CharacterLoreLinkDto) => {
+    setModalLoreEntry(entry);
+  };
+
+  const handleCloseModal = () => {
+    setModalLoreEntry(null);
+  };
 
   // Combine all core details for easy access
   const fullName = `${primaryProfile.firstName} ${primaryProfile.lastName}`;
@@ -215,7 +229,10 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
                   {link.loreEntry.narrative.substring(0, 150)}...
                 </p>
                 {/* 🔑 Item 2: Placeholder for View Full Lore button */}
-                <button className={styles.viewLoreButton}>
+                <button
+                  className={styles.viewLoreButton}
+                  onClick={() => handleViewFullLore(link)}
+                >
                   View Full Lore
                 </button>
               </li>
@@ -368,6 +385,21 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
           <AttireDetailsContent profile={primaryProfile} />
         )}
       </div>
+
+      {modalLoreEntry && (
+        <Modal
+          title={`${modalLoreEntry.loreEntry.title} (${modalLoreEntry.loreEntry.loreType})`}
+          onClose={handleCloseModal}
+        >
+          {/* Render the full narrative using the existing helper function */}
+          {renderBio(modalLoreEntry.loreEntry.narrative)}
+
+          {/* Optional: Include metadata if needed */}
+          <p className={styles.sourceSection}>
+            Source ID: {modalLoreEntry.loreEntry.loreEntryId}
+          </p>
+        </Modal>
+      )}
     </div>
   );
 };
