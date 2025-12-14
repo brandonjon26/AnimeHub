@@ -14,8 +14,6 @@
   position: fixed; /* Fixes the image relative to the viewport */
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
   background-size: cover; /* Ensures the image covers the entire screen */
   background-position: center;
   background-repeat: no-repeat;
@@ -25,11 +23,15 @@
 
 /* Wallpaper 1: Login Page (Placeholder Path) */
 .loginWallpaper {
+  width: 100vw;
+  height: 100vh;
   background-image: url("/images/wallpaper/AnimeHub_Wallpaper_1.png");
 }
 
 /* Wallpaper 2: Register Page (Placeholder Path) */
 .registerWallpaper {
+  width: 100vw;
+  height: 115vh;
   background-image: url("/images/wallpaper/AnimeHub_Wallpaper_2.png");
 }
 
