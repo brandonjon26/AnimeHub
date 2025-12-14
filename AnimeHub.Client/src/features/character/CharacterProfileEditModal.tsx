@@ -3,7 +3,7 @@ import { type CharacterProfileDto } from "../../api/types/CharacterTypes";
 import {
   CharacterProfileUpdateForm,
   CharacterAttireManagement,
-} from "./components";
+} from "./components/CharacterProfileForms";
 import styles from "./CharacterProfileEditModal.module.css";
 
 interface CharacterProfileEditModalProps {
