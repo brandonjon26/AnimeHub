@@ -261,11 +261,10 @@
   margin-bottom: 15px;
 }
 
-.loreParagraph {
-  /* Use this new class instead of .paragraph for lore text */
+/* .loreParagraph {
   margin-bottom: 15px;
   line-height: 1.6;
-}
+} */
 
 /* Redefine Key Details List styles to use within the new component structure */
 .loreSection .keyDetailsTitle {
@@ -279,7 +278,7 @@
 }
 
 /* --- Secondary Character Card Styles (NEW - For Chiara) --- */
-.secondaryCharacterCard {
+/* .secondaryCharacterCard {
   display: flex;
   gap: 20px;
   padding: 15px;
@@ -289,13 +288,13 @@
   transition: box-shadow 0.2s, transform 0.2s;
   margin-bottom: 20px;
   position: relative;
-}
+} */
 
 /* Class to suppress hover/click effects for non-admins (Requirement #2) */
-.secondaryCharacterCardNoHover {
+/* .secondaryCharacterCardNoHover {
   box-shadow: none;
   transform: none;
-}
+} */
 
 /* Styles for the image when a non-admin is viewing (Requirement #2) */
 .headshotImageNoHover {
@@ -305,14 +304,14 @@
 }
 
 /* Styles for the summary header and expand button */
-.summaryHeader {
+/* .summaryHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
-}
+} */
 
-.expandButton {
+/* .expandButton {
   background: none;
   border: 1px solid var(--color-accent-orange);
   color: var(--color-accent-orange);
@@ -323,49 +322,49 @@
   border-radius: 50%;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
-}
+} */
 
-.expandButton:hover {
+/* .expandButton:hover {
   background-color: var(--color-accent-orange);
   color: var(--color-bg-primary);
-}
+} */
 
 /* Styles for the expanded content */
-.expandedBioSection {
+/* .expandedBioSection {
   margin-top: 20px;
   padding-top: 15px;
   border-top: 1px dashed var(--color-text-secondary);
   animation: fadeIn 0.5s ease-out;
-}
+} */
 
-.expandedBioSection .keyDetailsTitle {
+/* .expandedBioSection .keyDetailsTitle {
   margin-top: 15px;
   margin-bottom: 5px;
   padding-bottom: 5px;
   border-bottom: 1px dotted var(--color-bg-secondary);
-  font-size: 1em; /* Smaller title inside the card */
-}
+  font-size: 1em; 
+} */
 
-.expandedBioSection .keyList {
+/* .expandedBioSection .keyList {
   margin-top: 5px;
-}
+} */
 
-.secondaryCharacterCard .summaryDetails {
+/* .secondaryCharacterCard .summaryDetails {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-}
+} */
 
-.secondaryCharacterCard h4 {
+/* .secondaryCharacterCard h4 {
   color: var(--color-accent-orange);
   margin-bottom: 5px;
-}
+} */
 
-.secondaryCharacterCard p {
+/* .secondaryCharacterCard p {
   font-size: 0.9em;
   margin-bottom: 3px;
   color: var(--color-text-secondary);
-}
+} */
 
 .loreEntryLink {
   /* Style for items in the Linked Lore list */
@@ -385,34 +384,30 @@
   margin-top: 5px;
 }
 
-.attireLayout {
+/* .attireLayout {
   display: flex;
-  /* Defines the column layout: nav on left, content on right */
   gap: 30px;
   padding: 10px 0;
-  min-height: 400px; /* Ensure component has height */
-}
+  min-height: 400px;
+} */
 
-.attireVerticalNav {
-  /* Left-hand column: Fixed width navigation */
-  flex-basis: 250px; /* A good fixed width for the nav list */
+/* .attireVerticalNav {
+  flex-basis: 250px; 
   flex-shrink: 0;
   padding-right: 20px;
-  /* Optional: Add a subtle separator border */
   border-right: 1px solid var(--color-bg-secondary);
-}
+} */
 
-.verticalNavHeader {
+/* .verticalNavHeader {
   color: var(--color-accent-purple);
   font-size: 1.1em;
   margin-bottom: 15px;
   padding-bottom: 5px;
   border-bottom: 1px dashed var(--color-bg-secondary);
-}
+} */
 
-.verticalNavLink {
-  /* Style for each button in the vertical nav */
-  display: block; /* Makes the button take the full width */
+/* .verticalNavLink {
+  display: block; 
   width: 100%;
   text-align: left;
   background: none;
@@ -424,50 +419,46 @@
   color: var(--color-text-secondary);
   border-radius: 4px;
   transition: background-color 0.2s, color 0.2s;
-}
+} */
 
-.verticalNavLink:hover {
+/* .verticalNavLink:hover {
   background-color: var(--color-bg-secondary);
   color: var(--color-text-primary);
-}
+} */
 
-.verticalNavLinkActive {
-  /* Highlight for the currently selected attire */
+/* .verticalNavLinkActive {
   background-color: var(--color-accent-orange);
-  color: var(--color-bg-primary); /* Dark text on bright orange */
+  color: var(--color-bg-primary); 
   font-weight: bold;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  border-left: 5px solid var(--color-accent-purple); /* Extra visual flair */
-}
+  border-left: 5px solid var(--color-accent-purple); 
+} */
 
-.verticalNavLinkActive:hover {
-  /* Override hover for the active state */
+/* .verticalNavLinkActive:hover {
   background-color: var(--color-accent-orange);
   color: var(--color-bg-primary);
-}
+} */
 
-.attireDetailsContent {
-  /* Right-hand column: The scrollable content area */
+/* .attireDetailsContent {
   flex-grow: 1;
   padding: 0 10px;
-  /* The main content area of the tab is scrollable if needed */
   overflow-y: auto;
-  max-height: 400px; /* Constrain height to match min-height of layout for scrolling visual */
-}
+  max-height: 400px; 
+} */
 
 /* Ensure the titles and lists within the attire content look good */
-.attireDetailsContent h2 {
+/* .attireDetailsContent h2 {
   color: var(--color-accent-orange);
   border-bottom: 2px solid var(--color-bg-secondary);
   padding-bottom: 10px;
   margin-bottom: 15px;
-}
+} */
 
-.attireDetailsContent h3 {
+/* .attireDetailsContent h3 {
   color: var(--color-accent-purple);
   margin-top: 20px;
   margin-bottom: 10px;
-}
+} */
 
 /* Style for the View Full Lore button (Item 2 setup) */
 .viewLoreButton {

@@ -3,10 +3,10 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import {
   type CharacterProfileDto,
   type CharacterAttireDto,
-} from "../../../api/types/CharacterTypes";
-import { CharacterClient } from "../../../api/CharacterClient";
+} from "../../../../api/types/CharacterTypes";
+import { CharacterClient } from "../../../../api/CharacterClient";
 import CharacterAttireAddForm from "./CharacterAttireAddForm";
-import styles from "../CharacterProfileEditModal.module.css";
+import styles from "../../CharacterProfileEditModal.module.css";
 
 interface CharacterAttireManagementProps {
   profile: CharacterProfileDto;
