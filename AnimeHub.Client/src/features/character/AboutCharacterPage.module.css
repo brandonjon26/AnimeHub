@@ -88,69 +88,6 @@
   margin-bottom: 30px; /* Space before the key details list */
 }
 
-.headshotContainer {
-  /* New container to manage click state and relative positioning for the overlay */
-  position: relative;
-  width: 250px; /* Match the width of .headshotImage */
-  flex-shrink: 0;
-  cursor: pointer; /* Indicate it's clickable */
-  border-radius: 8px; /* Match image border radius */
-  overflow: hidden; /* Ensures the overlay stays within the boundary */
-}
-
-.headshotContainer .headshotImage {
-  width: 250px;
-  flex-shrink: 0; /* Prevents the image from shrinking */
-  height: auto;
-  border: 3px solid var(--color-accent-purple); /* Standout border */
-  border-radius: 8px;
-  object-fit: cover;
-  transition: filter 0.3s ease;
-}
-
-.editOverlay {
-  /* 🔑 The overlay that appears on hover */
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(79, 46, 122, 0.7); /* Purple-tinted transparency */
-  color: white;
-  font-size: 1.2rem;
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0; /* Starts invisible */
-  transition: opacity 0.3s ease;
-  pointer-events: none; /* Allows click to pass through when hidden */
-  text-shadow: 0 0 5px black;
-  border: 3px solid var(--color-accent-purple); /* Match image border */
-  border-radius: 8px; /* Match image border radius */
-}
-
-/* Hover effects */
-.headshotContainer:hover .headshotImage {
-  filter: brightness(0.7); /* Darken the image on hover */
-}
-
-.headshotContainer:hover .editOverlay {
-  opacity: 1; /* Show the overlay on hover */
-}
-
-/* New class to disable the click appearance */
-.headshotContainerDisabled {
-  cursor: default; /* Change cursor back to default arrow */
-  pointer-events: none; /* Prevents any mouse events (like hover) from firing */
-}
-
-/* Ensure the disabled class overrides the hover styles */
-.headshotContainerDisabled:hover {
-  box-shadow: none; /* Remove hover glow/shadow */
-  opacity: 1; /* Remove opacity change on hover */
-}
-
 .bioText {
   flex-grow: 1;
 }
@@ -354,11 +291,6 @@
   position: relative;
 }
 
-/* .secondaryCharacterCard:hover {
-  box-shadow: 0 0 10px var(--color-accent-purple);
-  transform: translateY(-2px);
-} */
-
 /* Class to suppress hover/click effects for non-admins (Requirement #2) */
 .secondaryCharacterCardNoHover {
   box-shadow: none;
@@ -370,23 +302,6 @@
   cursor: default !important; /* Force default cursor */
   /* If you reuse .headshotContainer for the small card, we need to ensure hover effects on the image are suppressed */
   pointer-events: none; /* Prevents the image from receiving mouse events */
-}
-
-.secondaryCharacterCard .headshotContainer {
-  width: 100px; /* Smaller headshot for the summary card */
-  height: 100px;
-  flex-shrink: 0;
-  overflow: hidden;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.secondaryCharacterCard .headshotImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border: 2px solid var(--color-accent-orange);
-  border-radius: 8px;
 }
 
 /* Styles for the summary header and expand button */

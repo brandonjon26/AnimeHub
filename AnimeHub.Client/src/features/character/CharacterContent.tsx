@@ -10,6 +10,7 @@ import {
 } from "../../api/types/CharacterTypes";
 import CharacterLoreReveal from "./CharacterLoreReveal";
 import CharacterProfileEditModal from "./CharacterProfileEditModal";
+import { EditableHeadshot } from "./components/EditableHeadshot";
 import { useAuth } from "../../hooks/useAuth";
 import GalleryAdminModal from "./gallery/GalleryAdminModal";
 import styles from "./AboutCharacterPage.module.css";
@@ -159,23 +160,13 @@ const CharacterContent: React.FC<CharacterContentProps> = ({
         {/* LEFT: Bio/Text Area (Retaining original structure) */}
         <div className={styles.bioArea}>
           <div className={styles.bioFlexContainer}>
-            {/* Primary Character Headshot Click (Ayami) */}
-            <div
-              className={`${styles.headshotContainer} ${
-                !isAdminAccess ? styles.headshotContainerDisabled : ""
-              }`}
-              onClick={() => handleEditClick(primaryProfile)}
-            >
-              <img
-                src={`/images/headshot/${primaryProfile.firstName.toLowerCase()}/Headshot.png`}
-                alt={`${fullName} Headshot`}
-                className={styles.headshotImage}
-              />
-
-              {isAdminAccess && (
-                <span className={styles.editOverlay}>Edit Profile</span>
-              )}
-            </div>
+            {/* 🔑 REPLACED: Primary Character Headshot (Ayami) */}
+            <EditableHeadshot
+              profile={primaryProfile}
+              isAdminAccess={isAdminAccess}
+              onEditClick={handleEditClick} // Pass the handler
+              size="primary" // Use the larger, default size
+            />
 
             <CharacterLoreReveal
               primaryProfile={primaryProfile}

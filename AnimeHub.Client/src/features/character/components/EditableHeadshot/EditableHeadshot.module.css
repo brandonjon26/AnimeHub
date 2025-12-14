@@ -1,0 +1,94 @@
+/* --- Base Styles (Migrated from AboutCharacterPage.module.css) --- */
+
+/* Base container styling (size will be applied separately) */
+.headshotContainer {
+  /* New container to manage click state and relative positioning for the overlay */
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer; /* Indicate it's clickable */
+  border-radius: 8px; /* Match image border radius */
+  overflow: hidden; /* Ensures the overlay stays within the boundary */
+}
+
+/* Base image styling */
+.headshotImage {
+  width: 100%; /* Important: takes full width of its container */
+  height: 100%; /* Important: takes full height of its container */
+  object-fit: cover;
+  transition: filter 0.3s ease;
+}
+
+/* The overlay that appears on hover */
+.editOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(79, 46, 122, 0.7); /* Purple-tinted transparency */
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0; /* Starts invisible */
+  transition: opacity 0.3s ease;
+  pointer-events: none; /* Allows click to pass through when hidden */
+  text-shadow: 0 0 5px black;
+  /* Border is applied dynamically below */
+  border-radius: 8px; /* Match image border radius */
+}
+
+/* --- Size Variations (New, based on the two usages) --- */
+
+/* Primary Size (Ayami - 250px) */
+.headshotContainerPrimary {
+  width: 250px;
+  height: 250px;
+  border: 3px solid var(--color-accent-purple);
+}
+
+/* Secondary Size (Chiara - 100px) */
+.headshotContainerSecondary {
+  width: 100px;
+  height: 100px;
+  border: 2px solid var(--color-accent-orange); /* Use Chiara's color */
+}
+
+/* Apply specific border colors to the overlay */
+.headshotContainerPrimary .editOverlay {
+  border: 3px solid var(--color-accent-purple);
+}
+
+.headshotContainerSecondary .editOverlay {
+  border: 2px solid var(--color-accent-orange);
+}
+
+/* --- Interaction Styles (Common) --- */
+
+/* Hover effects for the container */
+.headshotContainer:hover {
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.5); /* Subtle glow on hover */
+}
+
+.headshotContainer:hover .headshotImage {
+  filter: brightness(0.7); /* Darken the image on hover */
+}
+
+.headshotContainer:hover .editOverlay {
+  opacity: 1; /* Show the overlay on hover */
+}
+
+/* Disable State (Admin access is false) */
+.headshotContainerDisabled {
+  cursor: default; /* Change cursor back to default arrow */
+  pointer-events: none; /* Prevents any mouse events (like hover) from firing */
+}
+
+/* Ensure the disabled class overrides the hover styles */
+.headshotContainerDisabled:hover {
+  box-shadow: none; /* Remove hover glow/shadow */
+  opacity: 1; /* Remove opacity change on hover */
+  filter: none; /* Remove filter on hover */
+}
