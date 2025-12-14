@@ -6,6 +6,7 @@ import {
   type CharacterLoreLinkDto,
   type LoreEntryDto,
 } from "../../api/types/CharacterTypes";
+import { EditableHeadshot } from "./components/EditableHeadshot";
 import styles from "./AboutCharacterPage.module.css";
 
 interface CharacterLoreRevealProps {
@@ -52,11 +53,6 @@ const SecondaryCharacterCard: React.FC<SecondaryCharacterCardProps> = ({
     setIsExpanded((prev) => !prev);
   };
 
-  // For admin edit (only tied to image)
-  const handleAdminEditClick = () => {
-    onEditClick(secondaryProfile);
-  };
-
   const fullBio = secondaryProfile.bio;
 
   // Using a separate component to keep this clean.
@@ -66,26 +62,13 @@ const SecondaryCharacterCard: React.FC<SecondaryCharacterCardProps> = ({
         !isAdminAccess ? styles.secondaryCharacterCardNoHover : ""
       }`} // 🔑 ADD NO-HOVER CLASS
     >
-      {/* 1. Image Container (Admin Click Target) */}
-      <div
-        className={`${styles.headshotContainer} ${
-          !isAdminAccess ? styles.headshotContainerDisabled : ""
-        }`} // Reuse base styling
-        onClick={handleAdminEditClick} // 🔑 NEW: Only image is clickable
-        title={
-          isAdminAccess
-            ? `Edit ${secondaryProfile.firstName} Profile`
-            : `${secondaryProfile.firstName}'s Headshot`
-        }
-      >
-        {/* Image source needs to be dynamic for Chiara */}
-        <img
-          src={`/images/headshot/${secondaryProfile.firstName.toLowerCase()}/Headshot.png`}
-          alt={`${secondaryProfile.firstName} Headshot`}
-          className={styles.headshotImage}
-        />
-        {isAdminAccess && <span className={styles.editOverlay}>Edit</span>}
-      </div>
+      {/* 🔑 REPLACED: Image Container (Admin Click Target) */}
+      <EditableHeadshot
+        profile={secondaryProfile}
+        isAdminAccess={isAdminAccess}
+        onEditClick={onEditClick} // Pass the handler from props
+        size="secondary" // Use the smaller size defined in the CSS module
+      />
 
       {/* 2. Summary Details (Public/Expandable Area) */}
       <div className={styles.summaryDetails}>
