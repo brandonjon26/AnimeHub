@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: top;
   height: 100vh;
-  padding: 100px;
+  padding: 165px;
   text-align: center;
   /* background-color: var(--color-bg-primary); */
 }
@@ -35,9 +35,15 @@
   display: grid;
   grid-template-columns: 1fr 2fr 1fr; /* Left Avatar | Center Content | Right Avatar */
   align-items: center;
-  width: 100%;
+  width: 75%; /* change back to 100 to reset */
   max-width: 1250px; /* Limit the spread */
   gap: 40px;
+
+  /* delete to reset */
+  padding: 30px;
+  background-color: var(--color-bg-secondary);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
 }
 
 .avatarContainer {
@@ -57,12 +63,13 @@
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
+/* uncomment to reset */
 .welcomeContent {
   /* Central text and link area */
-  padding: 30px;
+  /* padding: 30px;
   background-color: var(--color-bg-secondary);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7); */
 }
 
 .welcomeContent h2 {
