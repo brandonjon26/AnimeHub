@@ -261,10 +261,10 @@
   margin-bottom: 15px;
 }
 
-/* .loreParagraph {
+.loreParagraph {
   margin-bottom: 15px;
   line-height: 1.6;
-} */
+}
 
 /* Redefine Key Details List styles to use within the new component structure */
 .loreSection .keyDetailsTitle {
@@ -277,94 +277,12 @@
   line-height: 1.8;
 }
 
-/* --- Secondary Character Card Styles (NEW - For Chiara) --- */
-/* .secondaryCharacterCard {
-  display: flex;
-  gap: 20px;
-  padding: 15px;
-  background-color: var(--color-bg-secondary);
-  border: 1px solid var(--color-accent-purple);
-  border-radius: 8px;
-  transition: box-shadow 0.2s, transform 0.2s;
-  margin-bottom: 20px;
-  position: relative;
-} */
-
-/* Class to suppress hover/click effects for non-admins (Requirement #2) */
-/* .secondaryCharacterCardNoHover {
-  box-shadow: none;
-  transform: none;
-} */
-
 /* Styles for the image when a non-admin is viewing (Requirement #2) */
 .headshotImageNoHover {
   cursor: default !important; /* Force default cursor */
   /* If you reuse .headshotContainer for the small card, we need to ensure hover effects on the image are suppressed */
   pointer-events: none; /* Prevents the image from receiving mouse events */
 }
-
-/* Styles for the summary header and expand button */
-/* .summaryHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-} */
-
-/* .expandButton {
-  background: none;
-  border: 1px solid var(--color-accent-orange);
-  color: var(--color-accent-orange);
-  font-weight: bold;
-  font-size: 0.9em;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-} */
-
-/* .expandButton:hover {
-  background-color: var(--color-accent-orange);
-  color: var(--color-bg-primary);
-} */
-
-/* Styles for the expanded content */
-/* .expandedBioSection {
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px dashed var(--color-text-secondary);
-  animation: fadeIn 0.5s ease-out;
-} */
-
-/* .expandedBioSection .keyDetailsTitle {
-  margin-top: 15px;
-  margin-bottom: 5px;
-  padding-bottom: 5px;
-  border-bottom: 1px dotted var(--color-bg-secondary);
-  font-size: 1em; 
-} */
-
-/* .expandedBioSection .keyList {
-  margin-top: 5px;
-} */
-
-/* .secondaryCharacterCard .summaryDetails {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-} */
-
-/* .secondaryCharacterCard h4 {
-  color: var(--color-accent-orange);
-  margin-bottom: 5px;
-} */
-
-/* .secondaryCharacterCard p {
-  font-size: 0.9em;
-  margin-bottom: 3px;
-  color: var(--color-text-secondary);
-} */
 
 .loreEntryLink {
   /* Style for items in the Linked Lore list */
@@ -383,82 +301,6 @@
   color: var(--color-text-secondary);
   margin-top: 5px;
 }
-
-/* .attireLayout {
-  display: flex;
-  gap: 30px;
-  padding: 10px 0;
-  min-height: 400px;
-} */
-
-/* .attireVerticalNav {
-  flex-basis: 250px; 
-  flex-shrink: 0;
-  padding-right: 20px;
-  border-right: 1px solid var(--color-bg-secondary);
-} */
-
-/* .verticalNavHeader {
-  color: var(--color-accent-purple);
-  font-size: 1.1em;
-  margin-bottom: 15px;
-  padding-bottom: 5px;
-  border-bottom: 1px dashed var(--color-bg-secondary);
-} */
-
-/* .verticalNavLink {
-  display: block; 
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: none;
-  padding: 10px 15px;
-  margin-bottom: 5px;
-  cursor: pointer;
-  font-size: 0.95em;
-  color: var(--color-text-secondary);
-  border-radius: 4px;
-  transition: background-color 0.2s, color 0.2s;
-} */
-
-/* .verticalNavLink:hover {
-  background-color: var(--color-bg-secondary);
-  color: var(--color-text-primary);
-} */
-
-/* .verticalNavLinkActive {
-  background-color: var(--color-accent-orange);
-  color: var(--color-bg-primary); 
-  font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  border-left: 5px solid var(--color-accent-purple); 
-} */
-
-/* .verticalNavLinkActive:hover {
-  background-color: var(--color-accent-orange);
-  color: var(--color-bg-primary);
-} */
-
-/* .attireDetailsContent {
-  flex-grow: 1;
-  padding: 0 10px;
-  overflow-y: auto;
-  max-height: 400px; 
-} */
-
-/* Ensure the titles and lists within the attire content look good */
-/* .attireDetailsContent h2 {
-  color: var(--color-accent-orange);
-  border-bottom: 2px solid var(--color-bg-secondary);
-  padding-bottom: 10px;
-  margin-bottom: 15px;
-} */
-
-/* .attireDetailsContent h3 {
-  color: var(--color-accent-purple);
-  margin-top: 20px;
-  margin-bottom: 10px;
-} */
 
 /* Style for the View Full Lore button (Item 2 setup) */
 .viewLoreButton {

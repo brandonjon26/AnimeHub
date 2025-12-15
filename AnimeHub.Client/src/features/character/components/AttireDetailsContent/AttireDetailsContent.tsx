@@ -46,11 +46,12 @@ const AttireDetailsContent: React.FC<AttireDetailsContentProps> = ({
         <h2>
           {activeAttire.name} Details ({activeAttire.attireType})
         </h2>
-        {/* Use the shared utility for rendering paragraphs */}
-        {renderBio(activeAttire.description)}
+        <p className={styles.loreParagraph}>{activeAttire.description}</p>
 
         <h3 className={styles.keyDetailsTitle}>Hairstyle</h3>
-        {renderBio(activeAttire.hairstyleDescription)}
+        <p className={styles.loreParagraph}>
+          {activeAttire.hairstyleDescription}
+        </p>
 
         <h3 className={styles.keyDetailsTitle}>Accessories</h3>
         <ul className={styles.keyList}>
