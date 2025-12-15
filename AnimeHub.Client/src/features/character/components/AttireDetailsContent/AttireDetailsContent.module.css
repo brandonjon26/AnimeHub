@@ -1,3 +1,16 @@
+.keyDetailsTitle {
+  margin-top: 25px;
+  color: var(--color-accent-orange);
+  padding-bottom: 15px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid var(--color-bg-secondary);
+}
+
+.keyList {
+  padding-left: 20px;
+  line-height: 1.8;
+}
+
 .attireLayout {
   /* Defines the column layout: nav on left, content on right */
   display: flex;
