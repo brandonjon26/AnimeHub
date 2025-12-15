@@ -9,9 +9,9 @@ import { CharacterGreetingTitle } from "./components/CharacterGreetingTitle";
 import CharacterLoreReveal from "./CharacterLoreReveal";
 import CharacterProfileEditModal from "./CharacterProfileEditModal";
 import { EditableHeadshot } from "./components/EditableHeadshot";
+import { CharacterGalleryAdminTools } from "./gallery/CharacterGalleryAdminTools";
 import { useAuth } from "../../hooks/useAuth";
 import { useProfileEditModal } from "../../hooks/useProfileEditModal";
-import GalleryAdminModal from "./gallery/GalleryAdminModal";
 import styles from "./AboutCharacterPage.module.css";
 
 interface CharacterContentProps {
@@ -50,7 +50,7 @@ const CharacterContent: React.FC<CharacterContentProps> = ({
   const firstName = primaryProfile.firstName;
 
   // const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const [isGalleryAdminModalOpen, setIsGalleryAdminModalOpen] = useState(false);
+  // const [isGalleryAdminModalOpen, setIsGalleryAdminModalOpen] = useState(false);
 
   // Get accessories from the first attire for the Key Details list
   // Note: In a larger app, you might choose a primary attire specifically.
@@ -127,16 +127,11 @@ const CharacterContent: React.FC<CharacterContentProps> = ({
           <h2>{primaryProfile.firstName}'s Albums</h2>
 
           {/* ADMIN QUICK-ACCESS TOOLS */}
-          {isAdminAccess && (
-            <div className={styles.adminQuickAccess}>
-              <button
-                className={styles.adminButton}
-                onClick={() => setIsGalleryAdminModalOpen(true)}
-              >
-                🖼️ Manage Gallery Albums
-              </button>
-            </div>
-          )}
+          <CharacterGalleryAdminTools
+            isAdminAccess={isAdminAccess}
+            folders={folders}
+            onGalleryRefresh={onGalleryRefresh}
+          />
         </div>
         <div className={styles.albumList}>
           {filteredFolders.map((folder) => (
@@ -174,15 +169,6 @@ const CharacterContent: React.FC<CharacterContentProps> = ({
           profile={editingProfile}
           profileId={editingProfile.characterProfileId}
           onClose={handleMutationSuccess}
-        />
-      )}
-
-      {/* GALLERY ADMIN MODAL */}
-      {isGalleryAdminModalOpen && (
-        <GalleryAdminModal
-          folders={folders}
-          onClose={() => setIsGalleryAdminModalOpen(false)}
-          onGalleryRefresh={onGalleryRefresh}
         />
       )}
     </>

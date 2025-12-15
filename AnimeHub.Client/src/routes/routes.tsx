@@ -8,7 +8,7 @@ import {
 import MainLayout from "./../components/common/MainLayout/MainLayout.tsx";
 import HomePage from "../features/home/HomePage";
 import AboutCharacterPage from "../features/character/AboutCharacterPage.tsx";
-import GalleryFolderPage from "../features/character/gallery/GalleryFolderPage.tsx";
+import { GalleryFolderPage } from "../features/character/gallery/GalleryFolder";
 import Login from "../features/auth/Login.tsx";
 import Register from "../features/auth/Register.tsx";
 import ProtectedRoute from "../features/auth/ProtectedRoute.tsx";
