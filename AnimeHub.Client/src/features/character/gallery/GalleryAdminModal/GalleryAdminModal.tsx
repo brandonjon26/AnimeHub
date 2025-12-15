@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { GalleryClient } from "../../../api/GalleryClient";
+import { GalleryClient } from "../../../../api/GalleryClient";
 import {
   type GalleryCategory,
   type GalleryImage,
   type GalleryBatchCreateMetadata,
   type ImageMetadata,
   type GalleryFolderUpdate,
-} from "../../../api/types/GalleryTypes";
-import Modal from "../../../components/common/modal";
+} from "../../../../api/types/GalleryTypes";
+import Modal from "../../../../components/common/modal";
 import { AxiosError } from "axios";
 import styles from "./GalleryAdminModal.module.css";
 

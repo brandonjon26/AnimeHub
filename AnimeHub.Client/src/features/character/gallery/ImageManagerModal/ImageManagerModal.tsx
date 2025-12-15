@@ -4,10 +4,10 @@ import {
   type GalleryCategory,
   type GallerySingleCreate,
   type GallerySingleUpdate,
-} from "../../../api/types/GalleryTypes";
-import { GalleryClient } from "../../../api/GalleryClient";
+} from "../../../../api/types/GalleryTypes";
+import { GalleryClient } from "../../../../api/GalleryClient";
 import styles from "./ImageManagerModal.module.css"; // Local styles
-import Modal from "../../../components/common/modal"; // Assuming your modal component is named Modal
+import Modal from "../../../../components/common/modal"; // Assuming your modal component is named Modal
 
 // --- Component Props ---
 interface ImageManagerModalProps {

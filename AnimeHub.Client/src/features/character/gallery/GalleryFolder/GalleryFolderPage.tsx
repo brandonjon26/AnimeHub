@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { GalleryClient } from "../../../api/GalleryClient";
+import { GalleryClient } from "../../../../api/GalleryClient";
 import {
   type GalleryImage,
   type GalleryCategory,
-} from "../../../api/types/GalleryTypes";
+} from "../../../../api/types/GalleryTypes";
 import ImageViewer from "./ImageViewer";
-import ImageManagerModal from "./ImageManagerModal";
-import { useAuth } from "../../../hooks/useAuth";
+import { ImageManagerModal } from "../ImageManagerModal";
+import { useAuth } from "../../../../hooks/useAuth";
 import styles from "./Gallery.module.css";
-import pageStyles from "../AboutCharacterPage.module.css"; // Keep page container styles
+import pageStyles from "../../AboutCharacterPage.module.css"; // Keep page container styles
 
 const galleryClient = new GalleryClient();
 
