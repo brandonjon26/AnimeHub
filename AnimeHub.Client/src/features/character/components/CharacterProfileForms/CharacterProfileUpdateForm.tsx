@@ -4,9 +4,9 @@ import {
   type CharacterProfileDto,
   type CharacterProfileUpdateInput,
   type LoreEntrySummaryDto,
-} from "../../../api/types/CharacterTypes";
-import { CharacterClient } from "../../../api/CharacterClient";
-import styles from "../CharacterProfileEditModal.module.css"; // Use the modal's styles
+} from "../../../../api/types/CharacterTypes";
+import { CharacterClient } from "../../../../api/CharacterClient";
+import styles from "../../CharacterProfileEditModal.module.css"; // Use the modal's styles
 
 interface CharacterProfileUpdateFormProps {
   profile: CharacterProfileDto;

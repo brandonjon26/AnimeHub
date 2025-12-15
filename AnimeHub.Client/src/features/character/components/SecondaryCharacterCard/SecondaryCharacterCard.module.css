@@ -1,0 +1,92 @@
+.secondaryCharacterCard {
+  display: flex;
+  gap: 20px;
+  padding: 15px;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-accent-purple);
+  border-radius: 8px;
+  transition: box-shadow 0.2s, transform 0.2s;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+/* Class to suppress hover/click effects for non-admins */
+.secondaryCharacterCardNoHover {
+  cursor: default;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Styles for the summary header and expand button */
+.summaryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.expandButton {
+  background: none;
+  border: 1px solid var(--color-accent-orange);
+  color: var(--color-accent-orange);
+  font-weight: bold;
+  font-size: 0.9em;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.expandButton:hover {
+  background-color: var(--color-accent-orange);
+  color: var(--color-bg-primary);
+}
+
+/* Styles for the expanded content */
+.expandedBioSection {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px dashed var(--color-text-secondary);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.expandedBioSection .keyDetailsTitle {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px dotted var(--color-bg-secondary);
+  font-size: 1em; /* Smaller title inside the card */
+}
+
+.expandedBioSection .keyList {
+  margin-top: 5px;
+}
+
+.secondaryCharacterCard .summaryDetails {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.secondaryCharacterCard h4 {
+  color: var(--color-accent-orange);
+  margin-bottom: 5px;
+}
+
+.secondaryCharacterCard p {
+  font-size: 0.9em;
+  margin-bottom: 3px;
+  color: var(--color-text-secondary);
+}
+
+.loreParagraph {
+  /* Moved the lore paragraph style here as it is used by the renderBio helper */
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+/* Ensure keyframes exist in the primary stylesheet or are added here if needed */
+/* Since it relies on the @keyframes fadeIn, we should ensure it's available. 
+   Assuming for now global.css or AboutCharacterPage.module.css still handles global keyframes. 
+   If not, we would move it. */
