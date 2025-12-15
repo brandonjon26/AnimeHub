@@ -4,14 +4,13 @@ import {
   type GalleryImage,
   type GalleryCategory,
 } from "../../api/types/GalleryTypes";
-import {
-  type CharacterProfileDto,
-  type CharacterProfileSummaryDto,
-} from "../../api/types/CharacterTypes";
+import { type CharacterProfileDto } from "../../api/types/CharacterTypes";
+import { CharacterGreetingTitle } from "./components/CharacterGreetingTitle";
 import CharacterLoreReveal from "./CharacterLoreReveal";
 import CharacterProfileEditModal from "./CharacterProfileEditModal";
 import { EditableHeadshot } from "./components/EditableHeadshot";
 import { useAuth } from "../../hooks/useAuth";
+import { useProfileEditModal } from "../../hooks/useProfileEditModal";
 import GalleryAdminModal from "./gallery/GalleryAdminModal";
 import styles from "./AboutCharacterPage.module.css";
 
@@ -32,29 +31,26 @@ const CharacterContent: React.FC<CharacterContentProps> = ({
   isAdult,
   onGalleryRefresh,
 }) => {
-  // Tracks which character is being edited. Null means modal is closed.
-  const [editingProfile, setEditingProfile] =
-    useState<CharacterProfileDto | null>(null);
-
-  // Used to force re-mount of the modal after a successful mutation
-  const [profileModalKey, setProfileModalKey] = useState(0);
-
-  // const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const [isGalleryAdminModalOpen, setIsGalleryAdminModalOpen] = useState(false);
-
-  // Audio management
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-
   // Get user role for authorization
   const { user } = useAuth();
   // Check if the user is an Admin or Moderator (assuming roles are 'Admin' or 'Moderator')
   const isAdminAccess = user?.roles[0] === "Admin" || user?.roles[0] === "Mage";
 
-  const profileId = primaryProfile.characterProfileId;
+  // Use the Custom Hook for Edit Modal Logic
+  const {
+    editingProfile,
+    profileModalKey,
+    handleEditClick,
+    handleMutationSuccess,
+  } = useProfileEditModal(isAdminAccess);
 
+  const profileId = primaryProfile.characterProfileId;
   const fullName = `${primaryProfile.firstName} ${primaryProfile.lastName}`;
   const japaneseName = `${primaryProfile.japaneseFirstName} ${primaryProfile.japaneseLastName}`;
+  const firstName = primaryProfile.firstName;
+
+  // const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isGalleryAdminModalOpen, setIsGalleryAdminModalOpen] = useState(false);
 
   // Get accessories from the first attire for the Key Details list
   // Note: In a larger app, you might choose a primary attire specifically.
@@ -73,94 +69,22 @@ const CharacterContent: React.FC<CharacterContentProps> = ({
     return isAdult;
   });
 
-  // --- Universal Profile Edit Handler ---
-  const handleEditClick = (profile: CharacterProfileDto) => {
-    if (isAdminAccess) {
-      setEditingProfile(profile);
-    }
-  };
-
-  // --- Universal Modal Close/Mutation Success Handler ---
-  const handleMutationSuccess = () => {
-    setEditingProfile(null); // Close modal by resetting the editing profile state
-
-    // Increment the key to force the modal to re-mount/re-initialize.
-    // This is crucial because the primaryProfile prop, which holds the stale attire list,
-    // will now be freshly re-read from the parent's useQuery cache on the next render.
-    setProfileModalKey((prev) => prev + 1);
-  };
-  // --- END Modal Handlers ---
-
-  // Play/Pause Audio
-  const handlePlayGreeting = () => {
-    if (!audioRef.current) return;
-
-    // If currently paused, play it
-    if (audioRef.current.paused) {
-      // Always reset to start before playing if it's not the first time
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch((error) => {
-        // Catch promise rejection (e.g., if user hasn't interacted with the page yet)
-        console.error("Audio playback failed:", error);
-      });
-      setIsPlaying(true);
-    } else {
-      // If currently playing, pause it and reset
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setIsPlaying(false);
-    }
-  };
-
-  // Reset playback state when audio finishes
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio) {
-      const handleEnded = () => setIsPlaying(false);
-      audio.addEventListener("ended", handleEnded);
-      return () => {
-        audio.removeEventListener("ended", handleEnded);
-      };
-    }
-  }, []);
-
   return (
     <>
       {/* 1. TOP SECTION: Bio (Left) and Featured Photos (Right) */}
-      <h1 className={styles.title}>
-        Meet {fullName} ({japaneseName}) 🔮 The Bewitching Beauty {/*🌟*/}
-        {/* Play Button */}
-        {primaryProfile.greetingAudioUrl && (
-          <button
-            className={styles.audioButton}
-            onClick={handlePlayGreeting}
-            aria-label={
-              isPlaying
-                ? `Pause ${primaryProfile.firstName}'s greeting`
-                : `Play ${primaryProfile.firstName}'s greeting`
-            }
-          >
-            {/* Simple icon logic: use a speaker icon or play/pause symbols */}
-            {isPlaying ? "🔈" : "🔊"}
-          </button>
-        )}
-      </h1>
-
-      {/* Hidden Audio Element (Loaded via URL from DTO) */}
-      {primaryProfile.greetingAudioUrl && (
-        <audio
-          ref={audioRef}
-          src={primaryProfile.greetingAudioUrl}
-          preload="auto"
-        />
-      )}
+      <CharacterGreetingTitle // 🔑 USE NEW COMPONENT
+        fullName={fullName}
+        japaneseName={japaneseName}
+        greetingAudioUrl={primaryProfile.greetingAudioUrl}
+        firstName={firstName}
+      />
 
       {/* Reuses the existing flex wrapper class */}
       <div className={styles.contentWrapper}>
         {/* LEFT: Bio/Text Area (Retaining original structure) */}
         <div className={styles.bioArea}>
           <div className={styles.bioFlexContainer}>
-            {/* 🔑 REPLACED: Primary Character Headshot (Ayami) */}
+            {/* Primary Character Headshot (Ayami) */}
             <EditableHeadshot
               profile={primaryProfile}
               isAdminAccess={isAdminAccess}
@@ -202,7 +126,7 @@ const CharacterContent: React.FC<CharacterContentProps> = ({
         <div className={styles.galleryHeader}>
           <h2>{primaryProfile.firstName}'s Albums</h2>
 
-          {/* 🔑 ADMIN QUICK-ACCESS TOOLS */}
+          {/* ADMIN QUICK-ACCESS TOOLS */}
           {isAdminAccess && (
             <div className={styles.adminQuickAccess}>
               <button
@@ -253,7 +177,7 @@ const CharacterContent: React.FC<CharacterContentProps> = ({
         />
       )}
 
-      {/* 🔑 NEW: GALLERY ADMIN MODAL */}
+      {/* GALLERY ADMIN MODAL */}
       {isGalleryAdminModalOpen && (
         <GalleryAdminModal
           folders={folders}
