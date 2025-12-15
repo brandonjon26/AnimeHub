@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import Modal from "../../components/common/modal";
 import {
   type CharacterProfileDto,
-  type CharacterProfileSummaryDto,
   type CharacterLoreLinkDto,
-  type LoreEntryDto,
 } from "../../api/types/CharacterTypes";
+import { renderBio } from "../../hooks/renderBioUtils";
+import { SecondaryCharacterCard } from "./components/SecondaryCharacterCard";
+import AttireDetailsContent from "./components/AttireDetailsContent/AttireDetailsContent";
 import styles from "./AboutCharacterPage.module.css";
 
 interface CharacterLoreRevealProps {
@@ -15,210 +16,25 @@ interface CharacterLoreRevealProps {
   isAdminAccess: boolean;
 }
 
-// Helper function to render markdown-style bio text (using primary profile data)
-const renderBio = (text: string) => {
-  return text.split("\n\n").map((paragraph, index) => (
-    <p
-      key={index}
-      className={styles.loreParagraph} // Use a new dedicated class
-      dangerouslySetInnerHTML={{
-        __html: paragraph
-          .trim()
-          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-      }}
-    />
-  ));
-};
-
-// Component to display a summary card for the secondary character (Chiara)
-// Includes the required edit modal functionality
-interface SecondaryCharacterCardProps {
-  secondaryProfile: CharacterProfileDto;
-  onEditClick: (character: CharacterProfileDto) => void;
-  isAdminAccess: boolean;
-}
-
-const SecondaryCharacterCard: React.FC<SecondaryCharacterCardProps> = ({
-  secondaryProfile,
-  onEditClick,
-  isAdminAccess,
-}) => {
-  // For public visibility expansion
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  // For public visibility
-  const handleToggleExpand = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent the image click handler from firing if it were on the card
-    setIsExpanded((prev) => !prev);
-  };
-
-  // For admin edit (only tied to image)
-  const handleAdminEditClick = () => {
-    onEditClick(secondaryProfile);
-  };
-
-  const fullBio = secondaryProfile.bio;
-
-  // Using a separate component to keep this clean.
-  return (
-    <div
-      className={`${styles.secondaryCharacterCard} ${
-        !isAdminAccess ? styles.secondaryCharacterCardNoHover : ""
-      }`} // 🔑 ADD NO-HOVER CLASS
-    >
-      {/* 1. Image Container (Admin Click Target) */}
-      <div
-        className={`${styles.headshotContainer} ${
-          !isAdminAccess ? styles.headshotContainerDisabled : ""
-        }`} // Reuse base styling
-        onClick={handleAdminEditClick} // 🔑 NEW: Only image is clickable
-        title={
-          isAdminAccess
-            ? `Edit ${secondaryProfile.firstName} Profile`
-            : `${secondaryProfile.firstName}'s Headshot`
-        }
-      >
-        {/* Image source needs to be dynamic for Chiara */}
-        <img
-          src={`/images/headshot/${secondaryProfile.firstName.toLowerCase()}/Headshot.png`}
-          alt={`${secondaryProfile.firstName} Headshot`}
-          className={styles.headshotImage}
-        />
-        {isAdminAccess && <span className={styles.editOverlay}>Edit</span>}
-      </div>
-
-      {/* 2. Summary Details (Public/Expandable Area) */}
-      <div className={styles.summaryDetails}>
-        <div className={styles.summaryHeader}>
-          <h4>
-            {secondaryProfile.firstName} {secondaryProfile.lastName}
-          </h4>
-
-          {/* 🔑 NEW: EXPAND/COLLAPSE BUTTON */}
-          <button
-            className={styles.expandButton} // Need to style this
-            onClick={handleToggleExpand}
-            aria-expanded={isExpanded}
-            aria-controls={`bio-for-${secondaryProfile.firstName}`}
-            title={isExpanded ? "Collapse Details" : "Expand Details"}
-          >
-            {isExpanded ? "▲" : "▼"}
-          </button>
-        </div>
-
-        {/* Fixed Summary Content */}
-        <p>
-          <strong>Vibe:</strong> {secondaryProfile.vibe}
-        </p>
-        <p>
-          <strong>Unique Power:</strong> {secondaryProfile.uniquePower}
-        </p>
-        {/* Display Chiara's Greatest Feat if she has one, but link to Chiara's data */}
-        <p>
-          <strong>Greatest Feat:</strong> {secondaryProfile.greatestFeat?.title}
-        </p>
-
-        {/* 🔑 EXPANDED CONTENT AREA */}
-        {isExpanded && (
-          <div
-            id={`bio-for-${secondaryProfile.firstName}`}
-            className={styles.expandedBioSection}
-          >
-            <h5 className={styles.keyDetailsTitle}>Full Biography</h5>
-            {renderBio(fullBio)} {/* Reuse the markdown helper */}
-            <h5 className={styles.keyDetailsTitle}>Core Details</h5>
-            {/* We can quickly list a few more details here if we want */}
-            <ul className={styles.keyList}>
-              <li>
-                <b>Age:</b> {secondaryProfile.age}
-              </li>
-              <li>
-                <b>Body Type:</b> {secondaryProfile.bodyType}
-              </li>
-              <li>
-                <b>Origin:</b> {secondaryProfile.origin}
-              </li>
-              <li>
-                <b>Best Friend:</b> {secondaryProfile.bestFriend?.firstName}{" "}
-                {secondaryProfile.bestFriend?.lastName} 💜
-              </li>
-            </ul>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// --- NEW COMPONENT: Nested Vertical Attire Navigation ---
-
-interface AttireDetailsContentProps {
-  profile: CharacterProfileDto;
-}
-
-const AttireDetailsContent: React.FC<AttireDetailsContentProps> = ({
-  profile,
-}) => {
-  // Use the first attire's name as the default active one
-  const [activeAttireName, setActiveAttireName] = useState<string>(
-    profile.attires[0]?.name || ""
-  );
-
-  const activeAttire = profile.attires.find((a) => a.name === activeAttireName);
-
-  if (!activeAttire) {
-    return <p>No attire details available.</p>;
-  }
-
-  return (
-    // NOTE: This class needs styling to implement the desired flex/grid layout for nested nav
-    <div className={styles.attireLayout}>
-      {/* 1. Vertical Navigation Bar (Left Side) */}
-      <nav className={styles.attireVerticalNav}>
-        <h4 className={styles.verticalNavHeader}>Attire List</h4>
-        {profile.attires.map((attire) => (
-          <button
-            key={attire.name}
-            className={`${styles.verticalNavLink} ${
-              activeAttireName === attire.name
-                ? styles.verticalNavLinkActive
-                : ""
-            }`}
-            onClick={() => setActiveAttireName(attire.name)}
-          >
-            {attire.name}
-          </button>
-        ))}
-      </nav>
-
-      {/* 2. Attire Details Content (Right Side) */}
-      <div className={styles.attireDetailsContent}>
-        <h2>
-          {activeAttire.name} Details ({activeAttire.attireType})
-        </h2>
-        <p className={styles.loreParagraph}>{activeAttire.description}</p>
-
-        <h3 className={styles.keyDetailsTitle}>Hairstyle</h3>
-        <p className={styles.loreParagraph}>
-          {activeAttire.hairstyleDescription}
-        </p>
-
-        <h3 className={styles.keyDetailsTitle}>Accessories</h3>
-        <ul className={styles.keyList}>
-          {activeAttire.accessories.map((acc) => (
-            <li key={acc.characterAccessoryId}>
-              <b>{acc.isWeapon ? "Weapon" : "Accessory"}:</b> {acc.description}
-              {acc.uniqueEffect && <span> (Effect: {acc.uniqueEffect})</span>}
-            </li>
-          ))}
-          {activeAttire.accessories.length === 0 && (
-            <li>No special accessories recorded for this attire.</li>
-          )}
-        </ul>
-      </div>
-    </div>
-  );
-};
+// Helper function for Best Friend Tab content (now separate)
+const renderBestFriendTab = (
+  secondaryProfile: CharacterProfileDto,
+  onEditClick: (character: CharacterProfileDto) => void,
+  isAdminAccess: boolean
+) => (
+  <div className={styles.loreSection}>
+    <h2>{secondaryProfile?.firstName}'s Profile Summary</h2>
+    {secondaryProfile ? (
+      <SecondaryCharacterCard
+        secondaryProfile={secondaryProfile}
+        onEditClick={onEditClick}
+        isAdminAccess={isAdminAccess}
+      />
+    ) : (
+      <p>No best friend data available.</p>
+    )}
+  </div>
+);
 
 // --- CORE COMPONENT ---
 
@@ -253,28 +69,9 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
     (acc) => acc.isWeapon
   );
 
-  // --- Shared Lore Logic (Item 3.5) ---
   // Filter the lore links to find quests where the secondary character is also involved (optional, but clean)
-  // Since all lore links are already loaded on Ayami's profile, we just need to list them.
-  // We can further refine this in the future if needed, but for now, we show all linked lore.
   const sharedLoreEntries = primaryProfile.loreLinks;
   const hasSharedLore = sharedLoreEntries.length > 0;
-
-  // Helper function for Best Friend Tab content (now separate)
-  const renderBestFriendTab = () => (
-    <div className={styles.loreSection}>
-      <h2>{secondaryProfile?.firstName}'s Profile Summary</h2>
-      {secondaryProfile ? (
-        <SecondaryCharacterCard
-          secondaryProfile={secondaryProfile}
-          onEditClick={onEditClick}
-          isAdminAccess={isAdminAccess}
-        />
-      ) : (
-        <p>No best friend data available.</p>
-      )}
-    </div>
-  );
 
   // Prepare content for a Shared Quest Tab
   const renderSharedLoreTab = () => (
@@ -295,7 +92,6 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
                 <p className={styles.loreLinkSummary}>
                   {link.loreEntry.narrative.substring(0, 150)}...
                 </p>
-                {/* 🔑 Item 2: Placeholder for View Full Lore button */}
                 <button
                   className={styles.viewLoreButton}
                   onClick={() => handleViewFullLore(link)}
@@ -439,15 +235,15 @@ const CharacterLoreReveal: React.FC<CharacterLoreRevealProps> = ({
           </div>
         )}
 
-        {/* 🔑 Render Best Friend Tab Content */}
+        {/* Render Best Friend Tab Content */}
         {activeTab === "bestFriend" &&
           secondaryProfile &&
-          renderBestFriendTab()}
+          renderBestFriendTab(secondaryProfile, onEditClick, isAdminAccess)}
 
-        {/* 🔑 Render Shared Quest Tab Content */}
+        {/* Render Shared Quest Tab Content */}
         {activeTab === "sharedQuest" && renderSharedLoreTab()}
 
-        {/* 🔑 Render Attires/Outfits Tab Content (NEW Structure) */}
+        {/* Render Attires/Outfits Tab Content (NEW Structure) */}
         {activeTab === "attires" && primaryProfile.attires.length > 0 && (
           <AttireDetailsContent profile={primaryProfile} />
         )}

@@ -4,9 +4,9 @@ import {
   type CharacterProfileDto,
   type CharacterAttireInput,
   type CharacterAccessoryInput,
-} from "../../../api/types/CharacterTypes";
-import { CharacterClient } from "../../../api/CharacterClient";
-import styles from "../CharacterProfileEditModal.module.css";
+} from "../../../../api/types/CharacterTypes";
+import { CharacterClient } from "../../../../api/CharacterClient";
+import styles from "../../CharacterProfileEditModal.module.css";
 
 interface CharacterAttireAddFormProps {
   profile: CharacterProfileDto;

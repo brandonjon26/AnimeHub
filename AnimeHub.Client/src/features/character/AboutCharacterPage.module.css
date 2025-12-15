@@ -88,69 +88,6 @@
   margin-bottom: 30px; /* Space before the key details list */
 }
 
-.headshotContainer {
-  /* New container to manage click state and relative positioning for the overlay */
-  position: relative;
-  width: 250px; /* Match the width of .headshotImage */
-  flex-shrink: 0;
-  cursor: pointer; /* Indicate it's clickable */
-  border-radius: 8px; /* Match image border radius */
-  overflow: hidden; /* Ensures the overlay stays within the boundary */
-}
-
-.headshotContainer .headshotImage {
-  width: 250px;
-  flex-shrink: 0; /* Prevents the image from shrinking */
-  height: auto;
-  border: 3px solid var(--color-accent-purple); /* Standout border */
-  border-radius: 8px;
-  object-fit: cover;
-  transition: filter 0.3s ease;
-}
-
-.editOverlay {
-  /* 🔑 The overlay that appears on hover */
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(79, 46, 122, 0.7); /* Purple-tinted transparency */
-  color: white;
-  font-size: 1.2rem;
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0; /* Starts invisible */
-  transition: opacity 0.3s ease;
-  pointer-events: none; /* Allows click to pass through when hidden */
-  text-shadow: 0 0 5px black;
-  border: 3px solid var(--color-accent-purple); /* Match image border */
-  border-radius: 8px; /* Match image border radius */
-}
-
-/* Hover effects */
-.headshotContainer:hover .headshotImage {
-  filter: brightness(0.7); /* Darken the image on hover */
-}
-
-.headshotContainer:hover .editOverlay {
-  opacity: 1; /* Show the overlay on hover */
-}
-
-/* New class to disable the click appearance */
-.headshotContainerDisabled {
-  cursor: default; /* Change cursor back to default arrow */
-  pointer-events: none; /* Prevents any mouse events (like hover) from firing */
-}
-
-/* Ensure the disabled class overrides the hover styles */
-.headshotContainerDisabled:hover {
-  box-shadow: none; /* Remove hover glow/shadow */
-  opacity: 1; /* Remove opacity change on hover */
-}
-
 .bioText {
   flex-grow: 1;
 }
@@ -325,7 +262,6 @@
 }
 
 .loreParagraph {
-  /* Use this new class instead of .paragraph for lore text */
   margin-bottom: 15px;
   line-height: 1.6;
 }
@@ -341,115 +277,11 @@
   line-height: 1.8;
 }
 
-/* --- Secondary Character Card Styles (NEW - For Chiara) --- */
-.secondaryCharacterCard {
-  display: flex;
-  gap: 20px;
-  padding: 15px;
-  background-color: var(--color-bg-secondary);
-  border: 1px solid var(--color-accent-purple);
-  border-radius: 8px;
-  transition: box-shadow 0.2s, transform 0.2s;
-  margin-bottom: 20px;
-  position: relative;
-}
-
-/* .secondaryCharacterCard:hover {
-  box-shadow: 0 0 10px var(--color-accent-purple);
-  transform: translateY(-2px);
-} */
-
-/* Class to suppress hover/click effects for non-admins (Requirement #2) */
-.secondaryCharacterCardNoHover {
-  box-shadow: none;
-  transform: none;
-}
-
 /* Styles for the image when a non-admin is viewing (Requirement #2) */
 .headshotImageNoHover {
   cursor: default !important; /* Force default cursor */
   /* If you reuse .headshotContainer for the small card, we need to ensure hover effects on the image are suppressed */
   pointer-events: none; /* Prevents the image from receiving mouse events */
-}
-
-.secondaryCharacterCard .headshotContainer {
-  width: 100px; /* Smaller headshot for the summary card */
-  height: 100px;
-  flex-shrink: 0;
-  overflow: hidden;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.secondaryCharacterCard .headshotImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border: 2px solid var(--color-accent-orange);
-  border-radius: 8px;
-}
-
-/* Styles for the summary header and expand button */
-.summaryHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.expandButton {
-  background: none;
-  border: 1px solid var(--color-accent-orange);
-  color: var(--color-accent-orange);
-  font-weight: bold;
-  font-size: 0.9em;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.expandButton:hover {
-  background-color: var(--color-accent-orange);
-  color: var(--color-bg-primary);
-}
-
-/* Styles for the expanded content */
-.expandedBioSection {
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px dashed var(--color-text-secondary);
-  animation: fadeIn 0.5s ease-out;
-}
-
-.expandedBioSection .keyDetailsTitle {
-  margin-top: 15px;
-  margin-bottom: 5px;
-  padding-bottom: 5px;
-  border-bottom: 1px dotted var(--color-bg-secondary);
-  font-size: 1em; /* Smaller title inside the card */
-}
-
-.expandedBioSection .keyList {
-  margin-top: 5px;
-}
-
-.secondaryCharacterCard .summaryDetails {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.secondaryCharacterCard h4 {
-  color: var(--color-accent-orange);
-  margin-bottom: 5px;
-}
-
-.secondaryCharacterCard p {
-  font-size: 0.9em;
-  margin-bottom: 3px;
-  color: var(--color-text-secondary);
 }
 
 .loreEntryLink {
@@ -468,90 +300,6 @@
   font-size: 0.9em;
   color: var(--color-text-secondary);
   margin-top: 5px;
-}
-
-.attireLayout {
-  display: flex;
-  /* Defines the column layout: nav on left, content on right */
-  gap: 30px;
-  padding: 10px 0;
-  min-height: 400px; /* Ensure component has height */
-}
-
-.attireVerticalNav {
-  /* Left-hand column: Fixed width navigation */
-  flex-basis: 250px; /* A good fixed width for the nav list */
-  flex-shrink: 0;
-  padding-right: 20px;
-  /* Optional: Add a subtle separator border */
-  border-right: 1px solid var(--color-bg-secondary);
-}
-
-.verticalNavHeader {
-  color: var(--color-accent-purple);
-  font-size: 1.1em;
-  margin-bottom: 15px;
-  padding-bottom: 5px;
-  border-bottom: 1px dashed var(--color-bg-secondary);
-}
-
-.verticalNavLink {
-  /* Style for each button in the vertical nav */
-  display: block; /* Makes the button take the full width */
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: none;
-  padding: 10px 15px;
-  margin-bottom: 5px;
-  cursor: pointer;
-  font-size: 0.95em;
-  color: var(--color-text-secondary);
-  border-radius: 4px;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.verticalNavLink:hover {
-  background-color: var(--color-bg-secondary);
-  color: var(--color-text-primary);
-}
-
-.verticalNavLinkActive {
-  /* Highlight for the currently selected attire */
-  background-color: var(--color-accent-orange);
-  color: var(--color-bg-primary); /* Dark text on bright orange */
-  font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  border-left: 5px solid var(--color-accent-purple); /* Extra visual flair */
-}
-
-.verticalNavLinkActive:hover {
-  /* Override hover for the active state */
-  background-color: var(--color-accent-orange);
-  color: var(--color-bg-primary);
-}
-
-.attireDetailsContent {
-  /* Right-hand column: The scrollable content area */
-  flex-grow: 1;
-  padding: 0 10px;
-  /* The main content area of the tab is scrollable if needed */
-  overflow-y: auto;
-  max-height: 400px; /* Constrain height to match min-height of layout for scrolling visual */
-}
-
-/* Ensure the titles and lists within the attire content look good */
-.attireDetailsContent h2 {
-  color: var(--color-accent-orange);
-  border-bottom: 2px solid var(--color-bg-secondary);
-  padding-bottom: 10px;
-  margin-bottom: 15px;
-}
-
-.attireDetailsContent h3 {
-  color: var(--color-accent-purple);
-  margin-top: 20px;
-  margin-bottom: 10px;
 }
 
 /* Style for the View Full Lore button (Item 2 setup) */
