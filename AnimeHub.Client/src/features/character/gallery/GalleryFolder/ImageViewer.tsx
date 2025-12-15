@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { type GalleryImage } from "../../../api/types/GalleryTypes";
+import { type GalleryImage } from "../../../../api/types/GalleryTypes";
 import styles from "./Gallery.module.css";
 
 interface ImageViewerProps {

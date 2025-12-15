@@ -1,0 +1,25 @@
+.adminQuickAccess {
+  /* Position the button slightly above the main content for quick visibility */
+  margin-bottom: 20px;
+  text-align: right; /* Align the button to the right */
+}
+
+.adminButton {
+  /* Primary Admin action button style */
+  background-color: var(--color-bg-secondary);
+  color: var(--color-primary-brand); /* Use the accent orange brand color */
+  border: 1px solid var(--color-primary-brand);
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.95em;
+  transition: background-color 0.2s, color 0.2s, transform 0.1s;
+}
+
+.adminButton:hover {
+  background-color: var(--color-primary-brand); /* Invert colors on hover */
+  color: var(--color-bg-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
