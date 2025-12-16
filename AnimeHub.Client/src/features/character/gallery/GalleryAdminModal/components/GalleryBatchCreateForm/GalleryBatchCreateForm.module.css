@@ -1,0 +1,36 @@
+.batchForm {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* File input is often difficult to style directly, ensuring it's clearly visible */
+.fileInput {
+  padding: 10px 0;
+}
+
+/* --- SUBMIT BUTTON STYLES --- */
+.submitButton {
+  background-color: var(
+    --color-accent-green
+  ); /* Use a secondary accent color for creation */
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.1em;
+  transition: background-color 0.2s;
+  margin-top: 10px;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #2e8b57; /* Slightly darker green */
+}
+
+.submitButton:disabled {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}

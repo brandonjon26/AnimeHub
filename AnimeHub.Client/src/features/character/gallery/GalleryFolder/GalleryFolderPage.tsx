@@ -7,7 +7,7 @@ import {
 } from "../../../../api/types/GalleryTypes";
 import ImageViewer from "./ImageViewer";
 import { ImageManagerModal } from "../ImageManagerModal";
-import { useAuth } from "../../../../hooks/useAuth";
+import { useAuth } from "../../../../hooks/TS/useAuth";
 import styles from "./Gallery.module.css";
 import pageStyles from "../../AboutCharacterPage.module.css"; // Keep page container styles
 

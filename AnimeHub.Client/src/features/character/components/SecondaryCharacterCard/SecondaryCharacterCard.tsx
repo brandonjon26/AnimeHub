@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { type CharacterProfileDto } from "../../../../api/types/CharacterTypes";
 import EditableHeadshot from "../EditableHeadshot/EditableHeadshot"; // Import our new reusable component
-import { renderBio } from "../../../../hooks/renderBioUtils";
+import { renderBio } from "../../../../utils/JS/renderBioUtils";
 import styles from "./SecondaryCharacterCard.module.css";
 
 interface SecondaryCharacterCardProps {

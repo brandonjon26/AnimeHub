@@ -10,7 +10,7 @@ import {
 } from "../../api/types/GalleryTypes";
 import { type CharacterProfileDto } from "../../api/types/CharacterTypes";
 import MainLayout from "../../components/common/MainLayout";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../hooks/TS/useAuth";
 import styles from "./AboutCharacterPage.module.css";
 
 // Initialize the client
