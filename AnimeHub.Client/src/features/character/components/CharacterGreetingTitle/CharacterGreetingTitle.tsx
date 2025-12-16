@@ -1,5 +1,5 @@
 import React from "react";
-import { useCharacterAudio } from "../../../../hooks/useCharacterAudio";
+import { useCharacterAudio } from "../../../../hooks/JS/useCharacterAudio";
 import styles from "./CharacterGreetingTitle.module.css";
 
 interface CharacterGreetingTitleProps {
@@ -16,8 +16,9 @@ const CharacterGreetingTitle: React.FC<CharacterGreetingTitleProps> = ({
   firstName,
 }) => {
   // Use the custom hook to manage audio state and handlers
-  const { audioRef, isPlaying, handlePlayGreeting } =
-    useCharacterAudio(greetingAudioUrl);
+  const { audioRef, isPlaying, handlePlayGreeting } = useCharacterAudio(
+    greetingAudioUrl ?? ""
+  );
 
   return (
     <>

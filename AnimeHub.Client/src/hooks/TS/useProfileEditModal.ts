@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { type CharacterProfileDto } from "../api/types/CharacterTypes";
+import { type CharacterProfileDto } from "../../api/types/CharacterTypes";
 
 /**
  * Custom hook to manage the state and handlers for a universal character profile edit modal.

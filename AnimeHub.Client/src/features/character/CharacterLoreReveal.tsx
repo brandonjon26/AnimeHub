@@ -4,7 +4,7 @@ import {
   type CharacterProfileDto,
   type CharacterLoreLinkDto,
 } from "../../api/types/CharacterTypes";
-import { renderBio } from "../../hooks/renderBioUtils";
+import { renderBio } from "../../utils/JS/renderBioUtils";
 import { SecondaryCharacterCard } from "./components/SecondaryCharacterCard";
 import AttireDetailsContent from "./components/AttireDetailsContent/AttireDetailsContent";
 import styles from "./AboutCharacterPage.module.css";

@@ -10,8 +10,8 @@ import CharacterLoreReveal from "./CharacterLoreReveal";
 import CharacterProfileEditModal from "./CharacterProfileEditModal";
 import { EditableHeadshot } from "./components/EditableHeadshot";
 import { CharacterGalleryAdminTools } from "./gallery/CharacterGalleryAdminTools";
-import { useAuth } from "../../hooks/useAuth";
-import { useProfileEditModal } from "../../hooks/useProfileEditModal";
+import { useAuth } from "../../hooks/TS/useAuth";
+import { useProfileEditModal } from "../../hooks/TS/useProfileEditModal";
 import styles from "./AboutCharacterPage.module.css";
 
 interface CharacterContentProps {

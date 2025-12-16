@@ -1,0 +1,68 @@
+.previewContainer h4 {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.filePreviews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 10px;
+  border: 1px dashed var(--color-bg-secondary);
+  border-radius: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.previewCard {
+  position: relative;
+  width: 100px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: var(--color-bg-secondary);
+  padding-bottom: 5px; /* Space for file name */
+}
+
+.previewCard:hover {
+  border-color: var(--color-accent-purple);
+  box-shadow: 0 0 5px var(--color-accent-purple);
+}
+
+.featured {
+  /* Special style for the selected featured image */
+  border-color: var(--color-accent-orange);
+  box-shadow: 0 0 8px var(--color-accent-orange);
+}
+
+.previewImage {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+}
+
+.fileName {
+  font-size: 0.75em;
+  text-align: center;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 5px 2px 0;
+}
+
+.featuredTag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: var(--color-accent-orange);
+  color: var(--color-bg-primary);
+  padding: 2px 5px;
+  font-size: 0.65em;
+  font-weight: bold;
+  border-bottom-left-radius: 4px;
+  line-height: 1;
+}

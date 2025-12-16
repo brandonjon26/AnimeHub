@@ -1,4 +1,4 @@
-import styles from "../features/character/AboutCharacterPage.module.css";
+import styles from "../../features/character/AboutCharacterPage.module.css";
 
 /**
  * Helper function to render markdown-style bio text (paragraphs and bolding).
