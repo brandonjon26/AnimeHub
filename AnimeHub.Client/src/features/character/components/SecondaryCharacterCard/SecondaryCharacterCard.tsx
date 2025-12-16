@@ -59,15 +59,15 @@ const SecondaryCharacterCard: React.FC<SecondaryCharacterCardProps> = ({
         </div>
 
         {/* Fixed Summary Content */}
-        <p>
+        <div>
           <strong>Vibe:</strong> {secondaryProfile.vibe}
-        </p>
-        <p>
+        </div>
+        <div>
           <strong>Unique Power:</strong> {secondaryProfile.uniquePower}
-        </p>
-        <p>
+        </div>
+        <div>
           <strong>Greatest Feat:</strong> {secondaryProfile.greatestFeat?.title}
-        </p>
+        </div>
 
         {/* EXPANDED CONTENT AREA */}
         {isExpanded && (
