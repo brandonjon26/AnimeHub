@@ -164,3 +164,12 @@
 .viewerCloseButton:hover {
   color: var(--color-accent-orange); /* Use accent color on hover */
 }
+
+.errorTitle {
+  color: #ff4d4d;
+  margin-top: 20px;
+  font-size: 1.8rem;
+  border-bottom: 2px solid var(--color-bg-secondary);
+  padding-bottom: 10px;
+  display: inline-block;
+}
