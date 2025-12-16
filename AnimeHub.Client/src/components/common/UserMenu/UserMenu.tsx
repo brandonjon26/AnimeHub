@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../hooks/useAuth";
+import { useAuth } from "../../../hooks/TS/useAuth";
 import { FaUserAlt } from "react-icons/fa";
 import styles from "./UserMenu.module.css";
 

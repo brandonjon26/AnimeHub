@@ -2,7 +2,7 @@ import React, { type ReactNode, useState } from "react";
 import { NavLink, useLocation, Outlet } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
 import CharacterAvatar from "../CharacterAvatar";
-import { useAuth } from "../../../hooks/useAuth";
+import { useAuth } from "../../../hooks/TS/useAuth";
 import UserMenu from "../UserMenu";
 import styles from "./MainLayout.module.css";
 
