@@ -1,23 +1,23 @@
-import React, { useMemo } from "react";
+import React from "react";
+import styles from "./GalleryUpdateDeleteForm.module.css";
 import {
   type GalleryCategory,
   type GalleryImage,
 } from "../../../../../../api/types/GalleryTypes";
 import { ImagePreviewCard } from "../ImagePreviewCard";
-import styles from "./GalleryUpdateDeleteForm.module.css";
 
 interface GalleryUpdateDeleteFormProps {
   folders: GalleryCategory[];
   selectedFolder: GalleryCategory | null;
   setSelectedFolder: (folder: GalleryCategory | null) => void;
   folderImages: GalleryImage[];
+  isLoadingImages: boolean;
+  updateIsMatureContent: boolean;
+  setUpdateIsMatureContent: (val: boolean) => void;
   updateFeaturedImageId: number | null;
   setUpdateFeaturedImageId: (id: number) => void;
-  updateIsMatureContent: boolean;
-  setUpdateIsMatureContent: (isMature: boolean) => void;
-  isLoadingImages: boolean;
-  handleUpdateFolder: (e: React.FormEvent) => Promise<void>;
-  handleDeleteFolder: () => Promise<void>;
+  onSubmit: (e: React.FormEvent) => void;
+  onDelete: () => void;
 }
 
 const GalleryUpdateDeleteForm: React.FC<GalleryUpdateDeleteFormProps> = ({
@@ -25,28 +25,18 @@ const GalleryUpdateDeleteForm: React.FC<GalleryUpdateDeleteFormProps> = ({
   selectedFolder,
   setSelectedFolder,
   folderImages,
-  updateFeaturedImageId,
-  setUpdateFeaturedImageId,
+  isLoadingImages,
   updateIsMatureContent,
   setUpdateIsMatureContent,
-  isLoadingImages,
-  handleUpdateFolder,
-  handleDeleteFolder,
+  updateFeaturedImageId,
+  setUpdateFeaturedImageId,
+  onSubmit,
+  onDelete,
 }) => {
-  // Determine the image source path dynamically for existing images (original helper logic)
-  const getImageSource = (image: GalleryImage): string => {
-    return image.imageUrl;
-  };
-
-  const sortedFolders = useMemo(() => {
-    return [...folders].sort((a, b) => a.name.localeCompare(b.name));
-  }, [folders]);
-
   return (
-    <form onSubmit={handleUpdateFolder} className={styles.updateForm}>
+    <form onSubmit={onSubmit} className={styles.updateForm}>
       <h3>Update/Delete Existing Album</h3>
 
-      {/* Folder Selection Dropdown */}
       <div className={styles.formGroup}>
         <label htmlFor="selectFolder">Select Album to Edit:</label>
         <select
@@ -63,7 +53,7 @@ const GalleryUpdateDeleteForm: React.FC<GalleryUpdateDeleteFormProps> = ({
           <option value="" disabled>
             -- Select an Album --
           </option>
-          {sortedFolders.map((folder) => (
+          {folders.map((folder) => (
             <option
               key={folder.galleryImageCategoryId}
               value={folder.galleryImageCategoryId}
@@ -78,7 +68,6 @@ const GalleryUpdateDeleteForm: React.FC<GalleryUpdateDeleteFormProps> = ({
         <fieldset disabled={isLoadingImages} className={styles.fieldset}>
           <legend>Edit Metadata for "{selectedFolder.name}"</legend>
 
-          {/* Input: Is Mature Content */}
           <div className={styles.formGroup}>
             <label className={styles.checkboxLabel}>
               <input
@@ -86,30 +75,24 @@ const GalleryUpdateDeleteForm: React.FC<GalleryUpdateDeleteFormProps> = ({
                 checked={updateIsMatureContent}
                 onChange={(e) => setUpdateIsMatureContent(e.target.checked)}
               />
-              **Mark as Mature Content** (Will be hidden from non-adult users)
+              <strong>Mark as Mature Content</strong>
             </label>
           </div>
 
-          {/* Existing Image Previews & Featured Selector */}
           {isLoadingImages ? (
             <p>Loading images...</p>
           ) : folderImages.length > 0 ? (
             <div className={styles.previewContainer}>
-              <h4>
-                Select New Featured Cover (Current:{" "}
-                {folderImages.find(
-                  (img) => img.galleryImageId === updateFeaturedImageId
-                )?.altText || "None"}
-                )
-              </h4>
+              <h4>Select New Featured Cover</h4>
               <div className={styles.filePreviews}>
                 {folderImages.map((image) => (
                   <ImagePreviewCard
                     key={image.galleryImageId}
-                    imageUrl={getImageSource(image)}
-                    altText={image.altText || "Gallery Image"}
+                    src={image.imageUrl}
+                    alt={image.altText || "Gallery Image"}
                     label={`ID: ${image.galleryImageId}`}
                     isFeatured={image.galleryImageId === updateFeaturedImageId}
+                    featuredTagText="New Featured Cover"
                     onClick={() =>
                       setUpdateFeaturedImageId(image.galleryImageId)
                     }
@@ -118,10 +101,9 @@ const GalleryUpdateDeleteForm: React.FC<GalleryUpdateDeleteFormProps> = ({
               </div>
             </div>
           ) : (
-            <p>No images found in this folder or failed to load.</p>
+            <p>No images found.</p>
           )}
 
-          {/* Action Buttons */}
           <div className={styles.actionGroup}>
             <button
               type="submit"
@@ -133,7 +115,7 @@ const GalleryUpdateDeleteForm: React.FC<GalleryUpdateDeleteFormProps> = ({
             <button
               type="button"
               className={styles.deleteButton}
-              onClick={handleDeleteFolder}
+              onClick={onDelete}
               disabled={isLoadingImages}
             >
               Permanently Delete Album (DELETE)
