@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 
 /**
  * Custom hook to manage audio playback, state, and cleanup for a character greeting.
- * * @param audioUrl The URL of the greeting audio file.
+ * @param {string} audioUrl The URL of the greeting audio file. // Added JSDoc type
  * @returns An object containing the audio ref, playback state, and play/pause handler.
  */
-export const useCharacterAudio = (audioUrl?: string) => {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+export const useCharacterAudio = (audioUrl) => {
+  /* ?: string ===> add back to argument if setting back to typescript */
+  // const audioRef = useRef<HTMLAudioElement | null>(null); ===> uncomment and delete below line if setting back to typescript
+  const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   // Effect to reset playback state when audio finishes
@@ -22,7 +24,8 @@ export const useCharacterAudio = (audioUrl?: string) => {
   }, [audioUrl]);
 
   // Play/Pause Audio Handler
-  const handlePlayGreeting = (e?: React.MouseEvent) => {
+  const handlePlayGreeting = (e) => {
+    /* ?: React.MouseEvent ===> add back to argument if setting back to typescript */
     e?.preventDefault(); // Stop click events if used on a button
     if (!audioRef.current || !audioUrl) return;
 

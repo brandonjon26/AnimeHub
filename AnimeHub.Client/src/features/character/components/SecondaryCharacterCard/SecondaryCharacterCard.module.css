@@ -57,6 +57,12 @@
   padding-bottom: 5px;
   border-bottom: 1px dotted var(--color-bg-secondary);
   font-size: 1em; /* Smaller title inside the card */
+  color: var(--color-accent-green);
+}
+
+.keyList {
+  padding-left: 20px;
+  line-height: 1.8;
 }
 
 .expandedBioSection .keyList {
