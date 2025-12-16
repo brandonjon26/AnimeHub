@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { type AuthContextType } from "../features/auth/authContext"; // Import the type definition
+import { type AuthContextType } from "../features/auth/authContext.ts"; // Import the type definition
 import { AuthContext } from "../features/auth/AuthContext.tsx"; // Assuming this is now exported
 
 /**
