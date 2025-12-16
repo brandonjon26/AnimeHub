@@ -2,39 +2,31 @@ import React from "react";
 import styles from "./ImagePreviewCard.module.css";
 
 interface ImagePreviewCardProps {
-  imageUrl: string;
-  altText: string;
+  src: string;
+  alt: string;
   label: string;
   isFeatured: boolean;
+  featuredTagText: string;
   onClick: () => void;
-  // Optional: For cleaning up Object URLs in the "Create" view
-  onLoad?: () => void;
 }
 
 const ImagePreviewCard: React.FC<ImagePreviewCardProps> = ({
-  imageUrl,
-  altText,
+  src,
+  alt,
   label,
   isFeatured,
+  featuredTagText,
   onClick,
-  onLoad,
 }) => {
   return (
     <div
       className={`${styles.previewCard} ${isFeatured ? styles.featured : ""}`}
       onClick={onClick}
     >
-      <img
-        src={imageUrl}
-        alt={altText}
-        className={styles.previewImage}
-        onLoad={onLoad}
-      />
+      <img src={src} alt={alt} className={styles.previewImage} />
       <p className={styles.fileName}>{label}</p>
       {isFeatured && (
-        <span className={styles.featuredTag}>
-          ⭐ {label.includes("ID") ? "New Featured Cover" : "Featured Cover"}
-        </span>
+        <span className={styles.featuredTag}>⭐ {featuredTagText}</span>
       )}
     </div>
   );

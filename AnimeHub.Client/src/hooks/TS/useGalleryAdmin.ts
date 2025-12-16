@@ -9,23 +9,22 @@ import {
   type GalleryFolderUpdate,
 } from "../../api/types/GalleryTypes";
 
-// Initialize client (can be passed in via context/prop if preferred, but OK here for a large file cleanup)
 const galleryClient = new GalleryClient();
 
 interface UseGalleryAdminProps {
   folders: GalleryCategory[];
-  onGalleryRefresh: () => void;
   onClose: () => void;
+  onGalleryRefresh: () => void;
 }
 
 export const useGalleryAdmin = ({
   folders,
-  onGalleryRefresh,
   onClose,
+  onGalleryRefresh,
 }: UseGalleryAdminProps) => {
   const [currentView, setCurrentView] = useState<"create" | "update">("create");
 
-  // --- Create View State ---
+  // --- Create State ---
   const [newCategoryName, setNewCategoryName] = useState("");
   const [isMatureContent, setIsMatureContent] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -42,7 +41,7 @@ export const useGalleryAdmin = ({
   const [updateIsMatureContent, setUpdateIsMatureContent] = useState(false);
   const [isLoadingImages, setIsLoadingImages] = useState(false);
 
-  // Effect to fetch images and populate state when a folder is selected for update
+  // Sync update state when a folder is selected
   useEffect(() => {
     if (selectedFolder) {
       setUpdateIsMatureContent(selectedFolder.isMatureContent);
@@ -56,7 +55,6 @@ export const useGalleryAdmin = ({
             selectedFolder.name
           );
           setFolderImages(images);
-
           const currentFeatured = images.find((img) => img.isFeatured);
           if (currentFeatured) {
             setUpdateFeaturedImageId(currentFeatured.galleryImageId);
@@ -72,22 +70,18 @@ export const useGalleryAdmin = ({
     }
   }, [selectedFolder]);
 
-  // Handler for file selection (Create View)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
       setSelectedFiles(filesArray);
-
       if (filesArray.length > 0 && featuredIndex === null) {
         setFeaturedIndex(0);
       }
     }
   };
 
-  // Handler for batch submission (Create View)
   const handleBatchSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (selectedFiles.length === 0 || featuredIndex === null) {
       alert("Please select images and designate a featured image.");
       return;
@@ -109,11 +103,10 @@ export const useGalleryAdmin = ({
       };
 
       await galleryClient.batchCreateImages(metadata, selectedFiles);
-
       alert(`Album "${newCategoryName}" created successfully!`);
-      onGalleryRefresh(); // Refresh parent data
+      onGalleryRefresh();
 
-      // Reset form and close modal
+      // Reset
       setNewCategoryName("");
       setIsMatureContent(false);
       setSelectedFiles([]);
@@ -129,35 +122,29 @@ export const useGalleryAdmin = ({
     }
   };
 
-  // Handler for folder metadata update (Update View)
   const handleUpdateFolder = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!selectedFolder || updateFeaturedImageId === null) {
       alert("Please select a folder and a featured image.");
       return;
     }
-
     if (
       !window.confirm(
-        `Are you sure you want to update the metadata for "${selectedFolder.name}"?`
+        `Are you sure you want to update metadata for "${selectedFolder.name}"?`
       )
-    ) {
+    )
       return;
-    }
 
     try {
       const updateData: GalleryFolderUpdate = {
         isMatureContent: updateIsMatureContent,
         featuredImageId: updateFeaturedImageId,
       };
-
       await galleryClient.updateFolderMetadata(
         selectedFolder.galleryImageCategoryId,
         updateData
       );
-
-      alert(`Album "${selectedFolder.name}" metadata updated successfully!`);
+      alert(`Album "${selectedFolder.name}" updated successfully!`);
       onGalleryRefresh();
       onClose();
     } catch (error) {
@@ -170,22 +157,18 @@ export const useGalleryAdmin = ({
     }
   };
 
-  // Handler for folder deletion (Update View)
   const handleDeleteFolder = async () => {
     if (!selectedFolder) return;
-
     if (
       !window.confirm(
-        `⚠️ CRITICAL WARNING: This action will permanently delete the entire album "${selectedFolder.name}". Are you absolutely sure?`
+        `⚠️ CRITICAL: Delete entire album "${selectedFolder.name}" and all images?`
       )
-    ) {
+    )
       return;
-    }
 
     try {
       await galleryClient.deleteFolder(selectedFolder.galleryImageCategoryId);
-
-      alert(`Album "${selectedFolder.name}" and all images have been deleted.`);
+      alert(`Album "${selectedFolder.name}" deleted.`);
       onGalleryRefresh();
       onClose();
     } catch (error) {
@@ -199,23 +182,20 @@ export const useGalleryAdmin = ({
   };
 
   return {
-    // View Control
+    // View State
     currentView,
     setCurrentView,
-
-    // Create View State & Handlers
+    // Create Form State/Handlers
     newCategoryName,
     setNewCategoryName,
     isMatureContent,
     setIsMatureContent,
     selectedFiles,
-    setSelectedFiles,
     featuredIndex,
     setFeaturedIndex,
     handleFileChange,
     handleBatchSubmit,
-
-    // Update View State & Handlers
+    // Update Form State/Handlers
     selectedFolder,
     setSelectedFolder,
     folderImages,

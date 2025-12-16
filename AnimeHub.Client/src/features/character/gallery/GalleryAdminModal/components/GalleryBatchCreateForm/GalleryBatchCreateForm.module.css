@@ -4,16 +4,64 @@
   gap: 15px;
 }
 
-/* File input is often difficult to style directly, ensuring it's clearly visible */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.textInput {
+  padding: 10px;
+  border: 1px solid var(--color-bg-secondary);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border-radius: 4px;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.textInput:focus {
+  outline: none;
+  border-color: var(--color-accent-purple);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1em;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+}
+
 .fileInput {
   padding: 10px 0;
 }
 
-/* --- SUBMIT BUTTON STYLES --- */
+/* Preview Layout */
+.previewContainer h4 {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.filePreviews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 10px;
+  border: 1px dashed var(--color-bg-secondary);
+  border-radius: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Button Styles */
 .submitButton {
-  background-color: var(
-    --color-accent-green
-  ); /* Use a secondary accent color for creation */
+  background-color: var(--color-accent-green);
   color: white;
   border: none;
   padding: 12px 20px;
@@ -26,7 +74,7 @@
 }
 
 .submitButton:hover:not(:disabled) {
-  background-color: #2e8b57; /* Slightly darker green */
+  background-color: #2e8b57;
 }
 
 .submitButton:disabled {
