@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { type GalleryImage } from "../../../../api/types/GalleryTypes";
+import { useImageViewer } from "../../../../hooks/TS/useImageViewer";
 import styles from "./Gallery.module.css";
 
 interface ImageViewerProps {
@@ -13,37 +14,15 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   initialIndex,
   onClose,
 }) => {
-  const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const currentImage = images[currentIndex];
-
-  // Logic for cycling images (wraps around array boundaries)
-  const navigateImage = (direction: "next" | "prev") => {
-    let newIndex = currentIndex;
-    if (direction === "next") {
-      newIndex = (currentIndex + 1) % images.length;
-    } else {
-      // Add images.length before modulo to ensure positive result on wrap-around
-      newIndex = (currentIndex - 1 + images.length) % images.length;
-    }
-    setCurrentIndex(newIndex);
-  };
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") navigateImage("next");
-      else if (e.key === "ArrowLeft") navigateImage("prev");
-      else if (e.key === "Escape") onClose();
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [currentIndex, images.length, onClose]);
+  const { currentIndex, currentImage, navigateImage } = useImageViewer(
+    images,
+    initialIndex,
+    onClose
+  );
 
   if (!currentImage) return null;
 
   return (
-    // 🔑 Replaced inline styles with module class
     <div className={styles.viewerOverlay}>
       {/* Close Button */}
       <button onClick={onClose} className={styles.viewerCloseButton}>
@@ -52,24 +31,26 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
 
       {/* Image Container with navigation buttons */}
       <div className={styles.viewerContainer}>
-        {" "}
-        {/* 🔑 Use module style */}
         <img
           src={currentImage.imageUrl}
           alt={currentImage.altText}
           className={styles.viewerImage}
         />
+
         {/* Previous Button */}
         <button
           onClick={() => navigateImage("prev")}
           className={`${styles.viewerNavButton} ${styles.viewerPrev}`}
+          aria-label="Previous image"
         >
           &lt;
         </button>
+
         {/* Next Button */}
         <button
           onClick={() => navigateImage("next")}
           className={`${styles.viewerNavButton} ${styles.viewerNext}`}
+          aria-label="Next image"
         >
           &gt;
         </button>
@@ -77,8 +58,6 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
 
       {/* Caption */}
       <div className={styles.viewerCaption}>
-        {" "}
-        {/* 🔑 Use module style */}
         <p>
           {currentImage.altText} ({currentIndex + 1} of {images.length})
         </p>
