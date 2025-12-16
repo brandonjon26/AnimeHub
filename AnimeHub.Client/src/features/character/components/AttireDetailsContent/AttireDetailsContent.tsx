@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { type CharacterProfileDto } from "../../../../api/types/CharacterTypes";
-import { renderBio } from "../../../../hooks/renderBioUtils"; // Shared utility
+import { renderBio } from "../../../../utils/JS/renderBioUtils"; // Shared utility
 import styles from "./AttireDetailsContent.module.css"; // Dedicated styles
 
 interface AttireDetailsContentProps {
