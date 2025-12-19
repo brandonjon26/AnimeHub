@@ -2,46 +2,10 @@
   padding: 10px 0;
 }
 
-/* NOTE: The following classes are still required by the UPDATE view 
-  currently rendered in the main TSX file. 
-*/
 .formContainer {
   display: flex;
   flex-direction: column;
   gap: 15px;
-}
-
-.formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.textInput {
-  padding: 10px;
-  border: 1px solid var(--color-bg-secondary);
-  background-color: var(--color-bg-secondary);
-  color: var(--color-text-primary);
-  border-radius: 4px;
-  transition: border-color 0.2s;
-}
-
-.textInput:focus {
-  outline: none;
-  border-color: var(--color-accent-purple);
-}
-
-.checkboxLabel {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1em;
-}
-
-.checkboxLabel input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  min-width: 18px;
 }
 
 /* View Toggle Styles */
@@ -120,25 +84,4 @@
   border-radius: 4px;
   margin-bottom: 15px;
   font-weight: bold;
-}
-
-/* Delete Preview Styles */
-.deletePreview {
-  text-align: center;
-  padding: 20px;
-  border: 2px dashed #b22222;
-  border-radius: 4px;
-  background-color: rgba(178, 34, 34, 0.1);
-}
-
-.deletePreview p {
-  margin-bottom: 10px;
-}
-
-.previewImage {
-  max-width: 150px;
-  height: auto;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
