@@ -1,55 +1,14 @@
-/* Container and Layout */
 .managerContainer {
   padding: 10px 0;
 }
 
+/* NOTE: The following classes are still required by the UPDATE view 
+  currently rendered in the main TSX file. 
+*/
 .formContainer {
   display: flex;
   flex-direction: column;
   gap: 15px;
-}
-
-/* Reusing View Toggle Styles from GalleryAdminModal */
-.viewToggleGroup {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.viewToggleGroup button {
-  /* Base button style */
-  padding: 8px 15px;
-  border: 1px solid var(--color-bg-secondary);
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s, color 0.2s;
-  flex-grow: 1; /* Ensure buttons are evenly spaced */
-}
-
-.inactiveButton {
-  background-color: var(--color-bg-primary);
-  color: var(--color-text-secondary);
-}
-
-.inactiveButton:hover {
-  background-color: var(--color-bg-secondary);
-}
-
-.activeButton {
-  /* Style for the currently selected tab/view (using orange accent) */
-  background-color: var(--color-accent-orange);
-  color: var(--color-bg-primary); /* Dark text on orange */
-  border-color: var(--color-accent-orange);
-  font-weight: bold;
-}
-
-/* Form Groups and Inputs */
-.viewContent {
-  /* We use this container from the old modal for styling consistency */
-  border: 1px solid var(--color-bg-secondary);
-  padding: 20px;
-  border-radius: 4px;
 }
 
 .formGroup {
@@ -85,11 +44,46 @@
   min-width: 18px;
 }
 
-.fileInput {
-  padding: 10px 0;
+/* View Toggle Styles */
+.viewToggleGroup {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-/* Action Button */
+.viewToggleGroup button {
+  padding: 8px 15px;
+  border: 1px solid var(--color-bg-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+  flex-grow: 1;
+}
+
+.inactiveButton {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+}
+
+.inactiveButton:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+.activeButton {
+  background-color: var(--color-accent-orange);
+  color: var(--color-bg-primary);
+  border-color: var(--color-accent-orange);
+  font-weight: bold;
+}
+
+.viewContent {
+  border: 1px solid var(--color-bg-secondary);
+  padding: 20px;
+  border-radius: 4px;
+}
+
+/* Action Button Styles */
 .actionGroup {
   margin-top: 20px;
   padding-top: 15px;
@@ -97,7 +91,6 @@
 }
 
 .submitButton {
-  /* Style for the primary action button */
   background-color: var(--color-accent-green);
   color: white;
   border: none;
@@ -107,11 +100,11 @@
   cursor: pointer;
   font-size: 1.1em;
   transition: background-color 0.2s;
-  width: 100%; /* Full width in the modal */
+  width: 100%;
 }
 
 .submitButton:hover:not(:disabled) {
-  background-color: #2e8b57; /* Slightly darker green */
+  background-color: #2e8b57;
 }
 
 .submitButton:disabled {
@@ -120,9 +113,8 @@
   cursor: not-allowed;
 }
 
-/* Error Message */
 .errorMessage {
-  background-color: #8b0000; /* Dark Red */
+  background-color: #8b0000;
   color: white;
   padding: 10px;
   border-radius: 4px;
@@ -130,11 +122,11 @@
   font-weight: bold;
 }
 
-/* Delete Preview */
+/* Delete Preview Styles */
 .deletePreview {
   text-align: center;
   padding: 20px;
-  border: 2px dashed #b22222; /* Warning Red */
+  border: 2px dashed #b22222;
   border-radius: 4px;
   background-color: rgba(178, 34, 34, 0.1);
 }

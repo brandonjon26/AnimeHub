@@ -1,0 +1,49 @@
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.formGroup label {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.textInput {
+  padding: 10px;
+  border: 1px solid var(--color-bg-secondary);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border-radius: 4px;
+  transition: border-color 0.2s;
+}
+
+.textInput:focus {
+  outline: none;
+  border-color: var(--color-accent-purple);
+}
+
+.fileInput {
+  padding: 10px 0;
+  color: var(--color-text-primary);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+}
