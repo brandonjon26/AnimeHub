@@ -6,6 +6,8 @@ import {
 import { useImageManager } from "../../../../hooks/TS/useImageManager";
 import { ImageAddForm } from "./components/ImageAddForm";
 import { ImageSelector } from "./components/ImageSelector";
+import { ImageUpdateForm } from "./components/ImageUpdateForm";
+import { ImageDeleteForm } from "./components/ImageDeleteForm";
 import styles from "./ImageManagerModal.module.css";
 import Modal from "../../../../components/common/modal";
 
@@ -64,7 +66,6 @@ const ImageManagerModal: React.FC<ImageManagerModalProps> = (props) => {
     // 2. UPDATE & DELETE Views (Shared logic)
     return (
       <div className={styles.formContainer}>
-        {/* 🆕 Shared Selector */}
         <ImageSelector
           imagesInFolder={props.imagesInFolder}
           selectedImageId={selectedImageId}
@@ -74,66 +75,20 @@ const ImageManagerModal: React.FC<ImageManagerModalProps> = (props) => {
         />
 
         {selectedView === "UPDATE" && (
-          <>
-            <div className={styles.formGroup}>
-              <label htmlFor="target-category">Move to Category</label>
-              <select
-                id="target-category"
-                className={styles.textInput}
-                value={targetCategoryId}
-                onChange={(e) => setTargetCategoryId(Number(e.target.value))}
-                disabled={loading}
-              >
-                {props.allFolders.map((f) => (
-                  <option
-                    key={f.galleryImageCategoryId}
-                    value={f.galleryImageCategoryId}
-                  >
-                    {f.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formGroup}>
-              <label className={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={isFeatured}
-                  onChange={(e) => setIsFeatured(e.target.checked)}
-                  disabled={loading}
-                />
-                Mark as <strong>Featured</strong>
-              </label>
-            </div>
-            <div className={styles.formGroup}>
-              <label className={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={isMature}
-                  onChange={(e) => setIsMature(e.target.checked)}
-                  disabled={loading}
-                />
-                Mark as <strong>Mature Content</strong>
-              </label>
-            </div>
-          </>
+          <ImageUpdateForm
+            allFolders={props.allFolders}
+            targetCategoryId={targetCategoryId}
+            setTargetCategoryId={setTargetCategoryId}
+            isFeatured={isFeatured}
+            setIsFeatured={setIsFeatured}
+            isMature={isMature}
+            setIsMature={setIsMature}
+            loading={loading}
+          />
         )}
 
-        {selectedView === "DELETE" && imageToEdit && (
-          <div className={styles.deletePreview}>
-            <p>
-              You are about to delete Image ID:{" "}
-              <strong>{imageToEdit.galleryImageId}</strong>
-            </p>
-            <img
-              src={imageToEdit.imageUrl}
-              alt={imageToEdit.altText}
-              className={styles.previewImage}
-            />
-            <p>
-              Category: <strong>{imageToEdit.categoryName}</strong>
-            </p>
-          </div>
+        {selectedView === "DELETE" && (
+          <ImageDeleteForm imageToEdit={imageToEdit} />
         )}
       </div>
     );
