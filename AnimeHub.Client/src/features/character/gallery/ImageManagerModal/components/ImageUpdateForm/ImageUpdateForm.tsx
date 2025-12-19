@@ -1,5 +1,6 @@
 import React from "react";
 import { type GalleryCategory } from "../../../../../../api/types/GalleryTypes";
+import { ImageActionPreview } from "../ImageActionPreview";
 import styles from "./ImageUpdateForm.module.css";
 
 interface ImageUpdateFormProps {
@@ -11,6 +12,8 @@ interface ImageUpdateFormProps {
   isMature: boolean;
   setIsMature: (val: boolean) => void;
   loading: boolean;
+  currentImageUrl?: string;
+  altText?: string;
 }
 
 const ImageUpdateForm: React.FC<ImageUpdateFormProps> = ({
@@ -22,9 +25,17 @@ const ImageUpdateForm: React.FC<ImageUpdateFormProps> = ({
   isMature,
   setIsMature,
   loading,
+  currentImageUrl,
+  altText,
 }) => {
   return (
     <>
+      <ImageActionPreview
+        imageUrl={currentImageUrl}
+        altText={altText}
+        label="Selected Image"
+      />
+
       <div className={styles.formGroup}>
         <label htmlFor="target-category">Move to Category</label>
         <select

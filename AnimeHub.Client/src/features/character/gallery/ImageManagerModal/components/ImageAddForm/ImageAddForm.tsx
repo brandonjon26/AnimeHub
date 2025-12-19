@@ -1,11 +1,13 @@
 import React from "react";
 import { type GalleryCategory } from "../../../../../../api/types/GalleryTypes";
+import { ImageActionPreview } from "../ImageActionPreview";
 import styles from "./ImageAddForm.module.css";
 
 interface ImageAddFormProps {
   allFolders: GalleryCategory[];
   targetCategoryId: number;
   setTargetCategoryId: (id: number) => void;
+  fileToUpload: File | null;
   setFileToUpload: (file: File | null) => void;
   isFeatured: boolean;
   setIsFeatured: (val: boolean) => void;
@@ -20,6 +22,7 @@ const ImageAddForm: React.FC<ImageAddFormProps> = ({
   allFolders,
   targetCategoryId,
   setTargetCategoryId,
+  fileToUpload,
   setFileToUpload,
   isFeatured,
   setIsFeatured,
@@ -45,6 +48,12 @@ const ImageAddForm: React.FC<ImageAddFormProps> = ({
           accept="image/*"
         />
       </div>
+
+      <ImageActionPreview
+        file={fileToUpload}
+        altText={altText}
+        label="Upload Preview"
+      />
 
       {/* Target Category Selector */}
       <div className={styles.formGroup}>

@@ -25,6 +25,7 @@ const ImageManagerModal: React.FC<ImageManagerModalProps> = (props) => {
     setSelectedView,
     selectedImageId,
     setSelectedImageId,
+    fileToUpload,
     setFileToUpload,
     isFeatured,
     setIsFeatured,
@@ -51,6 +52,7 @@ const ImageManagerModal: React.FC<ImageManagerModalProps> = (props) => {
           allFolders={props.allFolders}
           targetCategoryId={targetCategoryId}
           setTargetCategoryId={setTargetCategoryId}
+          fileToUpload={fileToUpload}
           setFileToUpload={setFileToUpload}
           isFeatured={isFeatured}
           setIsFeatured={setIsFeatured}
@@ -84,6 +86,8 @@ const ImageManagerModal: React.FC<ImageManagerModalProps> = (props) => {
             isMature={isMature}
             setIsMature={setIsMature}
             loading={loading}
+            currentImageUrl={imageToEdit?.imageUrl}
+            altText={imageToEdit?.altText}
           />
         )}
 
