@@ -1,0 +1,19 @@
+.deletePreview {
+  text-align: center;
+  padding: 20px;
+  border: 2px dashed #b22222;
+  border-radius: 4px;
+  background-color: rgba(178, 34, 34, 0.1);
+}
+
+.deletePreview p {
+  margin-bottom: 10px;
+}
+
+.previewImage {
+  max-width: 150px;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
