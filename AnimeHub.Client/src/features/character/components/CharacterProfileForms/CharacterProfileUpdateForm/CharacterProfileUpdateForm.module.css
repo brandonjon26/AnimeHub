@@ -1,0 +1,99 @@
+.sectionTitle {
+  border-bottom: 1px solid var(--color-accent-green);
+  padding-bottom: 7.5px;
+  margin-bottom: 2.5px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns for pairs of inputs */
+  gap: 1.5rem;
+  padding-top: 7.5px;
+  margin-top: 2.5px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputGroup label {
+  font-weight: bold;
+  margin-bottom: 0.4rem;
+  color: var(--color-accent-orange);
+}
+
+.inputGroup input,
+.inputGroup select,
+.inputGroup textarea {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background-color: var(--color-bg-input);
+  color: var(--color-text-primary);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* For fields that span both columns (like Bio) */
+.inputGroupFull {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+}
+
+.inputGroupFull label {
+  font-weight: bold;
+  margin-bottom: 0.4rem;
+  color: var(--color-accent-orange);
+}
+
+.inputGroupFull input,
+.inputGroupFull textarea {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background-color: var(--color-bg-input);
+  color: var(--color-text-primary);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.formFooter {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.saveButton {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-accent-green);
+  color: var(--color-text-light);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.saveButton:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--color-accent-green) 90%, black);
+}
+
+.saveButton:disabled {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  color: var(--color-danger);
+  margin-right: 1rem;
+}
+
+.formLoading {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
