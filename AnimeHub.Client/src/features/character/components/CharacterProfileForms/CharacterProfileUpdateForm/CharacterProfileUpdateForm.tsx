@@ -1,7 +1,7 @@
 import React from "react";
 import { type CharacterProfileDto } from "../../../../../api/types/CharacterTypes";
 import { useCharacterProfileForm } from "../../../../../hooks/TS/useCharacterProfileForm";
-import styles from "../../../CharacterProfileEditModal.module.css";
+import styles from "./CharacterProfileUpdateForm.module.css";
 
 interface CharacterProfileUpdateFormProps {
   profile: CharacterProfileDto;
@@ -79,7 +79,6 @@ const CharacterProfileUpdateForm: React.FC<CharacterProfileUpdateFormProps> = ({
           />
         </div>
       </div>
-
       <div className={styles.formGrid}>
         <div className={styles.inputGroup}>
           <label htmlFor="age">Age</label>
@@ -125,6 +124,8 @@ const CharacterProfileUpdateForm: React.FC<CharacterProfileUpdateFormProps> = ({
           />
         </div>
       </div>
+
+      <br />
 
       <h2 className={styles.sectionTitle}>Appearance</h2>
       <div className={styles.formGrid}>
@@ -173,6 +174,8 @@ const CharacterProfileUpdateForm: React.FC<CharacterProfileUpdateFormProps> = ({
           />
         </div>
       </div>
+
+      <br />
 
       <h2 className={styles.sectionTitle}>Abilities & Equipment</h2>
       <div className={styles.formGrid}>
@@ -227,6 +230,8 @@ const CharacterProfileUpdateForm: React.FC<CharacterProfileUpdateFormProps> = ({
           />
         </div>
       </div>
+
+      <br />
 
       <h2 className={styles.sectionTitle}>Lore & Bio</h2>
       <div className={styles.formGrid}>
