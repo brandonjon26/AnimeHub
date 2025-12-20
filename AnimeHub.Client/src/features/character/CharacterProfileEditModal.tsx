@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { type CharacterProfileDto } from "../../api/types/CharacterTypes";
-import {
-  CharacterProfileUpdateForm,
-  CharacterAttireManagement,
-} from "./components/CharacterProfileForms";
+import { CharacterProfileUpdateForm } from "./components/CharacterProfileForms/CharacterProfileUpdateForm";
+import { CharacterAttireManagement } from "./components/CharacterProfileForms/CharacterAttireManagement";
 import styles from "./CharacterProfileEditModal.module.css";
 
 interface CharacterProfileEditModalProps {
