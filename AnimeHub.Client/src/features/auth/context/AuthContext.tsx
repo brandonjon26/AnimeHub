@@ -122,8 +122,6 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  // const [state, dispatch] = useReducer(authReducer, defaultAuthState);
-
   const [state, dispatch] = useReducer(authReducer, getInitialAuthState());
 
   // 1. Stabilize the Logout handler using useCallback
@@ -132,17 +130,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem("user");
     dispatch({ type: "LOGOUT" });
   }, []); // Empty dependency array means this function is stable
-
-  // 2. Stabilize the Login Success handler using useCallback
-  // const handleLoginSuccess = React.useCallback((userData: IUserResponse) => {
-  //   // Store essentials in localStorage
-  //   localStorage.setItem("jwtToken", userData.token); // Store user details without the token for easy hydration
-
-  //   const { token, ...userDetails } = userData;
-  //   localStorage.setItem("user", JSON.stringify(userDetails));
-
-  //   dispatch({ type: "LOGIN_SUCCESS", payload: userData });
-  // }, []); // Empty dependency array means this function is stable
 
   const login = React.useCallback(
     async (credentials: ILoginRequest) => {
