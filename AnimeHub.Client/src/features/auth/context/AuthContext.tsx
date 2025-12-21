@@ -15,8 +15,8 @@ import {
   type ILoginRequest,
   type IRegisterRequest,
   type IUserResponse,
-} from "../../api/types/auth";
-import { AuthService } from "../../api/authService";
+} from "../../../api/types/auth";
+import { AuthService } from "../../../api/authService";
 
 // Helper type to merge the standard JwtPayload with our custom claims (like 'role')
 interface CustomJwtPayload extends JwtPayload {

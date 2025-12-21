@@ -2,7 +2,7 @@ import {
   type ILoginRequest,
   type IRegisterRequest,
   type IUserResponse,
-} from "../../api/types/auth";
+} from "../../../api/types/auth";
 
 // 🔑 NEW TYPE: Defines the result object returned by login/register
 export interface AuthResult {

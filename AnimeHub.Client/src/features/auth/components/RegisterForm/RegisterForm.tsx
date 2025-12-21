@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../../hooks/TS/useAuth";
+import { useAuth } from "../../../../hooks/TS/useAuth";
 import {
   type IRegisterRequest,
   type IValidationError,
-} from "../../api/types/auth";
-import { parseValidationError } from "../../api/authService";
-import styles from "./Login.module.css";
+} from "../../../../api/types/auth";
+import { parseValidationError } from "../../../../api/authService";
+import styles from "../../styles/AuthForms.module.css";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -14,7 +14,7 @@ const today = new Date().toISOString().split("T")[0];
 const passwordRequirements =
   "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character.";
 
-const Register: React.FC = () => {
+const RegisterForm: React.FC = () => {
   const { register, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -324,4 +324,4 @@ const Register: React.FC = () => {
   );
 };
 
-export default Register;
+export default RegisterForm;

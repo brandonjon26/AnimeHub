@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../../hooks/TS/useAuth";
+import { useAuth } from "../../../hooks/TS/useAuth";
 
 interface ProtectedRouteProps {
   // Optionally specify required roles, e.g., "Admin", "Moderator"
