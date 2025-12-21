@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, RouterProvider } from "react-router-dom";
 import { router } from "./routes/routes.tsx";
 import { ThemeProvider } from "./features/theme/ThemeContext.tsx";
-import { AuthProvider } from "./features/auth/AuthContext.tsx";
+import { AuthProvider } from "./features/auth/context/AuthContext.tsx";
 
 // reate a client instance for TanStack Query
 const queryClient = new QueryClient({
