@@ -1,27 +1,20 @@
 import React from "react";
-// import MainLayout from "../../components/common/MainLayout";
-import ThemeToggle from "../../components/common/ThemeToggle"; // We will create this next
+import ThemeToggle from "../../components/common/ThemeToggle";
+import styles from "./HomePage.module.css";
 
 const HomePage: React.FC = () => {
   return (
-    // Wrap the Home Page content in the structural layout
     <>
       <h2>Welcome to AnimeHub!</h2>
       <p>This is the central page for announcements and featured content.</p>
 
-      {/* 🔑 Placeholder for testing theme toggle: */}
-      <p style={{ marginTop: "20px" }}>
+      {/* Placeholder for testing theme toggle: */}
+      <p className={styles.themeStatus}>
         Current Theme Status: <ThemeToggle />
       </p>
 
       {/* Simple placeholders to test the layout zones */}
-      <div
-        style={{
-          padding: "20px",
-          border: "1px solid var(--color-accent-purple)",
-          marginTop: "20px",
-        }}
-      >
+      <div className={styles.announcementContainer}>
         [Announcements & Featured Anime Section Placeholder]
       </div>
     </>
