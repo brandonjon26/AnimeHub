@@ -9,10 +9,10 @@ import MainLayout from "./../components/common/MainLayout/MainLayout.tsx";
 import HomePage from "../features/home/HomePage";
 import AboutCharacterPage from "../features/character/AboutCharacterPage.tsx";
 import { GalleryFolderPage } from "../features/character/gallery/GalleryFolder";
-import Login from "../features/auth/Login.tsx";
-import Register from "../features/auth/Register.tsx";
-import ProtectedRoute from "../features/auth/ProtectedRoute.tsx";
-import RedirectIfAuthenticated from "../features/auth/RedirectIfAuthenticated.tsx";
+import LoginForm from "../features/auth/components/LoginForm/LoginForm.tsx";
+import RegisterForm from "../features/auth/components/RegisterForm/RegisterForm.tsx";
+import ProtectedRoute from "../features/auth/guards/ProtectedRoute.tsx";
+import RedirectIfAuthenticated from "../features/auth/guards/RedirectIfAuthenticated.tsx";
 import WelcomePage from "../features/home/WelcomePage.tsx";
 import ProfilePage from "../features/profile/ProfilePage.tsx";
 
@@ -21,11 +21,11 @@ const routeConfig: RouteObject[] = [
   // --- PUBLIC AUTH ROUTES ---
   {
     path: "/login",
-    element: <Login />,
+    element: <LoginForm />,
   },
   {
     path: "/register",
-    element: <Register />,
+    element: <RegisterForm />,
   },
 
   // --- PROTECTED ROUTE WRAPPER ---

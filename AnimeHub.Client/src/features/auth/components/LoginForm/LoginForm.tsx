@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../../hooks/TS/useAuth";
+import { useAuth } from "../../../../hooks/TS/useAuth";
 import {
   type ILoginRequest,
   type IValidationError,
-} from "../../api/types/auth";
-import { parseValidationError } from "../../api/authService";
-import styles from "./Login.module.css";
+} from "../../../../api/types/auth";
+import { parseValidationError } from "../../../../api/authService";
+import styles from "../../styles/AuthForms.module.css";
 
-const Login: React.FC = () => {
+const LoginForm: React.FC = () => {
   const { login, isLoading: authLoading, user } = useAuth();
   const navigate = useNavigate();
 
@@ -161,4 +161,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default LoginForm;

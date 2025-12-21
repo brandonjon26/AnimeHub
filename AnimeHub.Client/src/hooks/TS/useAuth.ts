@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { type AuthContextType } from "../../features/auth/authContext.ts"; // Import the type definition
-import { AuthContext } from "../../features/auth/AuthContext.tsx"; // Assuming this is now exported
+import { type AuthContextType } from "../../features/auth/context/authContext.ts"; // Import the type definition
+import { AuthContext } from "../../features/auth/context/AuthContext.tsx"; // Assuming this is now exported
 
 /**
  * Custom hook to consume the AuthContext, providing access to authentication state and actions.
