@@ -6,7 +6,7 @@ export const useCharacterAttireManagement = (profile: CharacterProfileDto) => {
   const queryClient = useQueryClient();
   const characterRouteName = profile.firstName.toLowerCase();
 
-  // Subscribe to the cache to get the "live" profile data
+  // Subscription to the cache
   const { data: liveProfile } = useQuery({
     queryKey: ["characterProfile", characterRouteName],
     queryFn: () => CharacterClient.getProfile(characterRouteName),
@@ -43,7 +43,6 @@ export const useCharacterAttireManagement = (profile: CharacterProfileDto) => {
           newProfile
         );
       }
-
       return { previousProfile };
     },
 
