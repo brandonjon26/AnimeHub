@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useLoginForm } from "../../../../hooks/TS/useLoginForm";
+import { usePasswordToggle } from "../../../../hooks/JS/usePasswordToggle";
 import styles from "../../styles/AuthForms.module.css";
 
 const LoginForm: React.FC = () => {
@@ -13,6 +14,7 @@ const LoginForm: React.FC = () => {
     handleSubmit,
     getValidationError,
   } = useLoginForm();
+  const { type, isVisible, toggleVisibility } = usePasswordToggle();
 
   if (user) return null;
 
@@ -52,16 +54,26 @@ const LoginForm: React.FC = () => {
 
             <div className={styles["form-group"]}>
               <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                disabled={isLoading}
-                aria-invalid={!!getValidationError("password")}
-                required
-              />
+              <div className={styles["password-input-wrapper"]}>
+                <input
+                  type={type}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                  aria-invalid={!!getValidationError("password")}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={toggleVisibility}
+                  className={styles["toggle-button"]}
+                  tabIndex={-1} // Optional: prevents tabbing to the eye icon
+                >
+                  {isVisible ? "👁️" : "🙈"}
+                </button>
+              </div>
               {getValidationError("password") && (
                 <p className={styles["error-message"]}>
                   {getValidationError("password")}
