@@ -131,3 +131,20 @@
 .register-link-text a:hover {
   text-decoration: underline;
 }
+
+.register-box-wide {
+  max-width: 500px;
+  /* Keep your existing .login-box styles, just override the width */
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Ensure that nested form-groups in a row don't have bottom margin 
+   if it messes with the grid alignment */
+.form-row .form-group {
+  margin-bottom: 1;
+}

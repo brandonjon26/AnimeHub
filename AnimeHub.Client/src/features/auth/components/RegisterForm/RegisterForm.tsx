@@ -18,7 +18,9 @@ const RegisterForm: React.FC = () => {
     <>
       <div className={`${styles.wallpaperLayer} ${styles.registerWallpaper}`} />
       <div className={styles["login-container"]}>
-        <div className={styles["login-box"]} style={{ maxWidth: "500px" }}>
+        <div
+          className={`${styles["login-box"]} ${styles["register-box-wide"]}`}
+        >
           <h2>🔮 Join AnimeHub! 🔮</h2>
           <form onSubmit={handleSubmit} className={styles["login-form"]}>
             {generalError && (
@@ -67,15 +69,8 @@ const RegisterForm: React.FC = () => {
             </div>
 
             {/* Passwords Grid */}
-            <div
-              className={styles["form-group"]}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "1rem",
-              }}
-            >
-              <div className={styles["form-group"]} style={{ margin: 0 }}>
+            <div className={styles["form-row"]}>
+              <div className={styles["form-group"]}>
                 <label htmlFor="password">Password</label>
                 <input
                   type="password"
@@ -92,7 +87,7 @@ const RegisterForm: React.FC = () => {
                   </p>
                 )}
               </div>
-              <div className={styles["form-group"]} style={{ margin: 0 }}>
+              <div className={styles["form-group"]}>
                 <label htmlFor="confirmPassword">Confirm Password</label>
                 <input
                   type="password"
@@ -107,13 +102,7 @@ const RegisterForm: React.FC = () => {
             </div>
 
             {/* Names Grid */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "1rem",
-              }}
-            >
+            <div className={styles["form-row"]}>
               <div className={styles["form-group"]}>
                 <label htmlFor="firstName">First Name</label>
                 <input
@@ -141,13 +130,7 @@ const RegisterForm: React.FC = () => {
             </div>
 
             {/* Birthday & Location Grid */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "1rem",
-              }}
-            >
+            <div className={styles["form-row"]}>
               <div className={styles["form-group"]}>
                 <label htmlFor="birthday">Birthday</label>
                 <input
