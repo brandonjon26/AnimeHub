@@ -1,0 +1,9 @@
+.themeStatus {
+  margin-top: 20px;
+}
+
+.announcementContainer {
+  padding: 20px;
+  border: 1px solid var(--color-accent-purple);
+  margin-top: 20px;
+}
