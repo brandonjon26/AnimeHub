@@ -131,3 +131,45 @@
 .register-link-text a:hover {
   text-decoration: underline;
 }
+
+.register-box-wide {
+  max-width: 500px;
+  /* Keep your existing .login-box styles, just override the width */
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Ensure that nested form-groups in a row don't have bottom margin 
+   if it messes with the grid alignment */
+.form-row .form-group {
+  margin-bottom: 1;
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 40px; /* Make room for the button */
+}
+
+.toggle-button {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color); /* Use your theme variable */
+}

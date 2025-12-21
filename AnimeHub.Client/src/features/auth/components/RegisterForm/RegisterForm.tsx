@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useRegisterForm } from "../../../../hooks/TS/useRegisterForm";
+import { usePasswordToggle } from "../../../../hooks/JS/usePasswordToggle";
 import styles from "../../styles/AuthForms.module.css";
 
 const RegisterForm: React.FC = () => {
@@ -13,12 +14,24 @@ const RegisterForm: React.FC = () => {
     handleSubmit,
     getValidationError,
   } = useRegisterForm();
+  const {
+    type: passType,
+    isVisible: passVisible,
+    toggleVisibility: togglePass,
+  } = usePasswordToggle();
+  const {
+    type: confType,
+    isVisible: confVisible,
+    toggleVisibility: toggleConf,
+  } = usePasswordToggle();
 
   return (
     <>
       <div className={`${styles.wallpaperLayer} ${styles.registerWallpaper}`} />
       <div className={styles["login-container"]}>
-        <div className={styles["login-box"]} style={{ maxWidth: "500px" }}>
+        <div
+          className={`${styles["login-box"]} ${styles["register-box-wide"]}`}
+        >
           <h2>🔮 Join AnimeHub! 🔮</h2>
           <form onSubmit={handleSubmit} className={styles["login-form"]}>
             {generalError && (
@@ -67,53 +80,60 @@ const RegisterForm: React.FC = () => {
             </div>
 
             {/* Passwords Grid */}
-            <div
-              className={styles["form-group"]}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "1rem",
-              }}
-            >
-              <div className={styles["form-group"]} style={{ margin: 0 }}>
+            <div className={styles["form-row"]}>
+              <div className={styles["form-group"]}>
                 <label htmlFor="password">Password</label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                  required
-                />
+                <div className={styles["password-input-wrapper"]}>
+                  <input
+                    type={passType}
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePass}
+                    className={styles["toggle-button"]}
+                    tabIndex={-1}
+                  >
+                    {passVisible ? "👁️" : "🙈"}
+                  </button>
+                </div>
                 {getValidationError("password") && (
                   <p className={styles["error-message"]}>
                     {getValidationError("password")}
                   </p>
                 )}
               </div>
-              <div className={styles["form-group"]} style={{ margin: 0 }}>
+              <div className={styles["form-group"]}>
                 <label htmlFor="confirmPassword">Confirm Password</label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                  required
-                />
+                <div className={styles["password-input-wrapper"]}>
+                  <input
+                    type={confType}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleConf}
+                    className={styles["toggle-button"]}
+                    tabIndex={-1}
+                  >
+                    {confVisible ? "👁️" : "🙈"}
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Names Grid */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "1rem",
-              }}
-            >
+            <div className={styles["form-row"]}>
               <div className={styles["form-group"]}>
                 <label htmlFor="firstName">First Name</label>
                 <input
@@ -141,13 +161,7 @@ const RegisterForm: React.FC = () => {
             </div>
 
             {/* Birthday & Location Grid */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "1rem",
-              }}
-            >
+            <div className={styles["form-row"]}>
               <div className={styles["form-group"]}>
                 <label htmlFor="birthday">Birthday</label>
                 <input
