@@ -7,7 +7,7 @@ import {
   type GallerySingleUpdate,
 } from "./types/GalleryTypes";
 import apiClient from "./apiClient";
-import axios, { AxiosError, isAxiosError } from "axios";
+import axios from "axios";
 
 // The base path for gallery endpoints relative to API_BASE_URL
 const GALLERY_BASE_PATH = "/api/gallery";
@@ -21,11 +21,15 @@ export class GalleryClient {
    * Maps to: GET /api/gallery/folders
    */
   public async getFolders(): Promise<GalleryCategory[]> {
-    const response = await apiClient.get<GalleryCategory[]>(
-      `${GALLERY_BASE_PATH}/folders`
-    );
-    // Axios wraps the response data in a 'data' property
-    return response.data;
+    try {
+      const response = await apiClient.get<GalleryCategory[]>(
+        `${GALLERY_BASE_PATH}/folders`
+      );
+      // Axios wraps the response data in a 'data' property
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
@@ -33,10 +37,14 @@ export class GalleryClient {
    * Maps to: GET /api/gallery/featured
    */
   public async getFeaturedImages(): Promise<GalleryImage[]> {
-    const response = await apiClient.get<GalleryImage[]>(
-      `${GALLERY_BASE_PATH}/featured`
-    );
-    return response.data;
+    try {
+      const response = await apiClient.get<GalleryImage[]>(
+        `${GALLERY_BASE_PATH}/featured`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
@@ -74,24 +82,28 @@ export class GalleryClient {
     metadata: GalleryBatchCreateMetadata, // Updated type name
     files: File[]
   ): Promise<void> {
-    // 1. Construct FormData object
-    const formData = new FormData();
+    try {
+      // 1. Construct FormData object
+      const formData = new FormData();
 
-    // 2. Serialize the entire metadata object to a JSON string
-    formData.append("Metadata", JSON.stringify(metadata));
+      // 2. Serialize the entire metadata object to a JSON string
+      formData.append("Metadata", JSON.stringify(metadata));
 
-    // 3. Append files
-    files.forEach((file) => {
-      // The key "Files" must match the property name in GalleryImageCreateBatchDto
-      formData.append("Files", file);
-    });
+      // 3. Append files
+      files.forEach((file) => {
+        // The key "Files" must match the property name in GalleryImageCreateBatchDto
+        formData.append("Files", file);
+      });
 
-    // 4. Send the POST request
-    await apiClient.post<void>(`${GALLERY_BASE_PATH}/batch`, formData, {
-      headers: {
-        // "Content-Type": "multipart/form-data",
-      },
-    });
+      // 4. Send the POST request
+      await apiClient.post<void>(`${GALLERY_BASE_PATH}/batch`, formData, {
+        headers: {
+          // Axios handles this
+        },
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
   // ----------------------------------------------------------------------
@@ -108,31 +120,31 @@ export class GalleryClient {
     metadata: GallerySingleCreate,
     file: File
   ): Promise<GalleryImage> {
-    const formData = new FormData();
+    try {
+      const formData = new FormData();
 
-    // 1. Serialize the entire metadata object to a JSON string
-    // 🔑 FIX: Append the full metadata as a JSON string under the key "Metadata"
-    // This must match the backend's expected key: form["Metadata"]
-    formData.append("Metadata", JSON.stringify(metadata));
+      // 1. Serialize the entire metadata object to a JSON string
+      // Append the full metadata as a JSON string under the key "Metadata"
+      formData.append("Metadata", JSON.stringify(metadata));
 
-    // 2. Append the file
-    // 🔑 FIX: The backend is using form.Files.FirstOrDefault(), so the key name
-    // doesn't strictly need to be "Files" or "File," but it must be included.
-    // Let's use "file" or "File" for clarity, but the backend extracts the first file found.
-    formData.append("file", file); // Using a lowercase 'file' key for safety/convention
+      // 2. Append the file
+      formData.append("file", file); // Using a lowercase 'file' key for safety/convention
 
-    // 3. Send the POST request
-    const response = await apiClient.post<GalleryImage>(
-      `${GALLERY_BASE_PATH}/single`,
-      formData,
-      {
-        headers: {
-          // "Content-Type": "multipart/form-data", // Axios handles this
-        },
-      }
-    );
+      // 3. Send the POST request
+      const response = await apiClient.post<GalleryImage>(
+        `${GALLERY_BASE_PATH}/single`,
+        formData,
+        {
+          headers: {
+            // Axios handles this
+          },
+        }
+      );
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
@@ -144,15 +156,19 @@ export class GalleryClient {
     imageId: number,
     updateData: GallerySingleUpdate
   ): Promise<void> {
-    // Axios handles serializing the JSON body and setting Content-Type
-    await apiClient.put<void>(
-      `${GALLERY_BASE_PATH}/images/${imageId}`,
-      {
-        newGalleryImageCategoryId: updateData.newGalleryImageCategoryId,
-        isMatureContent: updateData.isMatureContent,
-      } // The request body matches the GalleryImageUpdateSingleDto fields
-    );
-    // Success returns 204 No Content, so we expect the promise to resolve without data.
+    try {
+      // Axios handles serializing the JSON body and setting Content-Type
+      await apiClient.put<void>(
+        `${GALLERY_BASE_PATH}/images/${imageId}`,
+        {
+          newGalleryImageCategoryId: updateData.newGalleryImageCategoryId,
+          isMatureContent: updateData.isMatureContent,
+        } // The request body matches the GalleryImageUpdateSingleDto fields
+      );
+      // Success returns 204 No Content, so we expect the promise to resolve without data.
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
@@ -160,8 +176,12 @@ export class GalleryClient {
    * @param imageId - The ID of the image to delete.
    */
   public async deleteImage(imageId: number): Promise<void> {
-    await apiClient.delete<void>(`${GALLERY_BASE_PATH}/images/${imageId}`);
-    // Success returns 204 No Content, so we expect the promise to resolve without data.
+    try {
+      await apiClient.delete<void>(`${GALLERY_BASE_PATH}/images/${imageId}`);
+      // Success returns 204 No Content, so we expect the promise to resolve without data.
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
@@ -174,12 +194,16 @@ export class GalleryClient {
     categoryId: number,
     updateData: GalleryFolderUpdate
   ): Promise<void> {
-    // Note: The backend expects the categoryId in the path, not the body.
-    await apiClient.put<void>(
-      `${GALLERY_BASE_PATH}/folder/${categoryId}`,
-      updateData
-    );
-    // Success returns 204 No Content, so we expect the promise to resolve without data.
+    try {
+      // Note: The backend expects the categoryId in the path, not the body.
+      await apiClient.put<void>(
+        `${GALLERY_BASE_PATH}/folder/${categoryId}`,
+        updateData
+      );
+      // Success returns 204 No Content, so we expect the promise to resolve without data.
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
@@ -188,7 +212,11 @@ export class GalleryClient {
    * @param categoryId - The ID of the category/folder to delete.
    */
   public async deleteFolder(categoryId: number): Promise<void> {
-    await apiClient.delete<void>(`${GALLERY_BASE_PATH}/folder/${categoryId}`);
-    // Success returns 204 No Content, so we expect the promise to resolve without data.
+    try {
+      await apiClient.delete<void>(`${GALLERY_BASE_PATH}/folder/${categoryId}`);
+      // Success returns 204 No Content, so we expect the promise to resolve without data.
+    } catch (error) {
+      throw error;
+    }
   }
 }
