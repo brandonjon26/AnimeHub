@@ -14,6 +14,10 @@ const RedirectIfAuthenticated: React.FC = () => {
   if (isLoading) {
     // Returning null is safe and standard for waiting for context hydration.
     return null;
+
+    // A themed background or a small spinner looks better than null if
+    // the check takes more than a blink.
+    // return <div className="loading-screen-placeholder" />;
   }
 
   // 2. RULE A: If authenticated, immediately send them to the protected home path.
