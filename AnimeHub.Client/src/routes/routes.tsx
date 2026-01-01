@@ -1,6 +1,4 @@
-import React from "react";
 import {
-  useRoutes,
   Navigate,
   createBrowserRouter,
   type RouteObject,
@@ -20,12 +18,17 @@ import ProfilePage from "../features/profile/ProfilePage.tsx";
 const routeConfig: RouteObject[] = [
   // --- PUBLIC AUTH ROUTES ---
   {
-    path: "/login",
-    element: <LoginForm />,
-  },
-  {
-    path: "/register",
-    element: <RegisterForm />,
+    element: <RedirectIfAuthenticated />,
+    children: [
+      {
+        path: "login",
+        element: <LoginForm />,
+      },
+      {
+        path: "register",
+        element: <RegisterForm />,
+      },
+    ],
   },
 
   // --- PROTECTED ROUTE WRAPPER ---
@@ -34,7 +37,7 @@ const routeConfig: RouteObject[] = [
     element: <ProtectedRoute />,
     children: [
       {
-        path: "/welcome",
+        path: "welcome",
         element: <WelcomePage />,
       },
       {
@@ -42,7 +45,7 @@ const routeConfig: RouteObject[] = [
         children: [
           {
             index: true,
-            element: <Navigate to="/home" />,
+            element: <Navigate to="home" replace />,
           },
           {
             path: "home",
@@ -64,7 +67,7 @@ const routeConfig: RouteObject[] = [
           // Future Anime and Merchandise paths
 
           {
-            path: "/profile",
+            path: "profile",
             element: <ProfilePage />,
           },
         ],
@@ -73,7 +76,7 @@ const routeConfig: RouteObject[] = [
   },
 
   // --- CATCH-ALL (404) ---
-  { path: "*", element: <div>404 Not Found</div> },
+  { path: "*", element: <div style={{ padding: "2rem" }}>404 Not Found</div> },
 ];
 
 // 2. Export the created browser router
