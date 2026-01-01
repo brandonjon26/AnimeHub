@@ -1,6 +1,4 @@
-import React from "react";
 import {
-  useRoutes,
   Navigate,
   createBrowserRouter,
   type RouteObject,
@@ -12,7 +10,6 @@ import { GalleryFolderPage } from "../features/character/gallery/GalleryFolder";
 import LoginForm from "../features/auth/components/LoginForm/LoginForm.tsx";
 import RegisterForm from "../features/auth/components/RegisterForm/RegisterForm.tsx";
 import ProtectedRoute from "../features/auth/guards/ProtectedRoute.tsx";
-import RedirectIfAuthenticated from "../features/auth/guards/RedirectIfAuthenticated.tsx";
 import WelcomePage from "../features/home/WelcomePage.tsx";
 import ProfilePage from "../features/profile/ProfilePage.tsx";
 
