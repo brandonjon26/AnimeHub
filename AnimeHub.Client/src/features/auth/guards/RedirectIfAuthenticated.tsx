@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
-import { Navigate, useNavigate, Outlet } from "react-router-dom";
-import { useAuth } from "../../../hooks/TS/useAuth"; // Assuming path to useAuth
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../../../hooks/TS/useAuth";
 
 /**
  * Wrapper component to redirect authenticated users away from public routes
