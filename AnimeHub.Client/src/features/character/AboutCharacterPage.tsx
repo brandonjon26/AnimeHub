@@ -1,15 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import CharacterContent from "./CharacterContent";
 import { GalleryClient } from "../../api/GalleryClient";
 import { CharacterClient } from "../../api/CharacterClient";
-import {
-  type GalleryImage,
-  type GalleryCategory,
-} from "../../api/types/GalleryTypes";
-import { type CharacterProfileDto } from "../../api/types/CharacterTypes";
-import MainLayout from "../../components/common/MainLayout";
 import { useAuth } from "../../hooks/TS/useAuth";
 import styles from "./AboutCharacterPage.module.css";
 

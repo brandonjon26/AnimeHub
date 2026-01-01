@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
-import { Navigate, useNavigate, Outlet } from "react-router-dom";
-import { useAuth } from "../../../hooks/TS/useAuth"; // Assuming path to useAuth
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../../../hooks/TS/useAuth";
 
 /**
  * Wrapper component to redirect authenticated users away from public routes
@@ -14,6 +14,10 @@ const RedirectIfAuthenticated: React.FC = () => {
   if (isLoading) {
     // Returning null is safe and standard for waiting for context hydration.
     return null;
+
+    // A themed background or a small spinner looks better than null if
+    // the check takes more than a blink.
+    // return <div className="loading-screen-placeholder" />;
   }
 
   // 2. RULE A: If authenticated, immediately send them to the protected home path.
