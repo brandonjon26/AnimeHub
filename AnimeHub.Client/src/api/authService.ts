@@ -1,11 +1,11 @@
 import apiClient from "./apiClient";
+import axios, { AxiosError } from "axios";
 import {
   type ILoginRequest,
   type IRegisterRequest,
   type IUserResponse,
   type IValidationError,
 } from "./types/auth";
-import axios, { AxiosError } from "axios";
 
 const AUTH_BASE_ROUTE = "/auth";
 
@@ -64,13 +64,14 @@ export const parseValidationError = (
   error: unknown
 ): IValidationError | null => {
   if (axios.isAxiosError(error)) {
-    const axiosError = error as AxiosError;
-    if (axiosError.response && axiosError.response.status === 400) {
-      // Check for the standard ASP.NET Core Validation Problem details structure
-      const data = axiosError.response.data as { errors: IValidationError };
-      if (data.errors) {
-        return data.errors;
-      }
+    const axiosError = error as AxiosError<{
+      errors?: IValidationError;
+      detail?: string;
+    }>;
+
+    // ASP.NET Core usually puts validation errors in a nested 'errors' object
+    if (axiosError.response?.status === 400) {
+      return axiosError.response.data.errors || null;
     }
   }
   return null;
