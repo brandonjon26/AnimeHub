@@ -1,5 +1,9 @@
 import axios from "axios";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_TIMEOUT = import.meta.env.VITE_API_TIMEOUT
+  ? Number(import.meta.env.VITE_API_TIMEOUT)
+  : 30000; // Default to 30 seconds if not set
 
 if (!API_BASE_URL) {
   console.error("VITE_API_BASE_URL is not set. API calls will likely fail.");
@@ -8,14 +12,13 @@ if (!API_BASE_URL) {
 // 1. Create the Axios instance
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000, // 10 second timeout for requests
+  timeout: API_TIMEOUT,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// 2. Add a Request Interceptor (Placeholder for JWT logic)
-// This fulfills the blueprint requirement to use an Interceptor.
+// 2. Request Interceptor (JWT Injection)
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("jwtToken");
@@ -41,6 +44,21 @@ apiClient.interceptors.request.use(
   }
 );
 
-// We will add a Response Interceptor here later for error handling.
+// 3. Response Interceptor (Global Error Handling)
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Handle 401 Unauthorized (Expired or invalid token)
+    if (error.response && error.response.status === 401) {
+      console.warn("Unauthorized access - clearing token and redirecting.");
+      localStorage.removeItem("jwtToken");
+      // Optional: window.location.href = '/login';
+    }
+
+    // You can also standardize the error object here so your
+    // components always receive a consistent structure.
+    return Promise.reject(error);
+  }
+);
 
 export default apiClient;

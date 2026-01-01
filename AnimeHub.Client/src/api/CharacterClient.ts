@@ -8,7 +8,6 @@ import {
   type LoreEntryInputDto,
   type LoreEntrySummaryDto,
 } from "./types/CharacterTypes";
-import axios, { AxiosError, isAxiosError } from "axios";
 
 const CHARACTER_BASE_URL = "/characters";
 const LORE_BASE_URL = "/lore";
@@ -24,10 +23,14 @@ export const CharacterClient = {
    * Fetches the full profile for a specific character (e.g., 'Ayami', 'Chiara').
    */
   getProfile: async (characterName: string): Promise<CharacterProfileDto> => {
-    const response = await apiClient.get<CharacterProfileDto>(
-      `${CHARACTER_BASE_URL}/${characterName}`
-    );
-    return response.data;
+    try {
+      const response = await apiClient.get<CharacterProfileDto>(
+        `${CHARACTER_BASE_URL}/${characterName}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   },
 
   /**
@@ -39,11 +42,15 @@ export const CharacterClient = {
     profileId: number,
     data: CharacterProfileUpdateInput
   ): Promise<void> => {
-    // Returns 204 No Content on success
-    await apiClient.put(
-      `${CHARACTER_BASE_URL}/${characterName}/profile/${profileId}`,
-      data
-    );
+    try {
+      // Returns 204 No Content on success
+      await apiClient.put(
+        `${CHARACTER_BASE_URL}/${characterName}/profile/${profileId}`,
+        data
+      );
+    } catch (error) {
+      throw error;
+    }
   },
 
   // --- ATTIRE OPERATIONS ---
@@ -57,12 +64,16 @@ export const CharacterClient = {
     profileId: number,
     data: CharacterAttireInput
   ): Promise<number> => {
-    const response = await apiClient.post<number>(
-      `${CHARACTER_BASE_URL}/${characterName}/${profileId}/attire`,
-      data
-    );
-    // Backend returns the ID of the newly created attire
-    return response.data;
+    try {
+      const response = await apiClient.post<number>(
+        `${CHARACTER_BASE_URL}/${characterName}/${profileId}/attire`,
+        data
+      );
+      // Backend returns the ID of the newly created attire
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   },
 
   /**
@@ -73,10 +84,14 @@ export const CharacterClient = {
     characterName: string,
     attireId: number
   ): Promise<void> => {
-    // Returns 204 No Content on success
-    await apiClient.delete(
-      `${CHARACTER_BASE_URL}/${characterName}/attire/${attireId}`
-    );
+    try {
+      // Returns 204 No Content on success
+      await apiClient.delete(
+        `${CHARACTER_BASE_URL}/${characterName}/attire/${attireId}`
+      );
+    } catch (error) {
+      throw error;
+    }
   },
 
   // --- LORE SYSTEM OPERATIONS ---
@@ -86,9 +101,14 @@ export const CharacterClient = {
    * Fetches a summary list of all available Lore Entries (ID and Title) for dropdowns.
    */
   getAllLoreEntries: async (): Promise<LoreEntrySummaryDto[]> => {
-    // 🔑 NEW METHOD DEFINITION
-    const response = await apiClient.get<LoreEntrySummaryDto[]>(LORE_BASE_URL);
-    return response.data;
+    try {
+      const response = await apiClient.get<LoreEntrySummaryDto[]>(
+        LORE_BASE_URL
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   },
 
   /**
@@ -96,10 +116,14 @@ export const CharacterClient = {
    * Fetches all available Lore Types (e.g., Quest, Origin) for lookups.
    */
   getLoreTypes: async (): Promise<LoreTypeDto[]> => {
-    const response = await apiClient.get<LoreTypeDto[]>(
-      `${LORE_BASE_URL}/types`
-    );
-    return response.data;
+    try {
+      const response = await apiClient.get<LoreTypeDto[]>(
+        `${LORE_BASE_URL}/types`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   },
 
   /**
@@ -107,10 +131,14 @@ export const CharacterClient = {
    * Retrieves a single Lore Entry by its ID.
    */
   getLoreEntryById: async (loreEntryId: number): Promise<LoreEntryDto> => {
-    const response = await apiClient.get<LoreEntryDto>(
-      `${LORE_BASE_URL}/${loreEntryId}`
-    );
-    return response.data;
+    try {
+      const response = await apiClient.get<LoreEntryDto>(
+        `${LORE_BASE_URL}/${loreEntryId}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   },
 
   /**
@@ -118,8 +146,12 @@ export const CharacterClient = {
    * Creates a new Lore Entry and links characters.
    */
   createLoreEntry: async (data: LoreEntryInputDto): Promise<LoreEntryDto> => {
-    const response = await apiClient.post<LoreEntryDto>(LORE_BASE_URL, data);
-    return response.data;
+    try {
+      const response = await apiClient.post<LoreEntryDto>(LORE_BASE_URL, data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   },
 
   /**
@@ -127,7 +159,11 @@ export const CharacterClient = {
    * Deletes a Lore Entry (handled transactionally on the backend).
    */
   deleteLoreEntry: async (loreEntryId: number): Promise<void> => {
-    await apiClient.delete(`${LORE_BASE_URL}/${loreEntryId}`);
+    try {
+      await apiClient.delete(`${LORE_BASE_URL}/${loreEntryId}`);
+    } catch (error) {
+      throw error;
+    }
   },
 
   /**
@@ -139,10 +175,14 @@ export const CharacterClient = {
     loreEntryId: number | null,
     profileId: number
   ): Promise<void> => {
-    // Send the ID in the request body
-    await apiClient.put(
-      `${CHARACTER_BASE_URL}/${characterName}/greatest-feat/${profileId}`,
-      { greatestFeatLoreId: loreEntryId }
-    );
+    try {
+      // Send the ID in the request body
+      await apiClient.put(
+        `${CHARACTER_BASE_URL}/${characterName}/greatest-feat/${profileId}`,
+        { greatestFeatLoreId: loreEntryId }
+      );
+    } catch (error) {
+      throw error;
+    }
   },
 };
