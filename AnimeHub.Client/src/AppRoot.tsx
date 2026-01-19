@@ -4,7 +4,7 @@ import { router } from "./routes/routes.tsx";
 import { ThemeProvider } from "./features/theme/ThemeContext.tsx";
 import { AuthProvider } from "./features/auth/context/AuthContext.tsx";
 
-// reate a client instance for TanStack Query
+// create a client instance for TanStack Query
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
