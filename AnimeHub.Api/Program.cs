@@ -118,7 +118,7 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://localhost:5173") // Allow your frontend's exact origin
                   .AllowAnyHeader()
-                  .AllowAnyMethod()  
+                  .AllowAnyMethod()
                   .AllowCredentials(); // Required for cookies/JWT in certain setups
         });
 });

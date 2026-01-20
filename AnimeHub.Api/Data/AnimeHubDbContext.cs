@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using AnimeHub.Api.Entities.Character.Lore;
+using AnimeHub.Api.Entities.Logging;
 
 namespace AnimeHub.Api.Data
 {
@@ -17,6 +18,9 @@ namespace AnimeHub.Api.Data
         }
 
         public DbSet<UserProfile> UserProfiles { get; set; }
+        public DbSet<LogEntry> LogEntries { get; set; }
+        public DbSet<LogLevelLookup> LogLevelLookups { get; set; }
+        public DbSet<LogSourceLookup> LogSourceLookups { get; set; }
         public DbSet<Anime> Anime {  get; set; }
         public DbSet<GalleryImage> GalleryImages { get; set; }
         public DbSet<GalleryImageCategory> GalleryImageCategories { get; set; }
@@ -47,6 +51,27 @@ namespace AnimeHub.Api.Data
                            .IsRequired()
                            .OnDelete(DeleteBehavior.Cascade);
             });
+
+            // --- SEEDING LOGIC ---
+            // This takes your C# Enums and pushes them into your Lookup Tables
+            modelBuilder.Entity<LogLevelLookup>().HasData(
+                Enum.GetValues(typeof(Entities.Enums.LogLevel))
+                    .Cast<Entities.Enums.LogLevel>()
+                    .Select(e => new LogLevelLookup { LogLevelId = e, Description = e.ToString() })
+            );
+
+            modelBuilder.Entity<LogSourceLookup>().HasData(
+                Enum.GetValues(typeof(LogSource))
+                    .Cast<LogSource>()
+                    .Select(e => new LogSourceLookup { LogSourceId = e, Description = e.ToString() })
+            );
+
+            // --- PERFORMANCE INDEXES ---
+            // Indexes make your future Dashboard search instantly
+            modelBuilder.Entity<LogEntry>().HasIndex(l => l.Timestamp);
+            modelBuilder.Entity<LogEntry>().HasIndex(l => l.LogLevelId);
+            modelBuilder.Entity<LogEntry>().HasIndex(l => l.LogSourceId);
+            modelBuilder.Entity<LogEntry>().HasIndex(l => l.TraceId); // Helpful for debugging
 
             // Configure the GalleryImage entity
             modelBuilder.Entity<GalleryImage>(entity =>
