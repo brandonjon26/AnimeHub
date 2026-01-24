@@ -2,10 +2,11 @@
 {
     public enum LogSource
     {
-        System = 0,    // General application startup/shutdown
-        WebAPI = 1,    // Standard API request/response flow
-        Scraper = 2,   // External Python Scraper jobs
-        Database = 3,  // EF Core or SQL specific issues
-        Security = 4   // Auth failures, suspicious activity
+        None = 0,      // Default record
+        System = 1,    // General application startup/shutdown
+        WebAPI = 2,    // Standard API request/response flow
+        Scraper = 3,   // External Python Scraper jobs
+        Database = 4,  // EF Core or SQL specific issues
+        Security = 5   // Auth failures, suspicious activity
     }
 }
