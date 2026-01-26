@@ -20,6 +20,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
+using FluentValidation;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -141,6 +142,10 @@ builder.Services.AddScoped<UserProfileInterface, UserProfileService>();
 
 
 builder.Services.AddControllers();
+
+// Register all validators rather than each individually
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
