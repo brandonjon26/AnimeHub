@@ -1,20 +1,83 @@
 using AnimeHub.Api.Data;
 using AnimeHub.Api.Endpoints;
+using AnimeHub.Api.Entities;
+using AnimeHub.Api.Infrastructure.Logging;
 using AnimeHub.Api.Mapping;
 using AnimeHub.Api.Repositories;
 using AnimeHub.Api.Services;
-using AnimeHub.Api.Entities;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using Serilog.Context;
+using Serilog.Sinks.MSSqlServer;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Diagnostics;
+using System.Reflection;
 using System.Text;
+using FluentValidation;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+#region Serilog Congiguration
+
+// --- START SERILOG CONFIGURATION ---
+
+#if DEBUG
+    // Only show Serilog's internal errors in the console during local debugging
+    Serilog.Debugging.SelfLog.Enable(msg => Console.WriteLine($"Serilog Error: {msg}"));
+#endif
+
+ColumnOptions columnOptions = new ColumnOptions();
+columnOptions.Store.Remove(StandardColumn.Level);
+columnOptions.Store.Remove(StandardColumn.Properties);
+columnOptions.Store.Remove(StandardColumn.MessageTemplate);
+columnOptions.Store.Remove(StandardColumn.Id);
+columnOptions.Store.Remove(StandardColumn.Exception); // We use our custom split fields
+
+// Map standard Serilog properties to your LogEntry columns
+columnOptions.TimeStamp.ColumnName = "Timestamp";
+columnOptions.Message.ColumnName = "Message";
+
+// Define your custom columns to match LogEntry.cs
+columnOptions.AdditionalColumns = new Collection<SqlColumn>
+{
+    new SqlColumn { ColumnName = "LogLevelId", DataType = SqlDbType.Int, AllowNull = false },
+    new SqlColumn { ColumnName = "LogSourceId", DataType = SqlDbType.Int, AllowNull = false },
+    new SqlColumn { ColumnName = "ExceptionType", DataType = SqlDbType.NVarChar, DataLength = 256, AllowNull = true },
+    new SqlColumn { ColumnName = "ExceptionMessage", DataType = SqlDbType.NVarChar, DataLength = -1, AllowNull = true },
+    new SqlColumn { ColumnName = "StackTrace", DataType = SqlDbType.NVarChar, DataLength = -1, AllowNull = true },
+    new SqlColumn { ColumnName = "TraceId", DataType = SqlDbType.NVarChar, DataLength = 100, AllowNull = true },
+    new SqlColumn { ColumnName = "Payload", DataType = SqlDbType.NVarChar, DataLength = -1, AllowNull = true },
+    new SqlColumn { ColumnName = "UserId", DataType = SqlDbType.NVarChar, DataLength = 450, AllowNull = true }
+};
+
+builder.Host.UseSerilog((context, loggerConfiguration) => loggerConfiguration
+    .ReadFrom.Configuration(context.Configuration)
+    .Enrich.FromLogContext()
+    .Enrich.With<LoggingEnricher>() // Translates Serilog levels to my 0-7 Enum
+    .WriteTo.Console()
+    .WriteTo.MSSqlServer(
+        connectionString: context.Configuration.GetConnectionString("DefaultConnection"),
+        sinkOptions: new MSSqlServerSinkOptions 
+        { 
+            TableName = "LogEntry", 
+            AutoCreateSqlTable = false 
+        },
+        columnOptions: columnOptions
+    ));
+
+// --- END SERILOG CONFIGURATION ---
+
+#endregion
+
 
 // Configure Kestrel to increase the maximum request body size (e.g., to 100MB)
 builder.WebHost.ConfigureKestrel(serverOptions =>
@@ -60,7 +123,7 @@ builder.Services.AddAutoMapper((IServiceProvider serviceProvider, IMapperConfigu
 
 #region Add Scoped Services
 
-// Register the Anime Repository (Scoped lifetime is standard for repositories)
+// Register the Repositories (Scoped lifetime is standard for repositories)
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped<IAnimeRepository, AnimeRepository>();
 builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
@@ -68,7 +131,7 @@ builder.Services.AddScoped<IGalleryCategoryRepository, GalleryCategoryRepository
 builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
 builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 
-// Register the Anime Service (Scoped lifetime is standard for services)
+// Register the Services (Scoped lifetime is standard for services)
 builder.Services.AddScoped<AnimeInterface, AnimeService>();
 builder.Services.AddScoped<GalleryInterface, GalleryService>();
 builder.Services.AddScoped<CharacterInterface, CharacterService>();
@@ -79,6 +142,10 @@ builder.Services.AddScoped<UserProfileInterface, UserProfileService>();
 
 
 builder.Services.AddControllers();
+
+// Register all validators rather than each individually
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -158,6 +225,8 @@ builder.Services.AddAuthorization(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseSerilogRequestLogging();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -199,6 +268,7 @@ app.MapGalleryEndpoints();
 app.MapCharacterEndpoints();
 app.MapAuthEndpoints();
 app.MapUserProfileEndpoints();
+// app.MapSystemEndpoints();
 
 #endregion
 

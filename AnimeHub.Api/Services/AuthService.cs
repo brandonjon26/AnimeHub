@@ -7,6 +7,10 @@ using AutoMapper;
 using AnimeHub.Api.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using AnimeHub.Api.Infrastructure.Logging;
+using System.Text.Json;
+using AnimeHub.Api.Entities.Enums;
 
 namespace AnimeHub.Api.Services
 {
@@ -15,85 +19,133 @@ namespace AnimeHub.Api.Services
 
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILogger<AuthService> _logger;
+        private readonly IValidator<RegisterDto> _registerValidator;
+        private readonly IValidator<LoginDto> _loginValidator;
         private readonly IConfiguration _configuration; // Needed for JWT secret key
         private readonly UserProfileInterface _profileService;
         private readonly IMapper _mapper;
 
         private record TokenResult(string Token, DateTimeOffset Expiration);
 
-        public AuthService(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, UserProfileInterface profileService, IMapper mapper)
+        public AuthService(
+            UserManager<IdentityUser> userManager, 
+            RoleManager<IdentityRole> roleManager, 
+            IConfiguration configuration, 
+            UserProfileInterface profileService, 
+            IMapper mapper, ILogger<AuthService> logger, 
+            IValidator<RegisterDto> registerValidator, 
+            IValidator<LoginDto> loginValidator)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _profileService = profileService;
             _mapper = mapper;
+            _logger = logger;
+            _registerValidator = registerValidator;
+            _loginValidator = loginValidator;
         }
 
         public async Task<UserResponseDto?> RegisterAsync(RegisterDto dto)
         {
-            // Check if user already exists (by email or username)
-            if (await _userManager.FindByEmailAsync(dto.Email) != null ||
-                await _userManager.FindByNameAsync(dto.UserName) != null)
+            try
             {
-                // Note: IdentityResult doesn't have a built-in 'User Exists' error code, 
-                // but we can generate one or let the endpoint handler handle it pre-call.
-                // For simplicity here, the endpoint will handle the initial check (as written earlier).
-            }
-
-            // Create the new IdentityUser
-            IdentityUser user = new IdentityUser
-            {
-                UserName = dto.UserName,
-                Email = dto.Email,
-                EmailConfirmed = true
-            };
-
-            // Attempt to create the user with the given password
-            IdentityResult result = await _userManager.CreateAsync(user, dto.Password);
-
-            if (result.Succeeded)
-            {
-                // Assign the default 'Villager' role
-                // NOTE: We rely on the role being created via the Seed method later.
-                await _userManager.AddToRoleAsync(user, Roles.Villager);
-
-                // Create the UserProfile record
-                await _profileService.CreateProfileAsync(user.Id, dto);
-
-                // Fetch roles and profile (Just like in LoginAsync)
-                IList<string> roles = await _userManager.GetRolesAsync(user);
-                UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id);
-
-                // Generate Token
-                TokenResult tokenData = GenerateJwtToken(user, roles);
-
-                // Mapping and Construction (Reusing LoginAsync's logic)
-                UserResponseDto initialResponse = _mapper.Map<UserResponseDto>(user);
-
-                if (profile != null)
+                var validationResult = await _registerValidator.ValidateAsync(dto);
+                if (!validationResult.IsValid)
                 {
-                    _mapper.Map(profile, initialResponse);
+                    throw new ValidationException("Validation of the account registration request failed.", validationResult.Errors);                    
                 }
 
-                UserResponseDto finalResponse = initialResponse with
+                // Check if user already exists (by email or username)
+                if (await _userManager.FindByEmailAsync(dto.Email) != null ||
+                    await _userManager.FindByNameAsync(dto.UserName) != null)
                 {
-                    Token = tokenData.Token,
-                    Expiration = tokenData.Expiration,
-                    Roles = roles.ToList(),
-                    IsAdmin = roles.Contains(Roles.Administrator) || roles.Contains(Roles.Mage)
+                    _logger.LogInformation("Registration attempted with existing email: {Email}", dto.Email);
+                    return null;
+                }
+
+                // Create the new IdentityUser
+                IdentityUser user = new IdentityUser
+                {
+                    UserName = dto.UserName,
+                    Email = dto.Email,
+                    EmailConfirmed = true
                 };
 
-                // Registration failed, return null to indicate failure (or let endpoint handle the result)
-                // For now, we return null, which the endpoint will convert to an IdentityResult failure response.
-                return finalResponse;
-            }
+                // Attempt to create the user with the given password
+                IdentityResult result = await _userManager.CreateAsync(user, dto.Password);
 
-            return null;
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation("New user registered successfully: {UserName} ({UserId})", user.UserName, user.Id);
+
+                    // Assign the default 'Villager' role
+                    // NOTE: We rely on the role being created via the Seed method later.
+                    await _userManager.AddToRoleAsync(user, Roles.Villager);
+
+                    // Create the UserProfile record
+                    await _profileService.CreateProfileAsync(user.Id, dto);
+
+                    // Fetch roles and profile (Just like in LoginAsync)
+                    IList<string> roles = await _userManager.GetRolesAsync(user);
+                    UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id);
+
+                    // Generate Token
+                    TokenResult tokenData = GenerateJwtToken(user, roles);
+
+                    // Mapping and Construction (Reusing LoginAsync's logic)
+                    UserResponseDto initialResponse = _mapper.Map<UserResponseDto>(user);
+
+                    if (profile != null)
+                    {
+                        _mapper.Map(profile, initialResponse);
+                    }
+
+                    UserResponseDto finalResponse = initialResponse with
+                    {
+                        Token = tokenData.Token,
+                        Expiration = tokenData.Expiration,
+                        Roles = roles.ToList(),
+                        IsAdmin = roles.Contains(Roles.Administrator) || roles.Contains(Roles.Mage)
+                    };
+
+                    // Registration failed, return null to indicate failure (or let endpoint handle the result)
+                    // For now, we return null, which the endpoint will convert to an IdentityResult failure response.
+                    return finalResponse;
+                }
+
+                return null;
+            }
+            catch (ValidationException validationException)
+            {
+                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, payload: JsonSerializer.Serialize(dto)))
+                {
+                    string errorMessages = string.Join(", ", validationException.Errors.Select(e => e.ErrorMessage));
+
+                    _logger.LogWarning("Registration validation failed for {Email}. Errors: {Errors}",
+                        dto.Email, errorMessages);
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, payload: JsonSerializer.Serialize(dto)))
+                {
+                    _logger.LogError(ex, "An unexpected error occurred during registration for {Email}", dto.Email);
+                }
+                return null;
+            }            
         }
 
         public async Task<UserResponseDto?> LoginAsync(LoginDto dto)
         {
+            var validationResult = await _loginValidator.ValidateAsync(dto);
+            if (!validationResult.IsValid)
+            {
+                return null;
+            }
+
             // Find user by unified LoginIdentifier (Email or Username)
             IdentityUser? user = dto.LoginIdentifier.Contains('@')
                 ? await _userManager.FindByEmailAsync(dto.LoginIdentifier)
@@ -101,8 +153,12 @@ namespace AnimeHub.Api.Services
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
             {
+                // Security Logging: Keep track of failed attempts
+                _logger.LogWarning("Failed login attempt for identifier: {Identifier}", dto.LoginIdentifier);
                 return null; // Login failed
             }
+
+            _logger.LogInformation("User logged in: {UserName}", user.UserName);
 
             // Fetch dependencies
             IList<string> roles = await _userManager.GetRolesAsync(user);
