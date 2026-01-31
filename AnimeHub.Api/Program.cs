@@ -62,7 +62,7 @@ columnOptions.AdditionalColumns = new Collection<SqlColumn>
 builder.Host.UseSerilog((context, loggerConfiguration) => loggerConfiguration
     .ReadFrom.Configuration(context.Configuration)
     .Enrich.FromLogContext()
-    .Enrich.With<LogLevelEnricher>() // Translates Serilog levels to my 0-7 Enum
+    .Enrich.With<LoggingEnricher>() // Translates Serilog levels to my 0-7 Enum
     .WriteTo.Console()
     .WriteTo.MSSqlServer(
         connectionString: context.Configuration.GetConnectionString("DefaultConnection"),
