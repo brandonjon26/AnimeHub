@@ -156,13 +156,16 @@ namespace AnimeHub.Api.Services
                 // Security Logging: Keep track of failed attempts
                 _logger.LogWarning("Failed login attempt for identifier: {Identifier}", dto.LoginIdentifier);
                 return null; // Login failed
-            }
-
-            _logger.LogInformation("User logged in: {UserName}", user.UserName);
+            }            
 
             // Fetch dependencies
             IList<string> roles = await _userManager.GetRolesAsync(user);
             UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id); // Fetch custom profile
+
+            using (_logger.BeginPropertyScope(logSourceId: LogSource.System, userId: profile?.UserId, payload: JsonSerializer.Serialize(dto)))
+            {
+                _logger.LogInformation("User logged in: {UserName}", user.UserName);
+            }
 
             // Generate Token
             TokenResult tokenData = GenerateJwtToken(user, roles);

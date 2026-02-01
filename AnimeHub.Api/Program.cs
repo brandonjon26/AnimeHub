@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using FluentValidation;
+using AnimeHub.Api.Infrastructure.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -231,7 +232,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
