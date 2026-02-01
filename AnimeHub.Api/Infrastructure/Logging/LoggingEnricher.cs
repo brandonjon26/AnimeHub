@@ -11,6 +11,7 @@ namespace AnimeHub.Api.Infrastructure.Logging
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
             EnrichLogLevel(logEvent, propertyFactory);
+            EnrichLogSource(logEvent, propertyFactory);
             EnrichExceptionDetails(logEvent, propertyFactory);
         }
 
@@ -32,6 +33,16 @@ namespace AnimeHub.Api.Infrastructure.Logging
             // Note: Microsoft.Extensions.Logging.LogLevel.Critical usually maps to Serilog's Fatal.
 
             logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("LogLevelId", (int)animeHubLevel));
+        }
+
+        private void EnrichLogSource(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
+        {
+            // If LogSourceId is ALREADY there (from your BeginPropertyScope), do nothing.
+            // If it is MISSING, we map it to 'System' so the DB insert doesn't fail.
+            if (!logEvent.Properties.ContainsKey("LogSourceId"))
+            {
+                logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("LogSourceId", (int)LogSource.System));
+            }
         }
 
         private void EnrichExceptionDetails(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
