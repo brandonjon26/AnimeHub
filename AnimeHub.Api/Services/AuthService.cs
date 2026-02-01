@@ -25,6 +25,7 @@ namespace AnimeHub.Api.Services
         private readonly IConfiguration _configuration; // Needed for JWT secret key
         private readonly UserProfileInterface _profileService;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         private record TokenResult(string Token, DateTimeOffset Expiration);
 
@@ -33,9 +34,11 @@ namespace AnimeHub.Api.Services
             RoleManager<IdentityRole> roleManager, 
             IConfiguration configuration, 
             UserProfileInterface profileService, 
-            IMapper mapper, ILogger<AuthService> logger, 
+            IMapper mapper, 
+            ILogger<AuthService> logger, 
             IValidator<RegisterDto> registerValidator, 
-            IValidator<LoginDto> loginValidator)
+            IValidator<LoginDto> loginValidator,
+            IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -45,10 +48,13 @@ namespace AnimeHub.Api.Services
             _logger = logger;
             _registerValidator = registerValidator;
             _loginValidator = loginValidator;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<UserResponseDto?> RegisterAsync(RegisterDto dto)
         {
+            string currentTraceId = _httpContextAccessor.HttpContext?.TraceIdentifier ?? string.Empty;
+
             try
             {
                 var validationResult = await _registerValidator.ValidateAsync(dto);
@@ -61,7 +67,10 @@ namespace AnimeHub.Api.Services
                 if (await _userManager.FindByEmailAsync(dto.Email) != null ||
                     await _userManager.FindByNameAsync(dto.UserName) != null)
                 {
-                    _logger.LogInformation("Registration attempted with existing email: {Email}", dto.Email);
+                    using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
+                    {
+                        _logger.LogInformation("Registration attempted with existing email: {Email}", dto.Email);
+                    }
                     return null;
                 }
 
@@ -78,8 +87,6 @@ namespace AnimeHub.Api.Services
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("New user registered successfully: {UserName} ({UserId})", user.UserName, user.Id);
-
                     // Assign the default 'Villager' role
                     // NOTE: We rely on the role being created via the Seed method later.
                     await _userManager.AddToRoleAsync(user, Roles.Villager);
@@ -90,6 +97,11 @@ namespace AnimeHub.Api.Services
                     // Fetch roles and profile (Just like in LoginAsync)
                     IList<string> roles = await _userManager.GetRolesAsync(user);
                     UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id);
+
+                    using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, userId: profile?.UserId, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
+                    {
+                        _logger.LogInformation("New user registered successfully: {UserName} ({UserId})", user.UserName, profile?.UserId);
+                    }
 
                     // Generate Token
                     TokenResult tokenData = GenerateJwtToken(user, roles);
@@ -119,18 +131,17 @@ namespace AnimeHub.Api.Services
             }
             catch (ValidationException validationException)
             {
-                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, payload: JsonSerializer.Serialize(dto)))
+                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
                 {
                     string errorMessages = string.Join(", ", validationException.Errors.Select(e => e.ErrorMessage));
 
-                    _logger.LogWarning("Registration validation failed for {Email}. Errors: {Errors}",
-                        dto.Email, errorMessages);
+                    _logger.LogError("Registration validation failed for {Email}. Errors: {Errors}", dto.Email, errorMessages);
                 }
                 return null;
             }
             catch (Exception ex)
             {
-                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, payload: JsonSerializer.Serialize(dto)))
+                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
                 {
                     _logger.LogError(ex, "An unexpected error occurred during registration for {Email}", dto.Email);
                 }
@@ -140,53 +151,82 @@ namespace AnimeHub.Api.Services
 
         public async Task<UserResponseDto?> LoginAsync(LoginDto dto)
         {
-            var validationResult = await _loginValidator.ValidateAsync(dto);
-            if (!validationResult.IsValid)
+            string currentTraceId = _httpContextAccessor.HttpContext?.TraceIdentifier ?? string.Empty;
+
+            try
+            {                
+                var validationResult = await _loginValidator.ValidateAsync(dto);
+                if (!validationResult.IsValid)
+                {
+                    throw new ValidationException("Validation of the account login request failed.", validationResult.Errors);
+                }
+
+                // Find user by unified LoginIdentifier (Email or Username)
+                IdentityUser? user = dto.LoginIdentifier.Contains('@')
+                    ? await _userManager.FindByEmailAsync(dto.LoginIdentifier)
+                    : await _userManager.FindByNameAsync(dto.LoginIdentifier);
+
+                if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
+                {
+                    using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
+                    {
+                        // Security Logging: Keep track of failed attempts
+                        _logger.LogWarning("Failed login attempt for identifier: {Identifier}", dto.LoginIdentifier);
+                        return null; // Login failed
+                    }
+                }
+
+                // Fetch dependencies
+                IList<string> roles = await _userManager.GetRolesAsync(user);
+                UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id); // Fetch custom profile
+
+                using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, userId: profile?.UserId, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
+                {
+                    _logger.LogInformation("User logged in: {UserName}", user.UserName);
+                }
+
+                // Generate Token
+                TokenResult tokenData = GenerateJwtToken(user, roles);
+
+                // Mapping and Construction
+                UserResponseDto initialResponse = _mapper.Map<UserResponseDto>(user); // Map IdentityUser fields
+
+                if (profile != null)
+                {
+                    // Overlay custom profile data using the second mapping
+                    _mapper.Map(profile, initialResponse);
+                }
+
+                // Final assignment of calculated/generated fields
+                // The 'with' expression creates a *new* record instance with the specified properties changed
+                UserResponseDto finalResponse = initialResponse with
+                {
+                    Token = tokenData.Token,
+                    Expiration = tokenData.Expiration,
+                    Roles = roles.ToList(),
+                    IsAdmin = roles.Contains(Roles.Administrator) || roles.Contains(Roles.Mage)
+                };
+
+                return finalResponse;
+            }
+            catch (ValidationException validationException)
             {
+                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
+                {
+                    string errorMessages = string.Join(", ", validationException.Errors.Select(e => e.ErrorMessage));
+
+                    _logger.LogError("Login validation failed for {LoginIdentifier}. Errors: {Errors}", dto.LoginIdentifier, errorMessages);
+                }
                 return null;
             }
-
-            // Find user by unified LoginIdentifier (Email or Username)
-            IdentityUser? user = dto.LoginIdentifier.Contains('@')
-                ? await _userManager.FindByEmailAsync(dto.LoginIdentifier)
-                : await _userManager.FindByNameAsync(dto.LoginIdentifier);
-
-            if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
+            catch (Exception ex)
             {
-                // Security Logging: Keep track of failed attempts
-                _logger.LogWarning("Failed login attempt for identifier: {Identifier}", dto.LoginIdentifier);
-                return null; // Login failed
-            }
-
-            _logger.LogInformation("User logged in: {UserName}", user.UserName);
-
-            // Fetch dependencies
-            IList<string> roles = await _userManager.GetRolesAsync(user);
-            UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id); // Fetch custom profile
-
-            // Generate Token
-            TokenResult tokenData = GenerateJwtToken(user, roles);
-
-            // Mapping and Construction
-            UserResponseDto initialResponse = _mapper.Map<UserResponseDto>(user); // Map IdentityUser fields
-
-            if (profile != null)
-            {
-                // Overlay custom profile data using the second mapping
-                _mapper.Map(profile, initialResponse);
-            }
-
-            // Final assignment of calculated/generated fields
-            // The 'with' expression creates a *new* record instance with the specified properties changed
-            UserResponseDto finalResponse = initialResponse with
-            {
-                Token = tokenData.Token,
-                Expiration = tokenData.Expiration,
-                Roles = roles.ToList(),
-                IsAdmin = roles.Contains(Roles.Administrator) || roles.Contains(Roles.Mage)
-            };
-
-            return finalResponse;
+                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
+                {
+                    _logger.LogError(ex, "An unexpected error occurred during login attempt for {LoginIdentifier}", dto.LoginIdentifier);
+                }
+                return null;
+            }            
         }
 
         // Generates the JWT Token

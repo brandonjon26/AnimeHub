@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using FluentValidation;
+using AnimeHub.Api.Infrastructure.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -143,6 +144,8 @@ builder.Services.AddScoped<UserProfileInterface, UserProfileService>();
 
 builder.Services.AddControllers();
 
+builder.Services.AddHttpContextAccessor();
+
 // Register all validators rather than each individually
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -224,6 +227,8 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
+app.UseMiddleware<GlobalExceptionMiddleware>();
+
 // Configure the HTTP request pipeline.
 app.UseSerilogRequestLogging();
 
@@ -231,6 +236,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();
