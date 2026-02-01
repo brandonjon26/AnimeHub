@@ -15,15 +15,15 @@ namespace AnimeHub.Api.Infrastructure.Logging
         /// <param name="traceId"></param>
         /// <param name="payload"></param>
         /// <returns></returns>
-        public static IDisposable BeginPropertyScope(this ILogger logger, LogSource logSourceId, string? userId = null, string? traceId = null, string? payload = null)
+        public static IDisposable BeginPropertyScope(this ILogger logger, LogSource logSourceId, string? userId = "", string? traceId = "", string? payload = "")
         {
             // Push each property individually and store their disposables
             List<IDisposable> disposables = new List<IDisposable>
             {
                 LogContext.PushProperty("LogSourceId", (int)logSourceId),
-                LogContext.PushProperty("UserId", userId ?? string.Empty),
-                LogContext.PushProperty("TraceId", traceId ?? string.Empty),
-                LogContext.PushProperty("Payload", payload ?? string.Empty)
+                LogContext.PushProperty("UserId", ((!string.IsNullOrEmpty(userId)) ? userId : string.Empty)),
+                LogContext.PushProperty("TraceId", ((!string.IsNullOrEmpty(traceId)) ? traceId : string.Empty)),
+                LogContext.PushProperty("Payload", ((!string.IsNullOrEmpty(payload)) ? payload : string.Empty))
             };
 
             return new CompositeDisposable(disposables);
