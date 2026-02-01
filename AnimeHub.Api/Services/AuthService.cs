@@ -25,6 +25,7 @@ namespace AnimeHub.Api.Services
         private readonly IConfiguration _configuration; // Needed for JWT secret key
         private readonly UserProfileInterface _profileService;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         private record TokenResult(string Token, DateTimeOffset Expiration);
 
@@ -33,9 +34,11 @@ namespace AnimeHub.Api.Services
             RoleManager<IdentityRole> roleManager, 
             IConfiguration configuration, 
             UserProfileInterface profileService, 
-            IMapper mapper, ILogger<AuthService> logger, 
+            IMapper mapper, 
+            ILogger<AuthService> logger, 
             IValidator<RegisterDto> registerValidator, 
-            IValidator<LoginDto> loginValidator)
+            IValidator<LoginDto> loginValidator,
+            IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -45,12 +48,15 @@ namespace AnimeHub.Api.Services
             _logger = logger;
             _registerValidator = registerValidator;
             _loginValidator = loginValidator;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<UserResponseDto?> RegisterAsync(RegisterDto dto)
         {
             try
             {
+                string currentTraceId = _httpContextAccessor.HttpContext?.TraceIdentifier ?? string.Empty;
+
                 var validationResult = await _registerValidator.ValidateAsync(dto);
                 if (!validationResult.IsValid)
                 {
@@ -61,7 +67,10 @@ namespace AnimeHub.Api.Services
                 if (await _userManager.FindByEmailAsync(dto.Email) != null ||
                     await _userManager.FindByNameAsync(dto.UserName) != null)
                 {
-                    _logger.LogInformation("Registration attempted with existing email: {Email}", dto.Email);
+                    using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
+                    {
+                        _logger.LogInformation("Registration attempted with existing email: {Email}", dto.Email);
+                    }
                     return null;
                 }
 
@@ -78,8 +87,6 @@ namespace AnimeHub.Api.Services
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("New user registered successfully: {UserName} ({UserId})", user.UserName, user.Id);
-
                     // Assign the default 'Villager' role
                     // NOTE: We rely on the role being created via the Seed method later.
                     await _userManager.AddToRoleAsync(user, Roles.Villager);
@@ -90,6 +97,11 @@ namespace AnimeHub.Api.Services
                     // Fetch roles and profile (Just like in LoginAsync)
                     IList<string> roles = await _userManager.GetRolesAsync(user);
                     UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id);
+
+                    using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, userId: profile?.UserId, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
+                    {
+                        _logger.LogInformation("New user registered successfully: {UserName} ({UserId})", user.UserName, profile?.UserId);
+                    }
 
                     // Generate Token
                     TokenResult tokenData = GenerateJwtToken(user, roles);
@@ -123,8 +135,7 @@ namespace AnimeHub.Api.Services
                 {
                     string errorMessages = string.Join(", ", validationException.Errors.Select(e => e.ErrorMessage));
 
-                    _logger.LogWarning("Registration validation failed for {Email}. Errors: {Errors}",
-                        dto.Email, errorMessages);
+                    _logger.LogError("Registration validation failed for {Email}. Errors: {Errors}", dto.Email, errorMessages);
                 }
                 return null;
             }
@@ -140,6 +151,8 @@ namespace AnimeHub.Api.Services
 
         public async Task<UserResponseDto?> LoginAsync(LoginDto dto)
         {
+            string currentTraceId = _httpContextAccessor.HttpContext?.TraceIdentifier ?? string.Empty;
+
             var validationResult = await _loginValidator.ValidateAsync(dto);
             if (!validationResult.IsValid)
             {
@@ -162,7 +175,7 @@ namespace AnimeHub.Api.Services
             IList<string> roles = await _userManager.GetRolesAsync(user);
             UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id); // Fetch custom profile
 
-            using (_logger.BeginPropertyScope(logSourceId: LogSource.System, userId: profile?.UserId, payload: JsonSerializer.Serialize(dto)))
+            using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, userId: profile?.UserId, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
             {
                 _logger.LogInformation("User logged in: {UserName}", user.UserName);
             }
