@@ -10,9 +10,23 @@ namespace AnimeHub.Api.Infrastructure.Logging
     {
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
+            SanitizeColumns(logEvent, propertyFactory);
             EnrichLogLevel(logEvent, propertyFactory);
             EnrichLogSource(logEvent, propertyFactory);
             EnrichExceptionDetails(logEvent, propertyFactory);
+        }
+
+        private void SanitizeColumns(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
+        {
+            string[] columnsToSanitize = { "Message", "ExceptionType", "ExceptionMessage", "StackTrace", "TraceId", "Payload", "UserId" };
+
+            foreach (string column in columnsToSanitize)
+            {
+                if (!logEvent.Properties.ContainsKey(column))
+                {
+                    logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(column, string.Empty));
+                }
+            }
         }
 
         private void EnrichLogLevel(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
