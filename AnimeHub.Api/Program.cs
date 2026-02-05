@@ -52,12 +52,12 @@ columnOptions.AdditionalColumns = new Collection<SqlColumn>
 {
     new SqlColumn { ColumnName = "LogLevelId", DataType = SqlDbType.Int, AllowNull = false },
     new SqlColumn { ColumnName = "LogSourceId", DataType = SqlDbType.Int, AllowNull = false },
-    new SqlColumn { ColumnName = "ExceptionType", DataType = SqlDbType.NVarChar, DataLength = 256, AllowNull = true },
-    new SqlColumn { ColumnName = "ExceptionMessage", DataType = SqlDbType.NVarChar, DataLength = -1, AllowNull = true },
-    new SqlColumn { ColumnName = "StackTrace", DataType = SqlDbType.NVarChar, DataLength = -1, AllowNull = true },
-    new SqlColumn { ColumnName = "TraceId", DataType = SqlDbType.NVarChar, DataLength = 100, AllowNull = true },
-    new SqlColumn { ColumnName = "Payload", DataType = SqlDbType.NVarChar, DataLength = -1, AllowNull = true },
-    new SqlColumn { ColumnName = "UserId", DataType = SqlDbType.NVarChar, DataLength = 450, AllowNull = true }
+    new SqlColumn { ColumnName = "ExceptionType", DataType = SqlDbType.NVarChar, DataLength = 256, AllowNull = false },
+    new SqlColumn { ColumnName = "ExceptionMessage", DataType = SqlDbType.NVarChar, DataLength = -1, AllowNull = false },
+    new SqlColumn { ColumnName = "StackTrace", DataType = SqlDbType.NVarChar, DataLength = -1, AllowNull = false },
+    new SqlColumn { ColumnName = "TraceId", DataType = SqlDbType.NVarChar, DataLength = 100, AllowNull = false },
+    new SqlColumn { ColumnName = "Payload", DataType = SqlDbType.NVarChar, DataLength = -1, AllowNull = false },
+    new SqlColumn { ColumnName = "UserId", DataType = SqlDbType.NVarChar, DataLength = 450, AllowNull = false }
 };
 
 builder.Host.UseSerilog((context, loggerConfiguration) => loggerConfiguration
