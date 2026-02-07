@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AnimeHub.Shared.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace AnimeHub.Api.DTOs.Auth
 {
@@ -16,6 +17,7 @@ namespace AnimeHub.Api.DTOs.Auth
         [Required(ErrorMessage = "Password is required.")]
         [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be at least 8 characters long.")]
         [DataType(DataType.Password)]
+        [Sensitive]
         public string Password { get; set; } = string.Empty;
 
         // --- Standard Profile Fields ---
