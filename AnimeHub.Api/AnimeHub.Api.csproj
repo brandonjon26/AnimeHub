@@ -33,4 +33,8 @@
     <Folder Include="Infrastructure\Filters\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AnimeHub.Shared\AnimeHub.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
