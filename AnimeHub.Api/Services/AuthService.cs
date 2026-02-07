@@ -1,16 +1,17 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using AnimeHub.Api.DTOs.Auth;
-using AutoMapper;
-using AnimeHub.Api.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using FluentValidation;
-using AnimeHub.Api.Infrastructure.Logging;
+﻿using System.Text;
 using System.Text.Json;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using AutoMapper;
+using FluentValidation;
+using AnimeHub.Api.Entities;
+using AnimeHub.Api.DTOs.Auth;
 using AnimeHub.Api.Entities.Enums;
+using AnimeHub.Api.Infrastructure.Logging;
+using AnimeHub.Shared.Utilities;
 
 namespace AnimeHub.Api.Services
 {
@@ -67,7 +68,7 @@ namespace AnimeHub.Api.Services
                 if (await _userManager.FindByEmailAsync(dto.Email) != null ||
                     await _userManager.FindByNameAsync(dto.UserName) != null)
                 {
-                    using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
+                    using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(dto)))
                     {
                         _logger.LogInformation("Registration attempted with existing email: {Email}", dto.Email);
                     }
@@ -96,12 +97,7 @@ namespace AnimeHub.Api.Services
 
                     // Fetch roles and profile (Just like in LoginAsync)
                     IList<string> roles = await _userManager.GetRolesAsync(user);
-                    UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id);
-
-                    using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, userId: profile?.UserId, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
-                    {
-                        _logger.LogInformation("New user registered successfully: {UserName} ({UserId})", user.UserName, profile?.UserId);
-                    }
+                    UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id);                    
 
                     // Generate Token
                     TokenResult tokenData = GenerateJwtToken(user, roles);
@@ -122,6 +118,12 @@ namespace AnimeHub.Api.Services
                         IsAdmin = roles.Contains(Roles.Administrator) || roles.Contains(Roles.Mage)
                     };
 
+                    // Write successful registration log
+                    using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, userId: profile?.UserId, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(dto)))
+                    {
+                        _logger.LogInformation("New user registered successfully: {UserName} ({UserId})", user.UserName, profile?.UserId);
+                    }
+
                     // Registration failed, return null to indicate failure (or let endpoint handle the result)
                     // For now, we return null, which the endpoint will convert to an IdentityResult failure response.
                     return finalResponse;
@@ -131,7 +133,7 @@ namespace AnimeHub.Api.Services
             }
             catch (ValidationException validationException)
             {
-                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
+                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(dto)))
                 {
                     string errorMessages = string.Join(", ", validationException.Errors.Select(e => e.ErrorMessage));
 
@@ -141,7 +143,7 @@ namespace AnimeHub.Api.Services
             }
             catch (Exception ex)
             {
-                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
+                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(dto)))
                 {
                     _logger.LogError(ex, "An unexpected error occurred during registration for {Email}", dto.Email);
                 }
@@ -168,7 +170,7 @@ namespace AnimeHub.Api.Services
 
                 if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
                 {
-                    using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
+                    using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(dto)))
                     {
                         // Security Logging: Keep track of failed attempts
                         _logger.LogWarning("Failed login attempt for identifier: {Identifier}", dto.LoginIdentifier);
@@ -179,11 +181,6 @@ namespace AnimeHub.Api.Services
                 // Fetch dependencies
                 IList<string> roles = await _userManager.GetRolesAsync(user);
                 UserProfile? profile = await _profileService.GetProfileByUserIdAsync(user.Id); // Fetch custom profile
-
-                using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, userId: profile?.UserId, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
-                {
-                    _logger.LogInformation("User logged in: {UserName}", user.UserName);
-                }
 
                 // Generate Token
                 TokenResult tokenData = GenerateJwtToken(user, roles);
@@ -207,11 +204,17 @@ namespace AnimeHub.Api.Services
                     IsAdmin = roles.Contains(Roles.Administrator) || roles.Contains(Roles.Mage)
                 };
 
+                // Write successful login to logs table
+                using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, userId: profile?.UserId, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(dto)))
+                {
+                    _logger.LogInformation("User logged in: {UserName}", user.UserName);
+                }
+
                 return finalResponse;
             }
             catch (ValidationException validationException)
             {
-                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
+                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(dto)))
                 {
                     string errorMessages = string.Join(", ", validationException.Errors.Select(e => e.ErrorMessage));
 
@@ -221,7 +224,7 @@ namespace AnimeHub.Api.Services
             }
             catch (Exception ex)
             {
-                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: JsonSerializer.Serialize(dto)))
+                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(dto)))
                 {
                     _logger.LogError(ex, "An unexpected error occurred during login attempt for {LoginIdentifier}", dto.LoginIdentifier);
                 }
