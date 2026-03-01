@@ -1,6 +1,7 @@
 ﻿using AnimeHub.Api.Entities.Enums;
 using Serilog.Context;
 using Serilog.Core.Enrichers;
+using AnimeHub.Shared.Enums;
 
 namespace AnimeHub.Api.Infrastructure.Logging
 {

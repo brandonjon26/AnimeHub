@@ -1,5 +1,8 @@
 ﻿using AnimeHub.Api.Entities.Enums;
 using AnimeHub.Api.Infrastructure.Logging;
+using AnimeHub.Shared.Utilities;
+using AnimeHub.Shared.Utilities.Exceptions;
+using AnimeHub.Shared.Enums;
 using Serilog.Context;
 using System.Net;
 using System.Text.Json;
@@ -37,24 +40,62 @@ namespace AnimeHub.Api.Infrastructure.Middleware
 
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            // Use our BeginPropertyScope to set the Source to WebAPI for unhandled errors
-            using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI))
+            string currentTraceId = context.TraceIdentifier ?? string.Empty;
+            var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            int statusCode = (int)HttpStatusCode.InternalServerError;
+            object? payload = null;
+            Shared.Enums.LogLevel logLevel = Shared.Enums.LogLevel.Error;
+            LogSource logSource = LogSource.WebAPI;
+            string message = "Internal Server Error. Please try again later.";
+
+            // 1. Check if it's one of OUR custom exceptions
+            if (exception is AnimeHubException appEx)
             {
-                _logger.LogError(exception, "An unhandled exception occurred during the request.");
+                statusCode = appEx.StatusCode;
+                payload = appEx.Payload;
+                logLevel = appEx.LogLevel;
+                logSource = appEx.LogSource;
+                message = appEx.Message;
             }
 
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            // 2. Log with the Payload (Sanitized!)
+            using (_logger.BeginPropertyScope(logSourceId: logSource, userId: userId, traceId: currentTraceId, payload: (payload != null ? LogSanitizer.SerializeAndSanitize(payload) : "")))
+            {
+                // Dynamic logging based on the LogLevel
+                switch (logLevel)
+                {
+                    case Shared.Enums.LogLevel.Critical:
+                        _logger.LogCritical(exception, "CRITICAL: {Message}", message);
+                        break;
+                    case Shared.Enums.LogLevel.Fatal:
+                        _logger.LogCritical(exception, "FATAL: {Message}", message);
+                        break;
+                    case Shared.Enums.LogLevel.Warning:
+                        _logger.LogWarning("Warning: {Message}", message);
+                        break;
+                    case Shared.Enums.LogLevel.Information:
+                        _logger.LogInformation("Info: {Message}", message);
+                        break;
+                    case Shared.Enums.LogLevel.Error:
+                    default:
+                        _logger.LogError(exception, "Error: {Message}", message);
+                        break;
+                }
+            }
 
-            // Return a clean error object to the frontend (no stack traces for users!)
+            // 3. Response to Frontend
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = statusCode;
+
             var response = new
             {
-                StatusCode = context.Response.StatusCode,
-                Message = "Internal Server Error. Please try again later.",
+                StatusCode = statusCode,
+                Message = message,
                 TraceId = context.TraceIdentifier
             };
 
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response));            
         }
     }
 }

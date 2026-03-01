@@ -3,6 +3,7 @@ using Serilog.Core;
 using Serilog.Events;
 using System.Text.Json;
 using FluentValidation;
+using AnimeHub.Shared.Enums;
 
 namespace AnimeHub.Api.Infrastructure.Logging
 {
@@ -33,13 +34,13 @@ namespace AnimeHub.Api.Infrastructure.Logging
         {
             var animeHubLevel = logEvent.Level switch
             {
-                LogEventLevel.Verbose     => Entities.Enums.LogLevel.Verbose,     // 1
-                LogEventLevel.Debug       => Entities.Enums.LogLevel.Debug,       // 2
-                LogEventLevel.Information => Entities.Enums.LogLevel.Information, // 3
-                LogEventLevel.Warning     => Entities.Enums.LogLevel.Warning,     // 4
-                LogEventLevel.Error       => Entities.Enums.LogLevel.Error,       // 5
-                LogEventLevel.Fatal       => Entities.Enums.LogLevel.Fatal,       // 6
-                _                         => Entities.Enums.LogLevel.None         // 0
+                LogEventLevel.Verbose     => Shared.Enums.LogLevel.Verbose,     // 1
+                LogEventLevel.Debug       => Shared.Enums.LogLevel.Debug,       // 2
+                LogEventLevel.Information => Shared.Enums.LogLevel.Information, // 3
+                LogEventLevel.Warning     => Shared.Enums.LogLevel.Warning,     // 4
+                LogEventLevel.Error       => Shared.Enums.LogLevel.Error,       // 5
+                LogEventLevel.Fatal       => Shared.Enums.LogLevel.Fatal,       // 6
+                _                         => Shared.Enums.LogLevel.None         // 0
             };
 
             // 2. Special Logic: If the log is 'Fatal' but contains a 'Critical' flag, 

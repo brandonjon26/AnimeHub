@@ -12,6 +12,7 @@ using AnimeHub.Api.DTOs.Auth;
 using AnimeHub.Api.Entities.Enums;
 using AnimeHub.Api.Infrastructure.Logging;
 using AnimeHub.Shared.Utilities;
+using AnimeHub.Shared.Enums;
 
 namespace AnimeHub.Api.Services
 {
