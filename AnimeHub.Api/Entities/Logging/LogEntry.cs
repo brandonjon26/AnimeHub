@@ -1,4 +1,5 @@
 ﻿using AnimeHub.Api.Entities.Enums;
+using AnimeHub.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -14,7 +15,7 @@ namespace AnimeHub.Api.Entities.Logging
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 
         [Required]
-        public Enums.LogLevel LogLevelId { get; set; }
+        public Shared.Enums.LogLevel LogLevelId { get; set; }
         public LogLevelLookup? LogLevel { get; set; } // Navigation Property
 
         [Required]
