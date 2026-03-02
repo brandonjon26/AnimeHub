@@ -2,14 +2,20 @@ using AnimeHub.Api.Data;
 using AnimeHub.Api.Endpoints;
 using AnimeHub.Api.Entities;
 using AnimeHub.Api.Infrastructure.Logging;
+using AnimeHub.Api.Infrastructure.Middleware;
 using AnimeHub.Api.Mapping;
 using AnimeHub.Api.Repositories;
 using AnimeHub.Api.Services;
+using AnimeHub.Shared.Models;
+using AnimeHub.Shared.Utilities;
+using AnimeHub.Shared.Utilities.CryptoUtils;
 using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -20,8 +26,6 @@ using System.Data;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
-using FluentValidation;
-using AnimeHub.Api.Infrastructure.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -89,12 +93,13 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 
 // Retrieve the connection string from configuration (Secret Manager in Development)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var cryptoKey = builder.Configuration.GetSection("Crypto");
 const string CorsPolicyName = "AllowReactClient";
 
 // Only load Key Vault secrets in non-development environments
 if (!builder.Environment.IsDevelopment())
 {
-    // Logic here for Key Vault access
+    // Logic here for Key Vault access (SQL Connection string & crypto key)
 }
 
 // Register the DbContext to use SQL Server
@@ -121,6 +126,8 @@ builder.Services.AddAutoMapper((IServiceProvider serviceProvider, IMapperConfigu
     config.AddProfile<AuthMappingProfile>();
 }, new Type[] { });
 
+builder.Services.Configure<CryptoSettings>(cryptoKey);
+
 
 #region Add Scoped Services
 
@@ -138,6 +145,8 @@ builder.Services.AddScoped<GalleryInterface, GalleryService>();
 builder.Services.AddScoped<CharacterInterface, CharacterService>();
 builder.Services.AddScoped<AuthInterface, AuthService>();
 builder.Services.AddScoped<UserProfileInterface, UserProfileService>();
+
+builder.Services.AddScoped<CryptoInterface, CryptoService>();
 
 #endregion
 

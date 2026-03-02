@@ -12,6 +12,8 @@ using AnimeHub.Api.DTOs.Auth;
 using AnimeHub.Api.Entities.Enums;
 using AnimeHub.Api.Infrastructure.Logging;
 using AnimeHub.Shared.Utilities;
+using AnimeHub.Shared.Enums;
+using AnimeHub.Shared.Utilities.Exceptions;
 
 namespace AnimeHub.Api.Services
 {
@@ -61,18 +63,14 @@ namespace AnimeHub.Api.Services
                 var validationResult = await _registerValidator.ValidateAsync(dto);
                 if (!validationResult.IsValid)
                 {
-                    throw new ValidationException("Validation of the account registration request failed.", validationResult.Errors);                    
+                    throw new AppValidationException("Registration validation failed.", validationResult.Errors);                    
                 }
 
                 // Check if user already exists (by email or username)
                 if (await _userManager.FindByEmailAsync(dto.Email) != null ||
                     await _userManager.FindByNameAsync(dto.UserName) != null)
                 {
-                    using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(dto)))
-                    {
-                        _logger.LogInformation("Registration attempted with existing email: {Email}", dto.Email);
-                    }
-                    return null;
+                    throw new UserAlreadyExistsException($"User with email {dto.Email} or username {dto.UserName} already exists.", dto);
                 }
 
                 // Create the new IdentityUser
@@ -128,26 +126,26 @@ namespace AnimeHub.Api.Services
                     // For now, we return null, which the endpoint will convert to an IdentityResult failure response.
                     return finalResponse;
                 }
-
-                return null;
+                else
+                {
+                    // Wrap Identity errors and throw as a 500
+                    throw new AnimeHubException("User creation failed.", 500, result.Errors);
+                }
             }
             catch (ValidationException validationException)
             {
-                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(dto)))
-                {
-                    string errorMessages = string.Join(", ", validationException.Errors.Select(e => e.ErrorMessage));
-
-                    _logger.LogError("Registration validation failed for {Email}. Errors: {Errors}", dto.Email, errorMessages);
-                }
-                return null;
+                // Translate to AnimeHub exception type
+                throw new AnimeHubException("A data validation error occurred while trying to create your account.", 500, validationException.Message);
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Generic .NET/EF error; Translate to AnimeHub exception type
+                throw new AnimeHubException("A database error occurred while creating your account.", 500, dbEx.Message);
             }
             catch (Exception ex)
             {
-                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(dto)))
-                {
-                    _logger.LogError(ex, "An unexpected error occurred during registration for {Email}", dto.Email);
-                }
-                return null;
+                // Translate to AnimeHub exception type
+                throw new AnimeHubException("An unexpected system error occurred.", 500, ex.Message, Shared.Enums.LogLevel.Error, LogSource.Security);
             }            
         }
 
@@ -160,7 +158,7 @@ namespace AnimeHub.Api.Services
                 var validationResult = await _loginValidator.ValidateAsync(dto);
                 if (!validationResult.IsValid)
                 {
-                    throw new ValidationException("Validation of the account login request failed.", validationResult.Errors);
+                    throw new AppValidationException("Login validation failed.", validationResult.Errors);
                 }
 
                 // Find user by unified LoginIdentifier (Email or Username)
@@ -170,12 +168,8 @@ namespace AnimeHub.Api.Services
 
                 if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
                 {
-                    using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(dto)))
-                    {
-                        // Security Logging: Keep track of failed attempts
-                        _logger.LogWarning("Failed login attempt for identifier: {Identifier}", dto.LoginIdentifier);
-                        return null; // Login failed
-                    }
+                    // Security logic: Throwing tells the middleware to log a Security Warning
+                    throw new AuthenticationException("Invalid username or password.", dto);
                 }
 
                 // Fetch dependencies
@@ -214,22 +208,18 @@ namespace AnimeHub.Api.Services
             }
             catch (ValidationException validationException)
             {
-                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(dto)))
-                {
-                    string errorMessages = string.Join(", ", validationException.Errors.Select(e => e.ErrorMessage));
-
-                    _logger.LogError("Login validation failed for {LoginIdentifier}. Errors: {Errors}", dto.LoginIdentifier, errorMessages);
-                }
-                return null;
+                throw new AnimeHubException("A data validation error occurred when trying to log in.", 500, validationException.Message);
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Generic .NET/EF error; Translate to AnimeHub exception type
+                throw new AnimeHubException("A database error occurred while creating your account.", 500, dbEx.Message);
             }
             catch (Exception ex)
             {
-                using (_logger.BeginPropertyScope(logSourceId: LogSource.Security, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(dto)))
-                {
-                    _logger.LogError(ex, "An unexpected error occurred during login attempt for {LoginIdentifier}", dto.LoginIdentifier);
-                }
-                return null;
-            }            
+                // Translate to AnimeHub exception type
+                throw new AnimeHubException("An unexpected system error occurred.", 500, ex.Message, Shared.Enums.LogLevel.Error, LogSource.Security);
+            }
         }
 
         // Generates the JWT Token

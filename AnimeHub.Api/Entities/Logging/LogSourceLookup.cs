@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AnimeHub.Api.Entities.Enums;
+using AnimeHub.Shared.Enums;
 
 namespace AnimeHub.Api.Entities.Logging
 {
