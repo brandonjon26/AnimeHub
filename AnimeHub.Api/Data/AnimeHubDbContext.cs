@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using AnimeHub.Api.Entities.Character.Lore;
 using AnimeHub.Api.Entities.Logging;
+using AnimeHub.Shared.Enums;
 
 namespace AnimeHub.Api.Data
 {
@@ -55,8 +56,8 @@ namespace AnimeHub.Api.Data
             // --- SEEDING LOGIC ---
             // This takes your C# Enums and pushes them into your Lookup Tables
             modelBuilder.Entity<LogLevelLookup>().HasData(
-                Enum.GetValues(typeof(Entities.Enums.LogLevel))
-                    .Cast<Entities.Enums.LogLevel>()
+                Enum.GetValues(typeof(Shared.Enums.LogLevel))
+                    .Cast<Shared.Enums.LogLevel>()
                     .Select(e => new LogLevelLookup { LogLevelId = e, Description = e.ToString() })
             );
 

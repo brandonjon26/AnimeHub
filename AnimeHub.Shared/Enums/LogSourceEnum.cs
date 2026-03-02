@@ -1,4 +1,4 @@
-﻿namespace AnimeHub.Api.Entities.Enums
+﻿namespace AnimeHub.Shared.Enums
 {
     public enum LogSource
     {
