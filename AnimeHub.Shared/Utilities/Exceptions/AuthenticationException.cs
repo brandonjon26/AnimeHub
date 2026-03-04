@@ -9,7 +9,7 @@ namespace AnimeHub.Shared.Utilities.Exceptions
 {
     public class AuthenticationException : AnimeHubException
     {
-        public AuthenticationException(string message, object? payload = null)
-            : base(message, 401, payload, LogLevel.Warning, LogSource.Security) { }
+        public AuthenticationException(string message, object? payload = null, Exception? innerException = null)
+            : base(message, 401, payload, innerException, LogLevel.Warning, LogSource.Security) { }
     }
 }

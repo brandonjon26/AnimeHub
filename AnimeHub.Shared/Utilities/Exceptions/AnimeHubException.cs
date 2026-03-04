@@ -17,9 +17,11 @@ namespace AnimeHub.Shared.Utilities.Exceptions
         public AnimeHubException(
             string message, 
             int statusCode = 500, 
-            object? payload = null, 
+            object? payload = null,
+            Exception? innerException = null, 
             LogLevel logLevel = LogLevel.Error, 
-            LogSource logSource = LogSource.WebAPI) : base(message) 
+            LogSource logSource = LogSource.WebAPI) 
+            : base(message, innerException) 
         { 
             StatusCode = statusCode; 
             Payload = payload;
