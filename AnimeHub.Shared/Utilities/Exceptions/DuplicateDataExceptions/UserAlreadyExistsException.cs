@@ -8,7 +8,7 @@ namespace AnimeHub.Shared.Utilities.Exceptions.DuplicateDataExceptions
 {
     public class UserAlreadyExistsException : ConflictException
     {
-        public UserAlreadyExistsException(string message, object? payload = null)
-            : base(message, payload) { }
+        public UserAlreadyExistsException(string message, object? payload = null, Exception? innerException = null)
+            : base(message, payload, innerException) { }
     }
 }

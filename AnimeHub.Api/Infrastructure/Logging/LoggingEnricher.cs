@@ -4,6 +4,7 @@ using Serilog.Events;
 using System.Text.Json;
 using FluentValidation;
 using AnimeHub.Shared.Enums;
+using AnimeHub.Shared.Utilities.Exceptions;
 
 namespace AnimeHub.Api.Infrastructure.Logging
 {
@@ -64,16 +65,18 @@ namespace AnimeHub.Api.Infrastructure.Logging
         {
             if (logEvent.Exception == null) return;
 
+            // If our custom exception has an inner exception we want to log THAT type and THAT stack trace for the developers.
             var ex = logEvent.Exception;
+            var sourceEx = (ex is AnimeHubException && ex.InnerException != null) ? ex.InnerException : ex;
 
             // Standard 3 fields (Works for ANY exception, including ValidationException)
-            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("ExceptionType", ex.GetType().FullName));
-            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("ExceptionMessage", ex.Message));
-            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("StackTrace", ex.StackTrace));
+            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("ExceptionType", sourceEx.GetType().FullName));
+            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("ExceptionMessage", sourceEx.Message));
+            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("StackTrace", sourceEx.StackTrace));
 
             // SPECIAL HANDLING: If it's a ValidationException, we might want to shove the 
             // specific field errors into the 'Payload' column if it's currently empty.
-            if (ex is ValidationException valEx)
+            if (sourceEx is ValidationException valEx)
             {
                 var errors = valEx.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
                 logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("Payload", JsonSerializer.Serialize(errors)));
