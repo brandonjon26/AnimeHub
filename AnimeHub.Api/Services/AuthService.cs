@@ -11,9 +11,10 @@ using AnimeHub.Api.Entities;
 using AnimeHub.Api.DTOs.Auth;
 using AnimeHub.Api.Entities.Enums;
 using AnimeHub.Api.Infrastructure.Logging;
-using AnimeHub.Shared.Utilities;
 using AnimeHub.Shared.Enums;
+using AnimeHub.Shared.Utilities;
 using AnimeHub.Shared.Utilities.Exceptions;
+using AnimeHub.Shared.Utilities.Exceptions.DuplicateDataExceptions;
 
 namespace AnimeHub.Api.Services
 {
@@ -63,7 +64,11 @@ namespace AnimeHub.Api.Services
                 var validationResult = await _registerValidator.ValidateAsync(dto);
                 if (!validationResult.IsValid)
                 {
-                    throw new AppValidationException("Registration validation failed.", validationResult.Errors);                    
+                    throw new AppValidationException("Registration validation failed.", new
+                    {
+                        Payload = dto,
+                        ValidationErrors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage })
+                    });
                 }
 
                 // Check if user already exists (by email or username)
@@ -135,17 +140,17 @@ namespace AnimeHub.Api.Services
             catch (ValidationException validationException)
             {
                 // Translate to AnimeHub exception type
-                throw new AnimeHubException("A data validation error occurred while trying to create your account.", 500, validationException.Message);
+                throw new AnimeHubException("A data validation error occurred while trying to create your account.", 500, dto, validationException);
             }
             catch (DbUpdateException dbEx)
             {
                 // Generic .NET/EF error; Translate to AnimeHub exception type
-                throw new AnimeHubException("A database error occurred while creating your account.", 500, dbEx.Message);
+                throw new AnimeHubException("A database error occurred while creating your account.", 500, dto, dbEx);
             }
             catch (Exception ex)
             {
                 // Translate to AnimeHub exception type
-                throw new AnimeHubException("An unexpected system error occurred.", 500, ex.Message, Shared.Enums.LogLevel.Error, LogSource.Security);
+                throw new AnimeHubException("An unexpected system error occurred.", 500, dto, ex, Shared.Enums.LogLevel.Error, LogSource.Security);
             }            
         }
 

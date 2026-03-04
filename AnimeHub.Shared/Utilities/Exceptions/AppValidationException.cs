@@ -9,7 +9,7 @@ namespace AnimeHub.Shared.Utilities.Exceptions
 {
     public class AppValidationException : AnimeHubException
     {
-        public AppValidationException(string message, object? payload = null)
-        : base(message, 400, payload, LogLevel.Warning, LogSource.WebAPI) { }
+        public AppValidationException(string message, object? payload = null, Exception? innerException = null)
+        : base(message, 400, payload, innerException, LogLevel.Warning, LogSource.WebAPI) { }
     }
 }
