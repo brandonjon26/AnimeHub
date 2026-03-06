@@ -9,7 +9,7 @@ namespace AnimeHub.Shared.Utilities.Exceptions.DuplicateDataExceptions
 {
     public class ConflictException : AnimeHubException
     {
-        public ConflictException(string message, object? payload = null, Exception? innerException)
+        public ConflictException(string message, object? payload = null, Exception? innerException = null)
             : base(message, 409, payload, innerException, LogLevel.Warning, LogSource.Security) { }
     }
 }
