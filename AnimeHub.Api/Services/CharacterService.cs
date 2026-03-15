@@ -1,12 +1,16 @@
 ﻿using System.Linq;
+using System.Security.Claims;
 using System.Collections.Generic;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using AutoMapper;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using AnimeHub.Api.Entities;
 using AnimeHub.Api.Repositories;
 using AnimeHub.Api.DTOs.Character;
 using AnimeHub.Api.Entities.Character;
 using AnimeHub.Api.DTOs.Character.Lore;
+using AnimeHub.Api.Infrastructure.Logging;
 using AnimeHub.Api.Entities.Character.Lore;
 using AnimeHub.Shared.Enums;
 using AnimeHub.Shared.Utilities;
@@ -32,6 +36,7 @@ namespace AnimeHub.Api.Services
         private readonly IValidator<CharacterAccessoryInputDto> _characterAccessoryInputValidator;
 
         private readonly IMapper _mapper;
+        private readonly ILogger<CharacterService> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;        
 
         public CharacterService(
@@ -45,6 +50,7 @@ namespace AnimeHub.Api.Services
             IValidator<CharacterProfileUpdateDto> characterProfileUpdateValidator, 
             IValidator<CharacterAttireInputDto> characterAttireInputValidator, 
             IValidator<CharacterAccessoryInputDto> characterAccessoryInputValidator, 
+            ILogger<CharacterService> logger, 
             IMapper mapper, 
             IHttpContextAccessor httpContextAccessor)
         {
@@ -58,6 +64,7 @@ namespace AnimeHub.Api.Services
             _characterProfileUpdateValidator = characterProfileUpdateValidator;
             _characterAttireInputValidator = characterAttireInputValidator;
             _characterAccessoryInputValidator = characterAccessoryInputValidator;
+            _logger = logger;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -126,6 +133,7 @@ namespace AnimeHub.Api.Services
         public async Task<bool> UpdateProfileAsync(int profileId, CharacterProfileUpdateDto updateDto)
         {
             string currentTraceId = _httpContextAccessor.HttpContext?.TraceIdentifier ?? string.Empty;
+            var currentUserId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             try
             {
@@ -134,6 +142,7 @@ namespace AnimeHub.Api.Services
                 {
                     throw new AppValidationException("Character update validation failed.", new
                     {
+                        ProfileId = profileId,
                         Payload = updateDto,
                         ValidationErrors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage })
                     });
@@ -142,18 +151,46 @@ namespace AnimeHub.Api.Services
                 // The Ayami Profile is a singleton, so we always retrieve the first one.
                 CharacterProfile? profileToUpdate = await _repository.GetFirstOrDefaultAsync(p => p.CharacterProfileId == profileId);
 
-                if (profileToUpdate is null) return false;
+                if (profileToUpdate is null)
+                {
+                    throw new AnimeHubException("There was an error finding the profile, try again later.", 500, updateDto);
+                }
+                else
+                {
+                    // Map DTO fields onto the existing Entity
+                    _mapper.Map(updateDto, profileToUpdate);
 
-                // Map DTO fields onto the existing Entity
-                _mapper.Map(updateDto, profileToUpdate);
+                    // Persist the changes
+                    await _repository.Update(profileToUpdate);
 
-                // Persist the changes
-                await _repository.Update(profileToUpdate);
+                    int recordsAffected = await _repository.SaveChangesAsync();
 
-                int recordsAffected = await _repository.SaveChangesAsync();
+                    if (recordsAffected > 0)
+                    {
+                        // Write successful registration log
+                        using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, userId: currentUserId, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(updateDto)))
+                        {
+                            _logger.LogInformation("{FirstName} {LastName}'s character profile has been update successfully: ProfileIs {CharacterProfileId}", profileToUpdate.FirstName.Trim(), profileToUpdate.LastName.Trim(), profileToUpdate.CharacterProfileId);
+                        }
 
-                // We can assume success if no exception is thrown
-                return recordsAffected > 0 ? true : false;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
+            }
+            catch (ValidationException validationException)
+            {
+                // Translate to AnimeHub exception type
+                throw new AnimeHubException("A data validation error occurred while trying to update the character profile", 500, updateDto, validationException);
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Generic .NET/EF error; Translate to AnimeHub exception type
+                throw new AnimeHubException("A database error occurred while updating the character account.", 500, updateDto, dbEx);
             }
             catch (Exception ex)
             {

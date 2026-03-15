@@ -134,7 +134,7 @@ namespace AnimeHub.Api.Services
                 else
                 {
                     // Wrap Identity errors and throw as a 500
-                    throw new AnimeHubException("User creation failed.", 500, result.Errors);
+                    throw new AnimeHubException($"User creation failed. \r\n Errors: {result.Errors}", 500, dto);
                 }
             }
             catch (ValidationException validationException)
