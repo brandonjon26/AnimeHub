@@ -36,7 +36,7 @@ namespace AnimeHub.Api.Infrastructure.Validators.Character
             // Relationships & Biography
             RuleFor(x => x.GreatestFeatLoreId).NotNull().GreaterThan(0);
             RuleFor(x => x.RomanticTensionDescription).NotEmpty().MaximumLength(500);
-            RuleFor(x => x.Bio).NotEmpty().MaximumLength(2000);
+            RuleFor(x => x.Bio).NotEmpty();
         }
     }
 }
