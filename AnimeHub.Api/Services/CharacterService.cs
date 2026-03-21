@@ -140,7 +140,7 @@ namespace AnimeHub.Api.Services
                 var validationResult = await _characterProfileUpdateValidator.ValidateAsync(updateDto);
                 if (!validationResult.IsValid)
                 {
-                    throw new AppValidationException("Character update validation failed.", new
+                    throw new AppValidationException($"Character update validation failed. Errors: {validationResult.Errors}", new
                     {
                         ProfileId = profileId,
                         Payload = updateDto,

@@ -12,10 +12,12 @@ namespace AnimeHub.Api.Infrastructure.Logging
     {
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            SanitizeColumns(logEvent, propertyFactory);
             EnrichLogLevel(logEvent, propertyFactory);
             EnrichLogSource(logEvent, propertyFactory);
             EnrichExceptionDetails(logEvent, propertyFactory);
+
+            // --- THIS HAS TO RUN LAST! --- //
+            SanitizeColumns(logEvent, propertyFactory);
         }
 
         private void SanitizeColumns(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
