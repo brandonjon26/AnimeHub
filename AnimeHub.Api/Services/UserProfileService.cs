@@ -48,6 +48,12 @@ namespace AnimeHub.Api.Services
 
                 return profile;
             }
+            catch (AnimeHubException)
+            {
+                // We don't want to wrap this as it's already formatted for the middleware.
+                // Re-throwing ensures it bubbles up to the GlobalExceptionMiddleware.
+                throw;
+            }
             catch (DbUpdateException dbEx)
             {
                 // Generic .NET/EF error; Translate to AnimeHub exception type
@@ -96,7 +102,10 @@ namespace AnimeHub.Api.Services
 
                 return existingProfile;
             }
-            catch (AnimeHubException) { throw; }
+            catch (AnimeHubException ahEx) 
+            { 
+                throw; 
+            }
             catch (Exception ex)
             {
                 throw new AnimeHubException("Failed to update user profile.", 500, new { UserId = userId, UpdateData = dto }, ex);
@@ -122,6 +131,10 @@ namespace AnimeHub.Api.Services
                 }
 
                 return result.Succeeded;
+            }
+            catch (AnimeHubException ahEx)
+            {
+                throw;
             }
             catch (DbUpdateException dbEx)
             {
