@@ -137,6 +137,12 @@ namespace AnimeHub.Api.Services
                     throw new AnimeHubException($"User creation failed. \r\n Errors: {result.Errors}", 500, dto);
                 }
             }
+            catch (AnimeHubException ahEx)
+            {
+                // We don't want to wrap this as it's already formatted for the middleware.
+                // Re-throwing ensures it bubbles up to the GlobalExceptionMiddleware.
+                throw;
+            }
             catch (ValidationException validationException)
             {
                 // Translate to AnimeHub exception type
@@ -214,6 +220,10 @@ namespace AnimeHub.Api.Services
                 }
 
                 return finalResponse;
+            }
+            catch (AnimeHubException ahEx)
+            {
+                throw;
             }
             catch (ValidationException validationException)
             {
