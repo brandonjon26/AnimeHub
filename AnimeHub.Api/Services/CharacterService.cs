@@ -1,12 +1,20 @@
-﻿using AutoMapper;
-using AnimeHub.Api.DTOs.Character;
-using AnimeHub.Api.DTOs.Character.Lore;
-using AnimeHub.Api.Entities;
-using AnimeHub.Api.Entities.Character;
-using AnimeHub.Api.Entities.Character.Lore;
-using AnimeHub.Api.Repositories;
+﻿using System.Linq;
+using System.Security.Claims;
 using System.Collections.Generic;
-using System.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using AutoMapper;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+using AnimeHub.Api.Entities;
+using AnimeHub.Api.Repositories;
+using AnimeHub.Api.DTOs.Character;
+using AnimeHub.Api.Entities.Character;
+using AnimeHub.Api.DTOs.Character.Lore;
+using AnimeHub.Api.Infrastructure.Logging;
+using AnimeHub.Api.Entities.Character.Lore;
+using AnimeHub.Shared.Enums;
+using AnimeHub.Shared.Utilities;
+using AnimeHub.Shared.Utilities.Exceptions;
 
 namespace AnimeHub.Api.Services
 {
@@ -15,16 +23,36 @@ namespace AnimeHub.Api.Services
         private readonly ICharacterRepository _repository;
         private readonly IBaseRepository<CharacterAttire> _attireRepository;
         private readonly IBaseRepository<CharacterAccessory> _accessoryRepository; // Need base repo for accessories
-        private readonly IBaseRepository<AccessoryAttireJoin> _joinRepository; // Need base repo for joins
+        private readonly IBaseRepository<AccessoryAttireJoin> _joinRepository; // Need base repo for joins        
+
         // Base repository for Lore entities
         private readonly IBaseRepository<LoreType> _loreTypeRepository;
         private readonly IBaseRepository<LoreEntry> _loreEntryRepository;
         private readonly IBaseRepository<CharacterLoreLink> _loreLinkRepository;
-        private readonly IMapper _mapper;
 
-        public CharacterService(ICharacterRepository repository, IBaseRepository<CharacterAttire> attireRepository, IBaseRepository<CharacterAccessory> accessoryRepository, 
-                                IBaseRepository<AccessoryAttireJoin> joinRepository, IBaseRepository<LoreType> loreTypeRepository, IBaseRepository<LoreEntry> loreEntryRepository, 
-                                IBaseRepository<CharacterLoreLink> loreLinkRepository, IMapper mapper)
+        //Validators
+        private readonly IValidator<CharacterProfileUpdateDto> _characterProfileUpdateValidator;
+        private readonly IValidator<CharacterAttireInputDto> _characterAttireInputValidator;
+        private readonly IValidator<CharacterAccessoryInputDto> _characterAccessoryInputValidator;
+
+        private readonly IMapper _mapper;
+        private readonly ILogger<CharacterService> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;        
+
+        public CharacterService(
+            ICharacterRepository repository, 
+            IBaseRepository<CharacterAttire> attireRepository, 
+            IBaseRepository<CharacterAccessory> accessoryRepository, 
+            IBaseRepository<AccessoryAttireJoin> joinRepository, 
+            IBaseRepository<LoreType> loreTypeRepository, 
+            IBaseRepository<LoreEntry> loreEntryRepository, 
+            IBaseRepository<CharacterLoreLink> loreLinkRepository, 
+            IValidator<CharacterProfileUpdateDto> characterProfileUpdateValidator, 
+            IValidator<CharacterAttireInputDto> characterAttireInputValidator, 
+            IValidator<CharacterAccessoryInputDto> characterAccessoryInputValidator, 
+            ILogger<CharacterService> logger, 
+            IMapper mapper, 
+            IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _attireRepository = attireRepository;
@@ -33,7 +61,12 @@ namespace AnimeHub.Api.Services
             _loreTypeRepository = loreTypeRepository;
             _loreEntryRepository = loreEntryRepository;
             _loreLinkRepository = loreLinkRepository;
+            _characterProfileUpdateValidator = characterProfileUpdateValidator;
+            _characterAttireInputValidator = characterAttireInputValidator;
+            _characterAccessoryInputValidator = characterAccessoryInputValidator;
+            _logger = logger;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         // --- READ ---
@@ -99,21 +132,75 @@ namespace AnimeHub.Api.Services
         // --- UPDATE ---
         public async Task<bool> UpdateProfileAsync(int profileId, CharacterProfileUpdateDto updateDto)
         {
-            // The Ayami Profile is a singleton, so we always retrieve the first one.
-            CharacterProfile? profileToUpdate = await _repository.GetFirstOrDefaultAsync(p => p.CharacterProfileId == profileId);
+            string currentTraceId = _httpContextAccessor.HttpContext?.TraceIdentifier ?? string.Empty;
+            var currentUserId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (profileToUpdate is null) return false;
+            try
+            {
+                var validationResult = await _characterProfileUpdateValidator.ValidateAsync(updateDto);
+                if (!validationResult.IsValid)
+                {
+                    throw new AppValidationException($"Character update validation failed. Check payload and stack trace for details on the failure.", new
+                    {
+                        ProfileId = profileId,
+                        Payload = updateDto,
+                        ValidationErrors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage })
+                    });
+                }
 
-            // Map DTO fields onto the existing Entity
-            _mapper.Map(updateDto, profileToUpdate);
+                // The Ayami Profile is a singleton, so we always retrieve the first one.
+                CharacterProfile? profileToUpdate = await _repository.GetFirstOrDefaultAsync(p => p.CharacterProfileId == profileId);
 
-            // Persist the changes
-            await _repository.Update(profileToUpdate);
+                if (profileToUpdate is null)
+                {
+                    throw new AnimeHubException("There was an error finding the profile, try again later.", 500, updateDto);
+                }
+                else
+                {
+                    // Map DTO fields onto the existing Entity
+                    _mapper.Map(updateDto, profileToUpdate);
 
-            int recordsAffected = await _repository.SaveChangesAsync();
+                    // Persist the changes
+                    await _repository.Update(profileToUpdate);
 
-            // We can assume success if no exception is thrown
-            return recordsAffected > 0 ? true : false;
+                    int recordsAffected = await _repository.SaveChangesAsync();
+
+                    if (recordsAffected > 0)
+                    {
+                        // Write successful registration log
+                        using (_logger.BeginPropertyScope(logSourceId: LogSource.WebAPI, userId: currentUserId, traceId: currentTraceId, payload: LogSanitizer.SerializeAndSanitize(updateDto)))
+                        {
+                            _logger.LogInformation("{FirstName} {LastName}'s character profile has been update successfully: ProfileIs {CharacterProfileId}", profileToUpdate.FirstName.Trim(), profileToUpdate.LastName.Trim(), profileToUpdate.CharacterProfileId);
+                        }
+
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (AnimeHubException ahEx)
+            {
+                // We don't want to wrap this as it's already formatted for the middleware.
+                // Re-throwing ensures it bubbles up to the GlobalExceptionMiddleware.
+                throw;
+            }
+            catch (ValidationException validationException)
+            {
+                // Translate to AnimeHub exception type
+                throw new AnimeHubException("A data validation error occurred while trying to update the character profile", 500, updateDto, validationException);
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Generic .NET/EF error; Translate to AnimeHub exception type
+                throw new AnimeHubException("A database error occurred while updating the character account.", 500, updateDto, dbEx);
+            }
+            catch (Exception ex)
+            {
+                throw new AnimeHubException("An unexpected system error occurred.", 500, updateDto, ex, Shared.Enums.LogLevel.Error, LogSource.WebAPI);
+            }            
         }
 
         // Update the Greatest Feat link

@@ -52,11 +52,13 @@ namespace AnimeHub.Api.Infrastructure.Middleware
             // 1. Check if it's one of OUR custom exceptions
             if (exception is AnimeHubException appEx)
             {
-                statusCode = appEx.StatusCode;
-                payload = appEx.Payload;
+                statusCode = appEx.StatusCode; 
                 logLevel = appEx.LogLevel;
                 logSource = appEx.LogSource;
                 message = appEx.Message;
+
+                // Look for most detailed payload in the chain
+                payload = GetDeepestPayload(appEx);
             }
 
             // 2. Log with the Payload (Sanitized!)
@@ -96,6 +98,26 @@ namespace AnimeHub.Api.Infrastructure.Middleware
             };
 
             await context.Response.WriteAsync(JsonSerializer.Serialize(response));            
+        }
+
+        private object? GetDeepestPayload(Exception ex)
+        {
+            object? lastFoundPayload = null;
+            Exception currentEx = ex;
+
+            while (currentEx != null)
+            {
+                // If the current exception is part of our exception tree and it has a payload, keep track of it
+                if (currentEx is AnimeHubException ahEx && ahEx.Payload != null)
+                {
+                    lastFoundPayload = ahEx.Payload;
+                }
+
+                // Drill down to the next exception
+                currentEx = currentEx.InnerException;
+            }
+
+            return lastFoundPayload;
         }
     }
 }
