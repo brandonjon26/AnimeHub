@@ -180,7 +180,12 @@ namespace AnimeHub.Api.Services
                         return false;
                     }
                 }
-
+            }
+            catch (AnimeHubException ahEx)
+            {
+                // We don't want to wrap this as it's already formatted for the middleware.
+                // Re-throwing ensures it bubbles up to the GlobalExceptionMiddleware.
+                throw;
             }
             catch (ValidationException validationException)
             {
