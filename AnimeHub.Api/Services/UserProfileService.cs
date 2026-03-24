@@ -48,10 +48,11 @@ namespace AnimeHub.Api.Services
 
                 return profile;
             }
-            catch (ValidationException validationException)
+            catch (AnimeHubException)
             {
-                // Translate to AnimeHub exception type
-                throw new AnimeHubException("A data validation error occurred while trying to create your account.", 500, dto, validationException);
+                // We don't want to wrap this as it's already formatted for the middleware.
+                // Re-throwing ensures it bubbles up to the GlobalExceptionMiddleware.
+                throw;
             }
             catch (DbUpdateException dbEx)
             {
@@ -101,7 +102,10 @@ namespace AnimeHub.Api.Services
 
                 return existingProfile;
             }
-            catch (AnimeHubException) { throw; }
+            catch (AnimeHubException ahEx) 
+            { 
+                throw; 
+            }
             catch (Exception ex)
             {
                 throw new AnimeHubException("Failed to update user profile.", 500, new { UserId = userId, UpdateData = dto }, ex);
@@ -127,6 +131,15 @@ namespace AnimeHub.Api.Services
                 }
 
                 return result.Succeeded;
+            }
+            catch (AnimeHubException ahEx)
+            {
+                throw;
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Generic .NET/EF error; Translate to AnimeHub exception type
+                throw new AnimeHubException("A database error occurred while updating your account.", 500, new { UserId = userId }, dbEx);
             }
             catch (Exception ex)
             {
