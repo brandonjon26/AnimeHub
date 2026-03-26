@@ -30,12 +30,12 @@ namespace AnimeHub.Api.Infrastructure.Validators.Character
 
             // Safety: Aligning with DB limits
             RuleFor(x => x.PrimaryEquipment).NotEmpty().MaximumLength(150);
-            RuleFor(x => x.RomanticTensionDescription).NotEmpty().MaximumLength(500);
-            RuleFor(x => x.Bio).NotEmpty().MaximumLength(2000);
+            RuleFor(x => x.UniquePower).NotEmpty().MaximumLength(255);
+            RuleFor(x => x.MagicAptitude).NotEmpty().MaximumLength(100);
 
             // Relationships & Biography
             RuleFor(x => x.GreatestFeatLoreId).NotNull().GreaterThan(0);
-            RuleFor(x => x.RomanticTensionDescription).NotEmpty().MaximumLength(500);
+            RuleFor(x => x.RomanticTensionDescription).NotEmpty();
             RuleFor(x => x.Bio).NotEmpty();
         }
     }
